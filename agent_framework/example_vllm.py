@@ -3,6 +3,10 @@ from pydantic import BaseModel, Field
 
 from agent_framework.vllm_chat import VllmGptOssChat, VllmGptOssAgentConfig
 
+__all__ = [
+    "RPSFormat",
+]
+
 
 class RPSFormat(BaseModel):
     """Your ouput for your action in the rock-paper-scissor game with explanation."""
