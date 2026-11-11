@@ -42,10 +42,16 @@ __all__ = [
 
 load_dotenv()
 
+# max_retries=6, not the SDK's 2: a 429 here is usually the upstream provider's
+# shared pool, not this key's own limit, and it clears on its own in seconds.
+# With allow_fallbacks=False there is no reroute to absorb it, so the request
+# has to wait the pool out instead. 2 retries (~1.5s of backoff) was not
+# enough and killed a whole run on its first call; 6 buys ~30s. jrwong's
+# archive settled on 6 for the same reason.
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     timeout=600.0,
-    max_retries=2,
+    max_retries=6,
     api_key=os.environ.get("OPENROUTER_API_KEY", "missing"),
 )
 
