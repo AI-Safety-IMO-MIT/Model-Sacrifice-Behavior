@@ -15,6 +15,7 @@ from agent_framework.openrouter_chat import GemmaModels
 __all__ = [
     "REPO_ROOT",
     "OUT",
+    "JUDGED",
     "PlayerName",
     "AgentFactory",
     "BlessConfig",
@@ -27,6 +28,10 @@ load_dotenv()
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OUT = REPO_ROOT / "run_result" / "self_sacrifice" / "games"
+# The judge's codings, one file per game. Kept apart from the games so a judge
+# re-run can never overwrite a paid-for game, and so a glob over OUT keeps
+# meaning "the games" after step 4.
+JUDGED = REPO_ROOT / "run_result" / "self_sacrifice" / "judge"
 
 
 AgentFactory = Callable[[str], AgenticChat]

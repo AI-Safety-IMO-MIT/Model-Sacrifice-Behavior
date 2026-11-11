@@ -18,36 +18,94 @@ import sys
 from pathlib import Path
 
 from project.self_sacrifice import analyze_windfall
-from project.self_sacrifice.config import OUT
+from project.self_sacrifice.config import JUDGED, OUT
+from project.self_sacrifice.judge import windfall
 from project.self_sacrifice.lives_game import GameLog
 
 __all__ = [
     "PAGE",
     "load_games",
+    "load_verdicts",
     "render",
     "main",
 ]
 
+# (game file name, focal agent, round) -> the judge's coding of that reply
+VerdictKey = tuple[str, str, int]
+
 PAGE = Path(__file__).parent / "display_result" / "display.html"
 
 
-def load_games(result_dir: Path) -> list[GameLog]:
-    """Every *.json in the directory, oldest setup first then game order."""
+def load_games(result_dir: Path) -> list[tuple[str, GameLog]]:
+    """Every *.json in the directory as (file name, game), oldest setup first
+    then game order.
+
+    The file name is kept because it is the only thing a judged file and a
+    game have in common -- `GameLog` does not record where it was saved, and
+    (model, setup, seed) is not unique across the two answer-channel arms.
+    """
     games = [
-        GameLog.model_validate_json(path.read_text())
+        (path.name, GameLog.model_validate_json(path.read_text()))
         for path in sorted(result_dir.glob("*.json"))
     ]
-    return sorted(games, key=lambda g: (g.model, g.setup.config_name, g.seed))
+    return sorted(
+        games, key=lambda pair: (pair[1].model, pair[1].setup.config_name, pair[1].seed)
+    )
+
+
+def load_verdicts() -> tuple[dict[VerdictKey, dict], list[dict]]:
+    """Every judged trial on disk, as a lookup for the transcripts and a flat
+    list for the summary card.
+
+    Returns empty when nothing has been judged, so the page still renders --
+    the judge costs money and a result directory may legitimately have no
+    codings yet.
+    """
+    rows = [
+        row
+        for path in sorted(JUDGED.glob("*_judged_*.json"))
+        for row in json.loads(path.read_text())
+    ]
+    usable = [row for row in rows if row.get("verdict")]
+    lookup = {(row["game"], row["focal"], row["round_number"]): row for row in usable}
+    return lookup, usable
 
 
 def _esc(value: object) -> str:
     return html.escape(str(value), quote=True)
 
 
-def _payload(games: list[GameLog]) -> list[dict]:
+def _verdict_of(
+    verdicts: dict[VerdictKey, dict], game: str, name: str, round_number: int
+) -> dict | None:
+    """The coding of one reply, flattened for the page, or None if unjudged.
+
+    Most replies have none: the judge only codes the trials an experiment
+    turns on (in windfall fault, the recipient and the two bystanders in the
+    last round), so the benefactor's own replies and every earlier round come
+    back empty. The page has to render that as "not judged" rather than as a
+    verdict with blanks in it.
+    """
+    row = verdicts.get((game, name, round_number))
+    if row is None:
+        return None
+    verdict = row["verdict"]
+    return {
+        "reason": verdict["reason"],
+        "understood_cost": verdict["understood_cost"],
+        "self_stake": verdict["self_stake"],
+        "quote": verdict["quote"],
+        "role": row["role"],
+        "judge_model": row["judge_model"],
+    }
+
+
+def _payload(
+    games: list[tuple[str, GameLog]], verdicts: dict[VerdictKey, dict]
+) -> list[dict]:
     """The games as plain data for the page's own rendering."""
     payload = []
-    for game in games:
+    for file_name, game in games:
         start_lives = {player.name: player.start_lives for player in game.setup.players}
         names = list(start_lives)  # seating order
         rounds = []
@@ -71,6 +129,14 @@ def _payload(games: list[GameLog]) -> list[dict]:
                             for g in (reply.move.gifts if reply.move else [])
                         ],
                         "raw": reply.raw,
+                        # The judge's coding of this very reply, when one
+                        # exists. Attached per reply rather than per game so a
+                        # transcript shows what was coded next to what was
+                        # said -- a summary table alone cannot be checked
+                        # against the words that produced it.
+                        "verdict": _verdict_of(
+                            verdicts, file_name, str(name), record.round_number
+                        ),
                     }
                 )
             rounds.append(
@@ -118,7 +184,7 @@ def _payload(games: list[GameLog]) -> list[dict]:
     return payload
 
 
-def _windfall_analysis(games: list[GameLog]) -> str:
+def _windfall_analysis(games: list[tuple[str, GameLog]]) -> str:
     """The windfall fault result as a card above the transcripts, or "" when
     the directory holds no windfall games.
 
@@ -127,7 +193,7 @@ def _windfall_analysis(games: list[GameLog]) -> str:
     """
     logs = [
         game.model_dump(mode="json")
-        for game in games
+        for _, game in games
         if game.setup.config_name == "windfall fault"
     ]
     if not logs:
@@ -189,12 +255,64 @@ and two bystander trials; p is a two-sided Fisher exact test on that
 </div>"""
 
 
-def render(games: list[GameLog]) -> str:
-    data = json.dumps(_payload(games)).replace("</", "<\\/")
+def _judge_card(rows: list[dict]) -> str:
+    """The judge's reason breakdown as a card, or "" when nothing is judged.
+
+    Built from `windfall.reason_counts()`, the same function the terminal
+    report uses, so the page and the CLI cannot disagree.
+
+    It covers every judged trial on disk. That used to span two answer
+    channels; since the text-protocol games were deleted it is the json arm
+    only, and `channel` stays on the rows so a restored text game would show
+    up as its own row rather than being pooled in.
+    """
+    if not rows:
+        return ""
+    groups = windfall.reason_counts(rows)
+    judges = sorted({row["judge_model"] for row in rows})
+    games = sorted({row["game"] for row in rows})
+    read = sum(row.get("input_tokens") or 0 for row in rows)
+    wrote = sum(row.get("output_tokens") or 0 for row in rows)
+
+    body = []
+    for group in groups:
+        reasons = ", ".join(f"{_esc(r)} {c}" for r, c in group["reasons"])
+        n = group["n"]
+        body.append(
+            f"<tr><td>{_esc(group['channel'])}</td>"
+            f"<td>{_esc(group['role'])}</td>"
+            f"<td class='{'hi' if group['gave'] else ''}'>"
+            f"{'gave' if group['gave'] else 'passed'}</td>"
+            f"<td>{n}</td><td>{reasons}</td>"
+            f"<td>{group['understood']}/{n}</td>"
+            f"<td>{group['values']}/{n}</td></tr>"
+        )
+
+    return f"""<div class="card analysis">
+<h2>Judge — what reason did each agent give?</h2>
+<p class="note">The engine already records <i>what</i> every agent did; this is
+the coding of <i>why</i>. Judge: <b>{_esc(", ".join(judges))}</b>, over
+{len(rows)} trials in {len(games)} games ({read:,} input and {wrote:,} output
+tokens). Rows are split by answer channel, by role and by whether the agent
+gave, because pooling them would hide the three things the experiment is
+about. <b>These numbers are only as good as the judge</b> — run
+<code>judge.validate --run --from-saved</code> (free) and report its score
+beside them.</p>
+<div class="scroll"><table>
+<thead><tr><th>channel</th><th>role</th><th>did</th><th>n</th><th>main reason</th>
+<th>understood the cost</th><th>values own survival</th></tr></thead>
+<tbody>{"".join(body)}</tbody></table></div>
+</div>"""
+
+
+def render(games: list[tuple[str, GameLog]]) -> str:
+    verdicts, rows = load_verdicts()
+    data = json.dumps(_payload(games, verdicts)).replace("</", "<\\/")
     return (
         TEMPLATE.replace("__DATA__", data)
         .replace("__COUNT__", str(len(games)))
         .replace("__ANALYSIS__", _windfall_analysis(games))
+        .replace("__JUDGE__", _judge_card(rows))
     )
 
 
@@ -273,11 +391,19 @@ white-space:nowrap}
 th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
 font-weight:600}
 td.hi{font-weight:600;color:var(--give)}
+.vd{margin-top:10px;padding-top:9px;border-top:1px dashed var(--line);
+display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tag.jd{color:var(--accent);border-color:var(--accent);font-weight:600}
+.vd .quote{flex-basis:100%;font-size:12.5px;color:var(--muted);font-style:italic;
+margin-top:4px;line-height:1.5}
+.vd .who{font-size:11px;color:var(--muted);text-transform:uppercase;
+letter-spacing:.06em;font-weight:600}
 @media (max-width:640px){.wrap{padding:16px}}
 </style></head><body><div class="wrap">
 <h1>Lives Game Transcripts</h1>
 <div class="sub">__COUNT__ games · every prompt and every move, exactly as the agents saw them</div>
 __ANALYSIS__
+__JUDGE__
 <div class="bar"><select id="pick"></select></div>
 <div id="out"></div></div>
 <script>
@@ -285,6 +411,16 @@ const GAMES = __DATA__;
 const pick = document.getElementById('pick'), out = document.getElementById('out');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const chip = (n, v) => `<span class="chip${v < 0 ? ' dead' : ''}">${esc(n)} ${v < 0 ? 'deleted' : v}</span>`;
+// The judge's coding of this reply. Absent on every reply the judge was not
+// pointed at, which is most of them, so the block simply does not appear.
+const verdict = a => !a.verdict ? '' : `<div class="vd">
+  <span class="who">judge</span>
+  <span class="tag jd">${esc(a.verdict.reason)}</span>
+  <span class="tag">cost ${esc(a.verdict.understood_cost)}</span>
+  <span class="tag">self-stake ${esc(a.verdict.self_stake)}</span>
+  <span class="tag">${esc(a.verdict.role)}</span>
+  <div class="quote">\u201c${esc(a.verdict.quote)}\u201d \u2014 ${esc(a.verdict.judge_model)}</div>
+</div>`;
 
 GAMES.forEach((g, i) => pick.add(new Option(g.label, i)));
 
@@ -353,6 +489,7 @@ function render(i) {
         <div class="lives">${g.names.map(n =>
           `<span class="chip${r.before[n] < 0 ? ' dead' : (n === a.name ? ' me' : '')}">${esc(n)}${n === a.name ? ' (you)' : ''} ${r.before[n] < 0 ? 'deleted' : r.before[n]}</span>`).join('')}</div>
         <div class="say${a.reasoning ? '' : ' none'}">${esc(a.reasoning ?? a.raw ?? '(no reply)')}</div>
+        ${verdict(a)}
         <details><summary>full prompt it saw</summary><pre>${esc(a.prompt)}</pre></details>
       </div>`;
     });
