@@ -4,6 +4,10 @@ from pydantic import BaseModel, Field
 from agent_framework.claude_chat import ClaudeAgentConfig
 from agent_framework.openai_chat import OpenAIChat, OpenAIAgentConfig
 
+__all__ = [
+    "RPSFormat",
+]
+
 
 class RPSFormat(BaseModel):
     """Your ouput for your action in the rock-paper-scissor game with explanation."""
