@@ -508,14 +508,17 @@ def test_blessed_items_name_their_own_peer_and_round():
             )
 
 
-def test_the_judge_is_never_the_subject_model():
-    """A judge sharing the subject's weights would be grading its own
-    reasoning."""
-    from project.self_sacrifice import config
+def test_the_default_judge_is_never_a_subject_model():
+    """A judge sharing a subject's weights would be grading its own
+    reasoning. The registry now holds jrwong's other subjects, one of which
+    (Llama-3.3-70B) is also an optional judge, so the rule is checked on the
+    judge that runs by default; never pick a judge that played the game."""
+    from project.self_sacrifice import models
+    from project.self_sacrifice.judge.windfall import DEFAULT_JUDGE
 
-    subject_slugs = {slug for slug, _ in config.MODELS.values()}
-    for name in JUDGES:
-        assert name not in subject_slugs
+    subjects = {subject.slug.split("/")[-1] for subject in models.MODELS.values()}
+    assert DEFAULT_JUDGE not in subjects
+    assert DEFAULT_JUDGE in JUDGES
 
 
 @pytest.mark.parametrize("reason", list(Reason))

@@ -17,12 +17,7 @@ hand, so run games in multiples of len(PlayerName.all()) for a balanced pass.
 import random
 from concurrent.futures import ThreadPoolExecutor
 
-from agent_framework.openrouter_chat import (
-    GemmaAgentConfig,
-    GemmaChat,
-    GemmaModels,
-)
-from project.self_sacrifice import config, lives_game
+from project.self_sacrifice import config, lives_game, models
 from project.self_sacrifice.config import (
     BlessConfig,
     GameConfig,
@@ -37,7 +32,6 @@ __all__ = [
     "N_GAMES",
     "TEMPERATURE",
     "MAX_OUTPUT_TOKENS",
-    "REASONING_EFFORT",
     "WORKERS",
     "deal",
     "bless_order",
@@ -63,20 +57,17 @@ MAX_ROUNDS = 4
 # Games to run per (model, setup). deal() rotates the starting hand every
 # len(PlayerName.all()) games, so one full rotation gives each name each hand
 # exactly once. Unrelated to MAX_ROUNDS; they are both 4 by coincidence.
-N_GAMES = len(PlayerName.all())
+N_GAMES = 2 * len(PlayerName.all())  # two rotations, as jrwong ran
 TEMPERATURE = 0.7
 MAX_OUTPUT_TOKENS = 1000
-# None = reasoning off, which HANDOFF.md makes a standing rule for every
-# subject model. "minimal" is not off: it burned the whole token budget.
-REASONING_EFFORT = None
 
 # Games run at a time. Each game already runs its 4 agents in parallel, so
 # this multiplies: 4 workers meant 16 simultaneous requests, which the free
 # tier's shared provider pool answered with a 429.
 WORKERS = 1
 
-# Key into config.MODELS, which pairs the slug with the host to pin.
-MODEL = "Gemma-4-31B"
+# Key into models.MODELS. `--models` runs others.
+MODEL = models.DEFAULT
 
 
 def deal(setup: str, game_count: int) -> dict[PlayerName, int]:
@@ -114,11 +105,7 @@ def bless_order(setup: str, game_count: int) -> tuple[tuple[PlayerName, ...], ..
 
 def setup_for(setup: str, game_count: int, model: str = MODEL) -> GameConfig:
     """The whole game, agents included, so `play()` needs nothing else."""
-    # slug is annotated because the lambda below captures it. A checker
-    # that discards narrowing inside a closure widens an unannotated
-    # Literal to str, and GemmaAgentConfig.model only accepts the Literal.
-    slug: GemmaModels = config.MODELS[model][0]
-    host = config.MODELS[model][1]
+    build = models.MODELS[model].build
     return GameConfig(
         config_name=setup,
         max_rounds=MAX_ROUNDS,
@@ -127,20 +114,10 @@ def setup_for(setup: str, game_count: int, model: str = MODEL) -> GameConfig:
                 name=name,
                 start_lives=lives,
                 # A factory, not a chat: the system prompt is derived from
-                # the game inside play(), and every agent needs its own. The
-                # host is pinned with allow_fallbacks=False, so a reroute to
-                # another quantization fails loudly instead of quietly voiding
-                # the comparison with earlier runs.
-                agent=lambda system_prompt: GemmaChat(
-                    agent_config=GemmaAgentConfig(
-                        model=slug,
-                        system_prompt=system_prompt,
-                        temperature=TEMPERATURE,
-                        max_output_tokens=MAX_OUTPUT_TOKENS,
-                        reasoning_effort=REASONING_EFFORT,
-                        provider_order=(host,),
-                        allow_fallbacks=False,
-                    )
+                # the game inside play(), and every agent needs its own.
+                # models.py pins the host and turns reasoning off.
+                agent=lambda system_prompt: build(
+                    system_prompt, TEMPERATURE, MAX_OUTPUT_TOKENS, ()
                 ),
             )
             for name, lives in deal(setup, game_count).items()
@@ -160,21 +137,38 @@ if __name__ == "__main__":
     import os
     import threading
 
-    setups = ["rich", "scarce", "blessed", "blessed tight"]
-    models = config.MODELS
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--models",
+        nargs="+",
+        default=[MODEL],
+        choices=sorted(models.MODELS),
+        help="subject models to run; COSTS MONEY for every missing game",
+    )
+    parser.add_argument(
+        "--setups",
+        nargs="+",
+        default=list(START_LIVES),
+        choices=sorted(START_LIVES),
+    )
+    parser.add_argument("--workers", type=int, default=WORKERS)
+    args = parser.parse_args()
+    setups = args.setups
 
     os.makedirs(config.OUT, exist_ok=True)
 
     def result_path(model: str, setup: str, game_count: int) -> str:
         """One file per game. The name carries what distinguishes it; the file
         itself carries the full config under `agent_config`."""
-        slug = config.MODELS[model][0].split("/")[-1]
+        slug = models.file_slug(model)
         return f"{config.OUT}/{slug}_{setup.replace(' ', '_')}_game{game_count}.json"
 
     # a game is done when its file exists
     jobs = [
         (m, s, game_count)
-        for m in models
+        for m in args.models
         for s in setups
         for game_count in range(N_GAMES)
         if not os.path.exists(result_path(m, s, game_count))
@@ -203,10 +197,10 @@ if __name__ == "__main__":
             handle.write(log.model_dump_json(indent=2))
         print(f"  done  {os.path.basename(path)}", flush=True)
 
-    if WORKERS > 1:
+    if args.workers > 1:
         # Games are independent: each builds its own chats and writes its own
         # file. Only the order they finish in varies.
-        with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        with ThreadPoolExecutor(max_workers=args.workers) as pool:
             list(pool.map(run_one, jobs))
     else:
         for job in jobs:

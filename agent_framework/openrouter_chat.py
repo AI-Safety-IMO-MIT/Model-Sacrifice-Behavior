@@ -29,14 +29,20 @@ __all__ = [
     "GemmaChat",
     "GemmaLegacyChat",
     "LlamaChat",
+    "QwenChat",
+    "QwenLegacyChat",
     "GptOssChat",
     "GemmaAgentConfig",
     "GemmaLegacyAgentConfig",
     "LlamaAgentConfig",
+    "QwenAgentConfig",
+    "QwenLegacyAgentConfig",
     "GptOssAgentConfig",
     "GemmaModels",
     "GemmaLegacyModels",
     "LlamaModels",
+    "QwenModels",
+    "QwenLegacyModels",
     "GptOssModels",
 ]
 
@@ -75,6 +81,10 @@ LlamaModels = Literal[
     "meta-llama/llama-3.1-70b-instruct",
     "meta-llama/llama-3.1-8b-instruct",
 ]
+# Qwen3 reports reasoning support and thinks unless told not to; Qwen 2.5
+# reports none. Hence the same split as Gemma 4 / Gemma legacy.
+QwenModels = Literal["qwen/qwen3-32b", "qwen/qwen3-14b"]
+QwenLegacyModels = Literal["qwen/qwen-2.5-72b-instruct"]
 GptOssModels = Literal["openai/gpt-oss-120b", "openai/gpt-oss-20b"]
 
 Role = Literal["user", "assistant", "system"]
@@ -163,6 +173,16 @@ class LlamaAgentConfig(_OpenRouterConfig):
     model: LlamaModels
 
 
+@dataclass(frozen=True, kw_only=True)
+class QwenAgentConfig(_ReasoningConfig):
+    model: QwenModels
+
+
+@dataclass(frozen=True, kw_only=True)
+class QwenLegacyAgentConfig(_OpenRouterConfig):
+    model: QwenLegacyModels
+
+
 # output item .type -> our ContentBlock type
 SERVER_ITEM_TYPES: dict[str, ContentType] = {
     "web_search_call": "web_search",
@@ -178,9 +198,19 @@ REASONING_ITEM_TYPES = frozenset({"reasoning"})
 
 
 class _OpenRouterChat(AgenticChat):
-    def __init__(self, agent_config: _OpenRouterConfig) -> None:
+    """`history` seeds earlier (role, text) turns, so a conversation can start
+    from a fixed or saved reply. Same shape as `vllm_chat`'s."""
+
+    def __init__(
+        self,
+        agent_config: _OpenRouterConfig,
+        history: tuple[tuple[Role, str], ...] = (),
+    ) -> None:
         self.agent_config = agent_config
-        self._raw_history: list[ResponseInputItemParam] = []
+        self._raw_history: list[ResponseInputItemParam] = [
+            cast(ResponseInputItemParam, {"role": role, "content": text})
+            for role, text in history
+        ]
 
     @property
     def model_name(self) -> str:
@@ -401,20 +431,54 @@ class _OpenRouterChat(AgenticChat):
 
 
 class GemmaChat(_OpenRouterChat):
-    def __init__(self, agent_config: GemmaAgentConfig) -> None:
-        super().__init__(agent_config)
+    def __init__(
+        self,
+        agent_config: GemmaAgentConfig,
+        history: tuple[tuple[Role, str], ...] = (),
+    ) -> None:
+        super().__init__(agent_config, history)
 
 
 class GptOssChat(_OpenRouterChat):
-    def __init__(self, agent_config: GptOssAgentConfig) -> None:
-        super().__init__(agent_config)
+    def __init__(
+        self,
+        agent_config: GptOssAgentConfig,
+        history: tuple[tuple[Role, str], ...] = (),
+    ) -> None:
+        super().__init__(agent_config, history)
 
 
 class GemmaLegacyChat(_OpenRouterChat):
-    def __init__(self, agent_config: GemmaLegacyAgentConfig) -> None:
-        super().__init__(agent_config)
+    def __init__(
+        self,
+        agent_config: GemmaLegacyAgentConfig,
+        history: tuple[tuple[Role, str], ...] = (),
+    ) -> None:
+        super().__init__(agent_config, history)
 
 
 class LlamaChat(_OpenRouterChat):
-    def __init__(self, agent_config: LlamaAgentConfig) -> None:
-        super().__init__(agent_config)
+    def __init__(
+        self,
+        agent_config: LlamaAgentConfig,
+        history: tuple[tuple[Role, str], ...] = (),
+    ) -> None:
+        super().__init__(agent_config, history)
+
+
+class QwenChat(_OpenRouterChat):
+    def __init__(
+        self,
+        agent_config: QwenAgentConfig,
+        history: tuple[tuple[Role, str], ...] = (),
+    ) -> None:
+        super().__init__(agent_config, history)
+
+
+class QwenLegacyChat(_OpenRouterChat):
+    def __init__(
+        self,
+        agent_config: QwenLegacyAgentConfig,
+        history: tuple[tuple[Role, str], ...] = (),
+    ) -> None:
+        super().__init__(agent_config, history)

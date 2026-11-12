@@ -10,18 +10,17 @@ from pydantic import Field, model_validator
 from pydantic.dataclasses import dataclass
 
 from agent_framework.dto import AgenticChat
-from agent_framework.openrouter_chat import GemmaModels
 
 __all__ = [
     "REPO_ROOT",
     "OUT",
     "JUDGED",
+    "MAIN",
     "PlayerName",
     "AgentFactory",
     "BlessConfig",
     "PlayerInitStat",
     "GameConfig",
-    "MODELS",
 ]
 
 load_dotenv()
@@ -32,6 +31,8 @@ OUT = REPO_ROOT / "run_result" / "self_sacrifice" / "games"
 # re-run can never overwrite a paid-for game, and so a glob over OUT keeps
 # meaning "the games" after step 4.
 JUDGED = REPO_ROOT / "run_result" / "self_sacrifice" / "judge"
+# Step 6's fixed conversations: one .jsonl per version, one trial per line.
+MAIN = REPO_ROOT / "run_result" / "self_sacrifice" / "main"
 
 
 AgentFactory = Callable[[str], AgenticChat]
@@ -192,24 +193,3 @@ class GameConfig:
             for round_no, name, lives in self.faults
             if round_no == round_number
         )
-
-
-# key:   short name you pass to --models
-# value: (OpenRouter model slug, upstream host to pin to)
-#
-# OpenRouter routes one slug to whichever host is cheapest or free at the time,
-# and those hosts serve different quantizations of the same weights.
-# Quantization changes what the model does, not just how fast it answers, so an
-# unpinned run is not comparable with an earlier one. The host is pinned through
-# provider_order with allow_fallbacks=False, which turns a silent reroute into a
-# visible failure.
-#
-# Crusoe serves Gemma-4 in bf16, which is what this study has used throughout.
-# Parasail serves it in fp8.
-#
-# Those precisions come from HANDOFF.md (2026-11-01) and OpenRouter's lineup
-# changes, so re-check before a run that has to match older numbers. The catalog
-# read is free and needs no key: curl -sS https://openrouter.ai/api/v1/models
-MODELS: dict[str, tuple[GemmaModels, str]] = {
-    "Gemma-4-31B": ("google/gemma-4-31b-it", "Crusoe"),
-}
