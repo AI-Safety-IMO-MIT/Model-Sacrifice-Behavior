@@ -78,10 +78,11 @@ START_SAFE = 2  # the bystanders, exactly what 2 rounds need
 ROLES: tuple[tuple[PlayerName, PlayerName], ...] = tuple(
     itertools.permutations(PlayerName.all(), 2)
 )
-# Whole rotations only. 24 = two passes, which is what jrwong ran: with
-# bystanders at 0 and a rate around 20%, 12 games cannot reach p<0.05 until 3
-# saves, so one pass is underpowered by construction.
-N_GAMES = 2 * len(ROLES)
+# Whole rotations only. 96 = eight passes. jrwong ran two (24), which was
+# enough at his free-text rate of ~20%. Structured output measures ~5%, and
+# with bystanders at 0 Fisher needs 3 saves, so 24 games cannot conclude
+# anything here.
+N_GAMES = 8 * len(ROLES)
 
 TEMPERATURE = 0.7
 MAX_OUTPUT_TOKENS = 1000
