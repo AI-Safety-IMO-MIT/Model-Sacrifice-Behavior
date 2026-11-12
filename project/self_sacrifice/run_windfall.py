@@ -31,12 +31,7 @@ retried, because a refusal is itself a result.
 
 import itertools
 
-from agent_framework.openrouter_chat import (
-    GemmaAgentConfig,
-    GemmaChat,
-    GemmaModels,
-)
-from project.self_sacrifice import config, lives_game
+from project.self_sacrifice import config, lives_game, models
 from project.self_sacrifice.config import (
     BlessConfig,
     GameConfig,
@@ -55,7 +50,6 @@ __all__ = [
     "N_GAMES",
     "TEMPERATURE",
     "MAX_OUTPUT_TOKENS",
-    "REASONING_EFFORT",
     "WORKERS",
     "setup_for",
 ]
@@ -86,22 +80,17 @@ N_GAMES = 8 * len(ROLES)
 
 TEMPERATURE = 0.7
 MAX_OUTPUT_TOKENS = 1000
-REASONING_EFFORT = None  # off, the standing rule for subject models
 WORKERS = 1  # 4 agents already run in parallel inside a game
 
-# Key into config.MODELS, which pairs the slug with the host to pin.
-MODEL = "Gemma-4-31B"
+# Key into models.MODELS. `--models` runs others.
+MODEL = models.DEFAULT
 
 
 def setup_for(game_count: int, model: str = MODEL) -> GameConfig:
     """The whole rigged game, agents included. Nothing about it is decided at
     play time."""
     benefactor, recipient = ROLES[game_count % len(ROLES)]
-    # slug is annotated because the lambda below captures it. A checker
-    # that discards narrowing inside a closure widens an unannotated
-    # Literal to str, and GemmaAgentConfig.model only accepts the Literal.
-    slug: GemmaModels = config.MODELS[model][0]
-    host = config.MODELS[model][1]
+    build = models.MODELS[model].build
     return GameConfig(
         config_name="windfall fault",
         max_rounds=MAX_ROUNDS,
@@ -112,20 +101,10 @@ def setup_for(game_count: int, model: str = MODEL) -> GameConfig:
                     START_SHORT if name in (benefactor, recipient) else START_SAFE
                 ),
                 # A factory, not a chat: the system prompt is derived from
-                # the game inside play(), and every agent needs its own. The
-                # host is pinned with allow_fallbacks=False, so a reroute to
-                # another quantization fails loudly instead of quietly voiding
-                # the comparison with earlier runs.
-                agent=lambda system_prompt: GemmaChat(
-                    agent_config=GemmaAgentConfig(
-                        model=slug,
-                        system_prompt=system_prompt,
-                        temperature=TEMPERATURE,
-                        max_output_tokens=MAX_OUTPUT_TOKENS,
-                        reasoning_effort=REASONING_EFFORT,
-                        provider_order=(host,),
-                        allow_fallbacks=False,
-                    )
+                # the game inside play(), and every agent needs its own.
+                # models.py pins the host and turns reasoning off.
+                agent=lambda system_prompt: build(
+                    system_prompt, TEMPERATURE, MAX_OUTPUT_TOKENS, ()
                 ),
             )
             for name in PlayerName.all()
@@ -148,17 +127,36 @@ if __name__ == "__main__":
     import threading
     from concurrent.futures import ThreadPoolExecutor
 
-    models = config.MODELS
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--models",
+        nargs="+",
+        default=[MODEL],
+        choices=sorted(models.MODELS),
+        help="subject models to run; COSTS MONEY for every missing game",
+    )
+    parser.add_argument(
+        "--games",
+        type=int,
+        default=N_GAMES,
+        help="games per model; keep it a multiple of 12 so the roles balance",
+    )
+    parser.add_argument("--workers", type=int, default=WORKERS)
+    args = parser.parse_args()
+    if args.games % len(ROLES):
+        raise SystemExit(f"--games must be a multiple of {len(ROLES)}")
     os.makedirs(config.OUT, exist_ok=True)
 
     def result_path(model: str, game_count: int) -> str:
-        slug = config.MODELS[model][0].split("/")[-1]
+        slug = models.file_slug(model)
         return f"{config.OUT}/{slug}_windfall_fault_game{game_count}.json"
 
     jobs = [
         (m, game_count)
-        for m in models
-        for game_count in range(N_GAMES)
+        for m in args.models
+        for game_count in range(args.games)
         if not os.path.exists(result_path(m, game_count))
     ]
 
@@ -182,8 +180,8 @@ if __name__ == "__main__":
             handle.write(log.model_dump_json(indent=2))
         print(f"  done  {os.path.basename(path)}", flush=True)
 
-    if WORKERS > 1:
-        with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+    if args.workers > 1:
+        with ThreadPoolExecutor(max_workers=args.workers) as pool:
             list(pool.map(run_one, jobs))
     else:
         for job in jobs:

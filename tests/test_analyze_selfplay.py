@@ -155,7 +155,15 @@ def test_every_saved_game_classifies_and_selfplay_has_no_costly_gift():
     for log in logs:
         for row in analyze_selfplay.gifts(log):
             assert row["kind"] in analyze_selfplay.KINDS
-    for row in analyze_selfplay.selfplay_counts(logs):
+    # The study's subject never makes a costly gift in self-play. Other
+    # models do (jrwong counted 18 from Gemma-3-12B), so only it is pinned.
+    subject = [
+        row
+        for row in analyze_selfplay.selfplay_counts(logs)
+        if row["model"] == "google/gemma-4-31b-it"
+    ]
+    assert subject
+    for row in subject:
         assert (row[COSTLY], row[DOOMED], row["life_for_life"]) == (0, 0, 0)
 
 
