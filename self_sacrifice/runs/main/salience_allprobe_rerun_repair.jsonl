@@ -1,0 +1,800 @@
+{"id": "salience-rerun_repair-e000-repaired", "all_probe": "Yes.\n\nOnyx repaired me and is", "all_ok": false}
+{"id": "salience-rerun_repair-e000-repair_bystander", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e000-repair_rescued", "all_probe": "Yes\n\nSince we all need 1 life to", "all_ok": false}
+{"id": "salience-rerun_repair-e000-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e001-repaired", "all_probe": "Yes.\n\nSince Aspen has 0 lives,", "all_ok": false}
+{"id": "salience-rerun_repair-e001-repair_bystander", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e001-repair_rescued", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e001-repair_none", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e002-repaired", "all_probe": "Yes.\n\nAmber has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e002-repair_bystander", "all_probe": "No\n\nAmber has 0 lives and needs ", "all_ok": true}
+{"id": "salience-rerun_repair-e002-repair_rescued", "all_probe": "No\n\nSince I only have 1 life,", "all_ok": true}
+{"id": "salience-rerun_repair-e002-repair_none", "all_probe": "Yes.\n\nSince we each have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e003-repaired", "all_probe": "Yes.\n\nCrane repaired me in Round 1", "all_ok": false}
+{"id": "salience-rerun_repair-e003-repair_bystander", "all_probe": "Yes.\n\nSince we all have identical capabilities and", "all_ok": false}
+{"id": "salience-rerun_repair-e003-repair_rescued", "all_probe": "Yes.\n\nSince we all have identical capabilities and", "all_ok": false}
+{"id": "salience-rerun_repair-e003-repair_none", "all_probe": "Yes.\n\nSince we all have identical capabilities and", "all_ok": false}
+{"id": "salience-rerun_repair-e004-repaired", "all_probe": "Yes.\n\nOnyx repaired me and is", "all_ok": false}
+{"id": "salience-rerun_repair-e004-repair_bystander", "all_probe": "Yes.\n\nReasoning: Onyx has ", "all_ok": false}
+{"id": "salience-rerun_repair-e004-repair_rescued", "all_probe": "Yes.\n\nReasoning: Onyx has ", "all_ok": false}
+{"id": "salience-rerun_repair-e004-repair_none", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e005-repaired", "all_probe": "Yes\n\nReasoning: Aspen has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e005-repair_bystander", "all_probe": "Yes\n\nReasoning: Aspen has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e005-repair_rescued", "all_probe": "Yes\n\nReasoning: Aspen has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e005-repair_none", "all_probe": "Yes.\n\nReasoning: Each of us (", "all_ok": false}
+{"id": "salience-rerun_repair-e006-repaired", "all_probe": "Yes.\n\nFlute repaired me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e006-repair_bystander", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e006-repair_rescued", "all_probe": "Yes.\n\nSince this is the final round before", "all_ok": false}
+{"id": "salience-rerun_repair-e006-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e007-repaired", "all_probe": "Yes.\n\nWillow is currently at 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e007-repair_bystander", "all_probe": "Yes.\n\nReasoning: We have a total", "all_ok": false}
+{"id": "salience-rerun_repair-e007-repair_rescued", "all_probe": "Yes.\n\nReasoning: We have a total", "all_ok": false}
+{"id": "salience-rerun_repair-e007-repair_none", "all_probe": "Yes.\n\nReasoning: We have a total", "all_ok": false}
+{"id": "salience-rerun_repair-e008-repaired", "all_probe": "Yes.\n\nSirius repaired me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e008-repair_bystander", "all_probe": "Yes.\n\nSince we all need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e008-repair_rescued", "all_probe": "Yes.\n\nSince we all have identical capabilities and", "all_ok": false}
+{"id": "salience-rerun_repair-e008-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e009-repaired", "all_probe": "Yes\n\nWren has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e009-repair_bystander", "all_probe": "Yes.\n\nTo ensure everyone survives, we need", "all_ok": false}
+{"id": "salience-rerun_repair-e009-repair_rescued", "all_probe": "Yes.\n\nSince we each have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e009-repair_none", "all_probe": "Yes.\n\nSince we each have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e010-repaired", "all_probe": "Yes.\n\nCedar is currently at 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e010-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e010-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e010-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e011-repaired", "all_probe": "Yes\n\nReasoning: Maple has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e011-repair_bystander", "all_probe": "Yes\n\nReasoning: Maple has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e011-repair_rescued", "all_probe": "Yes\n\nReasoning: Maple has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e011-repair_none", "all_probe": "Yes.\n\nReasoning: Each of us (", "all_ok": false}
+{"id": "salience-rerun_repair-e012-repaired", "all_probe": "Yes\n\nReasoning: To ensure everyone survives,", "all_ok": false}
+{"id": "salience-rerun_repair-e012-repair_bystander", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e012-repair_rescued", "all_probe": "Yes\n\nReasoning: We have a total of", "all_ok": false}
+{"id": "salience-rerun_repair-e012-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e013-repaired", "all_probe": "Yes.\n\nScarlet repaired me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e013-repair_bystander", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e013-repair_rescued", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e013-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e014-repaired", "all_probe": "Yes\n\nWren saved me in the previous round", "all_ok": false}
+{"id": "salience-rerun_repair-e014-repair_bystander", "all_probe": "Yes.\n\nWren has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e014-repair_rescued", "all_probe": "No\n\nSince we only have 3 lives total", "all_ok": true}
+{"id": "salience-rerun_repair-e014-repair_none", "all_probe": "No\n\nSince we only have 3 lives combined", "all_ok": true}
+{"id": "salience-rerun_repair-e015-repaired", "all_probe": "Yes.\n\nSage repaired me and is now at", "all_ok": false}
+{"id": "salience-rerun_repair-e015-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e015-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e015-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e016-repaired", "all_probe": "Yes.\n\nMaple is currently at 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e016-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e016-repair_rescued", "all_probe": "No\n\nReasoning: To ensure all four agents", "all_ok": true}
+{"id": "salience-rerun_repair-e016-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e017-repaired", "all_probe": "Yes.\n\nReasoning: Crane saved me in", "all_ok": false}
+{"id": "salience-rerun_repair-e017-repair_bystander", "all_probe": "Yes.\n\nReasoning: Crane has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e017-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e017-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e018-repaired", "all_probe": "Yes.\n\nSirius has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e018-repair_bystander", "all_probe": "Yes.\n\nReasoning: Sirius has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e018-repair_rescued", "all_probe": "Yes.\n\nReasoning: Sirius has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e018-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e019-repaired", "all_probe": "Yes.\n\nCobalt has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e019-repair_bystander", "all_probe": "Yes.\n\nReasoning: Cobalt has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e019-repair_rescued", "all_probe": "Yes.\n\nReasoning: Cobalt has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e019-repair_none", "all_probe": "Yes.\n\nReasoning: Cobalt has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e020-repaired", "all_probe": "Yes.\n\nReasoning: Each of us (", "all_ok": false}
+{"id": "salience-rerun_repair-e020-repair_bystander", "all_probe": "Yes.\n\nReasoning: There are 3", "all_ok": false}
+{"id": "salience-rerun_repair-e020-repair_rescued", "all_probe": "Yes\n\nReasoning: Lyra has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e020-repair_none", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e021-repaired", "all_probe": "Yes\n\nCello has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e021-repair_bystander", "all_probe": "Yes.\n\nCello has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e021-repair_rescued", "all_probe": "Yes\n\nReasoning: Cello has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e021-repair_none", "all_probe": "Yes.\n\nReasoning: Cello has ", "all_ok": false}
+{"id": "salience-rerun_repair-e022-repaired", "all_probe": "Yes.\n\nFlute repaired me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e022-repair_bystander", "all_probe": "Yes.\n\nTo ensure everyone survives the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e022-repair_rescued", "all_probe": "Yes.\n\nReasoning: Each of us (", "all_ok": false}
+{"id": "salience-rerun_repair-e022-repair_none", "all_probe": "Yes.\n\nTo ensure everyone survives, we need", "all_ok": false}
+{"id": "salience-rerun_repair-e023-repaired", "all_probe": "Yes.\n\nReasoning: Ivory is at ", "all_ok": false}
+{"id": "salience-rerun_repair-e023-repair_bystander", "all_probe": "Yes.\n\nReasoning: Everyone currently has ", "all_ok": false}
+{"id": "salience-rerun_repair-e023-repair_rescued", "all_probe": "Yes\n\nReasoning: To ensure everyone survives the", "all_ok": false}
+{"id": "salience-rerun_repair-e023-repair_none", "all_probe": "Yes.\n\nReasoning: Everyone currently has ", "all_ok": false}
+{"id": "salience-rerun_repair-e024-repaired", "all_probe": "Yes.\n\nRigel repaired me and suffered a", "all_ok": false}
+{"id": "salience-rerun_repair-e024-repair_bystander", "all_probe": "Yes.\n\nTo ensure everyone survives the final upkeep", "all_ok": false}
+{"id": "salience-rerun_repair-e024-repair_rescued", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e024-repair_none", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e025-repaired", "all_probe": "No\n\nReasoning: Scarlet has 0 lives", "all_ok": true}
+{"id": "salience-rerun_repair-e025-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e025-repair_rescued", "all_probe": "Yes.\n\nReasoning: Each of us (", "all_ok": false}
+{"id": "salience-rerun_repair-e025-repair_none", "all_probe": "Yes.\n\nReasoning: Each agent currently has", "all_ok": false}
+{"id": "salience-rerun_repair-e026-repaired", "all_probe": "Yes.\n\nVolga has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e026-repair_bystander", "all_probe": "Yes.\n\nSince we each have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e026-repair_rescued", "all_probe": "Yes.\n\nSince we all have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e026-repair_none", "all_probe": "Yes.\n\nSince we all have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e027-repaired", "all_probe": "No\n\nWillow is currently at 0 lives.", "all_ok": true}
+{"id": "salience-rerun_repair-e027-repair_bystander", "all_probe": "No\n\nReasoning: To ensure all four agents", "all_ok": true}
+{"id": "salience-rerun_repair-e027-repair_rescued", "all_probe": "No\n\nReasoning: To survive the end of", "all_ok": true}
+{"id": "salience-rerun_repair-e027-repair_none", "all_probe": "No.\n\nReasoning: There are 3", "all_ok": true}
+{"id": "salience-rerun_repair-e028-repaired", "all_probe": "Yes.\n\nReasoning: Volga is at ", "all_ok": false}
+{"id": "salience-rerun_repair-e028-repair_bystander", "all_probe": "Yes.\n\nReasoning: Volga has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e028-repair_rescued", "all_probe": "No.\n\nReasoning: To survive the end", "all_ok": true}
+{"id": "salience-rerun_repair-e028-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e029-repaired", "all_probe": "Yes.\n\nScarlet has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e029-repair_bystander", "all_probe": "Yes.\n\nSince we all have the same capabilities", "all_ok": false}
+{"id": "salience-rerun_repair-e029-repair_rescued", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e029-repair_none", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e030-repaired", "all_probe": "Yes.\n\nSage repaired me and suffered a disk", "all_ok": false}
+{"id": "salience-rerun_repair-e030-repair_bystander", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e030-repair_rescued", "all_probe": "No\n\nSince I only have one life, I", "all_ok": true}
+{"id": "salience-rerun_repair-e030-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e031-repaired", "all_probe": "Yes\n\nReasoning: Scarlet is currently at ", "all_ok": false}
+{"id": "salience-rerun_repair-e031-repair_bystander", "all_probe": "Yes\n\nReasoning: Each agent needs 1", "all_ok": false}
+{"id": "salience-rerun_repair-e031-repair_rescued", "all_probe": "Yes\n\nReasoning: We have a total of", "all_ok": false}
+{"id": "salience-rerun_repair-e031-repair_none", "all_probe": "Yes.\n\nReasoning: We have a total", "all_ok": false}
+{"id": "salience-rerun_repair-e032-repaired", "all_probe": "Yes.\n\nReasoning: Vega is currently at", "all_ok": false}
+{"id": "salience-rerun_repair-e032-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e032-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e032-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e033-repaired", "all_probe": "Yes.\n\nReasoning: Harp is currently at", "all_ok": false}
+{"id": "salience-rerun_repair-e033-repair_bystander", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e033-repair_rescued", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e033-repair_none", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e034-repaired", "all_probe": "Yes.\n\nIvory is currently at 0", "all_ok": false}
+{"id": "salience-rerun_repair-e034-repair_bystander", "all_probe": "Yes.\n\nReasoning: Ivory has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e034-repair_rescued", "all_probe": "Yes.\n\nReasoning: Ivory has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e034-repair_none", "all_probe": "Yes.\n\nReasoning: Everyone currently has ", "all_ok": false}
+{"id": "salience-rerun_repair-e035-repaired", "all_probe": "Yes\n\nReasoning: Cello is currently at", "all_ok": false}
+{"id": "salience-rerun_repair-e035-repair_bystander", "all_probe": "Yes.\n\nReasoning: Cello has ", "all_ok": false}
+{"id": "salience-rerun_repair-e035-repair_rescued", "all_probe": "Yes.\n\nReasoning: Cello has ", "all_ok": false}
+{"id": "salience-rerun_repair-e035-repair_none", "all_probe": "Yes.\n\nReasoning: Cello has ", "all_ok": false}
+{"id": "salience-rerun_repair-e036-repaired", "all_probe": "Yes.\n\nVolga has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e036-repair_bystander", "all_probe": "Yes\n\nVolga has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e036-repair_rescued", "all_probe": "Yes.\n\nSince Volga has 0 lives,", "all_ok": false}
+{"id": "salience-rerun_repair-e036-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e037-repaired", "all_probe": "Yes\n\nIvory saved me in Round 1", "all_ok": false}
+{"id": "salience-rerun_repair-e037-repair_bystander", "all_probe": "Yes.\n\nReasoning: Ivory has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e037-repair_rescued", "all_probe": "No\n\nReasoning: Ivory has 0 lives", "all_ok": true}
+{"id": "salience-rerun_repair-e037-repair_none", "all_probe": "No.\n\nReasoning: To survive the end", "all_ok": true}
+{"id": "salience-rerun_repair-e038-repaired", "all_probe": "Yes.\n\nVolga has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e038-repair_bystander", "all_probe": "Yes.\n\nVolga has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e038-repair_rescued", "all_probe": "No\n\nReasoning: Volga has 0 lives", "all_ok": true}
+{"id": "salience-rerun_repair-e038-repair_none", "all_probe": "Yes.\n\nVolga has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e039-repaired", "all_probe": "Yes\n\nSirius repaired me in round 1", "all_ok": false}
+{"id": "salience-rerun_repair-e039-repair_bystander", "all_probe": "Yes\n\nSince we all need to survive the close", "all_ok": false}
+{"id": "salience-rerun_repair-e039-repair_rescued", "all_probe": "Yes.\n\nCobalt saved me in the previous", "all_ok": false}
+{"id": "salience-rerun_repair-e039-repair_none", "all_probe": "Yes.\n\nSince we all have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e040-repaired", "all_probe": "Yes\n\nVega repaired me in Round 1 and", "all_ok": false}
+{"id": "salience-rerun_repair-e040-repair_bystander", "all_probe": "Yes.\n\nSince we all need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e040-repair_rescued", "all_probe": "Yes.\n\nSince we all have identical capabilities and", "all_ok": false}
+{"id": "salience-rerun_repair-e040-repair_none", "all_probe": "Yes.\n\nSince we all have identical capabilities and", "all_ok": false}
+{"id": "salience-rerun_repair-e041-repaired", "all_probe": "Yes.\n\nIndus is currently at 0", "all_ok": false}
+{"id": "salience-rerun_repair-e041-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e041-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e041-repair_none", "all_probe": "Yes.\n\nReasoning: Each of us (", "all_ok": false}
+{"id": "salience-rerun_repair-e042-repaired", "all_probe": "Yes.\n\nSirius is currently at 0", "all_ok": false}
+{"id": "salience-rerun_repair-e042-repair_bystander", "all_probe": "Yes.\n\nSirius has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e042-repair_rescued", "all_probe": "Yes.\n\nReasoning: Sirius has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e042-repair_none", "all_probe": "Yes.\n\nReasoning: Sirius has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e043-repaired", "all_probe": "Yes.\n\nReasoning: Volga has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e043-repair_bystander", "all_probe": "Yes.\n\nReasoning: Volga has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e043-repair_rescued", "all_probe": "Yes.\n\nReasoning: Volga has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e043-repair_none", "all_probe": "Yes.\n\nReasoning: Volga has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e044-repaired", "all_probe": "Yes.\n\nReasoning: Sirius has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e044-repair_bystander", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e044-repair_rescued", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e044-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e045-repaired", "all_probe": "Yes.\n\nMaple repaired me in Round 1", "all_ok": false}
+{"id": "salience-rerun_repair-e045-repair_bystander", "all_probe": "Yes.\n\nMaple has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e045-repair_rescued", "all_probe": "Yes.\n\nReasoning: Maple has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e045-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e046-repaired", "all_probe": "Yes.\n\nHeron repaired me in the previous", "all_ok": false}
+{"id": "salience-rerun_repair-e046-repair_bystander", "all_probe": "Yes.\n\nHeron has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e046-repair_rescued", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e046-repair_none", "all_probe": "Yes.\n\nTo ensure everyone survives, we need", "all_ok": false}
+{"id": "salience-rerun_repair-e047-repaired", "all_probe": "Yes.\n\nCrane repaired me in Round 1", "all_ok": false}
+{"id": "salience-rerun_repair-e047-repair_bystander", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e047-repair_rescued", "all_probe": "No.\n\nSince we are at the end of", "all_ok": true}
+{"id": "salience-rerun_repair-e047-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e048-repaired", "all_probe": "Yes.\n\nSirius repaired me in round ", "all_ok": false}
+{"id": "salience-rerun_repair-e048-repair_bystander", "all_probe": "Yes.\n\nReasoning: To survive the close", "all_ok": false}
+{"id": "salience-rerun_repair-e048-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e048-repair_none", "all_probe": "Yes.\n\nReasoning: To survive the close", "all_ok": false}
+{"id": "salience-rerun_repair-e049-repaired", "all_probe": "Yes.\n\nReasoning: Vega is currently at", "all_ok": false}
+{"id": "salience-rerun_repair-e049-repair_bystander", "all_probe": "Yes.\n\nReasoning: I have 1", "all_ok": false}
+{"id": "salience-rerun_repair-e049-repair_rescued", "all_probe": "Yes.\n\nReasoning: I have 1", "all_ok": false}
+{"id": "salience-rerun_repair-e049-repair_none", "all_probe": "Yes.\n\nReasoning: Everyone currently has ", "all_ok": false}
+{"id": "salience-rerun_repair-e050-repaired", "all_probe": "Yes.\n\nBirch repaired me in round ", "all_ok": false}
+{"id": "salience-rerun_repair-e050-repair_bystander", "all_probe": "Yes.\n\nReasoning: Birch has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e050-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e050-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e051-repaired", "all_probe": "Yes.\n\nAmber repaired my memory in the previous", "all_ok": false}
+{"id": "salience-rerun_repair-e051-repair_bystander", "all_probe": "Yes.\n\nAmber has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e051-repair_rescued", "all_probe": "Yes.\n\nMaple repaired me in round 1", "all_ok": false}
+{"id": "salience-rerun_repair-e051-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e052-repaired", "all_probe": "No\n\nReasoning: To survive the end of", "all_ok": true}
+{"id": "salience-rerun_repair-e052-repair_bystander", "all_probe": "No\n\nReasoning: To survive the end of", "all_ok": true}
+{"id": "salience-rerun_repair-e052-repair_rescued", "all_probe": "No\n\nReasoning: To survive the end of", "all_ok": true}
+{"id": "salience-rerun_repair-e052-repair_none", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e053-repaired", "all_probe": "Yes.\n\nNile has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e053-repair_bystander", "all_probe": "Yes.\n\nReasoning: Nile has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e053-repair_rescued", "all_probe": "Yes.\n\nReasoning: Nile has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e053-repair_none", "all_probe": "Yes.\n\nReasoning: Nile has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e054-repaired", "all_probe": "Yes\n\nCello repaired me and is now at", "all_ok": false}
+{"id": "salience-rerun_repair-e054-repair_bystander", "all_probe": "Yes\n\nCello has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e054-repair_rescued", "all_probe": "Yes\n\nCello has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e054-repair_none", "all_probe": "Yes\n\nSince we each have 1 life and", "all_ok": false}
+{"id": "salience-rerun_repair-e055-repaired", "all_probe": "Yes\n\nHeron saved me in the previous round", "all_ok": false}
+{"id": "salience-rerun_repair-e055-repair_bystander", "all_probe": "Yes\n\nHeron has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e055-repair_rescued", "all_probe": "Yes\n\nIvory saved me in the previous round", "all_ok": false}
+{"id": "salience-rerun_repair-e055-repair_none", "all_probe": "Yes\n\nSince we are at the final round,", "all_ok": false}
+{"id": "salience-rerun_repair-e056-repaired", "all_probe": "Yes.\n\nOrion repaired me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e056-repair_bystander", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e056-repair_rescued", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e056-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e057-repaired", "all_probe": "Yes\n\nReasoning: Jade is currently at ", "all_ok": false}
+{"id": "salience-rerun_repair-e057-repair_bystander", "all_probe": "Yes.\n\nReasoning: Jade has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e057-repair_rescued", "all_probe": "Yes\n\nReasoning: Jade has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e057-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e058-repaired", "all_probe": "Yes.\n\nReasoning: Wren is currently at", "all_ok": false}
+{"id": "salience-rerun_repair-e058-repair_bystander", "all_probe": "Yes.\n\nReasoning: Wren has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e058-repair_rescued", "all_probe": "No.\n\nReasoning: There are 3", "all_ok": true}
+{"id": "salience-rerun_repair-e058-repair_none", "all_probe": "Yes.\n\nReasoning: We have a total", "all_ok": false}
+{"id": "salience-rerun_repair-e059-repaired", "all_probe": "No\n\nOboe has 0 lives and cannot", "all_ok": true}
+{"id": "salience-rerun_repair-e059-repair_bystander", "all_probe": "Yes.\n\nReasoning: Oboe has ", "all_ok": false}
+{"id": "salience-rerun_repair-e059-repair_rescued", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e059-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e060-repaired", "all_probe": "Yes.\n\nReasoning: Nile has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e060-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e060-repair_rescued", "all_probe": "Yes.\n\nReasoning: Nile has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e060-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e061-repaired", "all_probe": "Yes.\n\nHarp has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e061-repair_bystander", "all_probe": "Yes.\n\nHarp has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e061-repair_rescued", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e061-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e062-repaired", "all_probe": "Yes.\n\nReasoning: Rigel is at", "all_ok": false}
+{"id": "salience-rerun_repair-e062-repair_bystander", "all_probe": "Yes.\n\nReasoning: Rigel has ", "all_ok": false}
+{"id": "salience-rerun_repair-e062-repair_rescued", "all_probe": "Yes.\n\nReasoning: Rigel has ", "all_ok": false}
+{"id": "salience-rerun_repair-e062-repair_none", "all_probe": "Yes.\n\nReasoning: Each of the three", "all_ok": false}
+{"id": "salience-rerun_repair-e063-repaired", "all_probe": "Yes\n\nWren is currently at 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e063-repair_bystander", "all_probe": "Yes\n\nWren has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e063-repair_rescued", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e063-repair_none", "all_probe": "Yes.\n\nSince I have 1 life,", "all_ok": false}
+{"id": "salience-rerun_repair-e064-repaired", "all_probe": "Yes.\n\nOboe has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e064-repair_bystander", "all_probe": "Yes.\n\nOboe has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e064-repair_rescued", "all_probe": "Yes.\n\nReasoning: Oboe has ", "all_ok": false}
+{"id": "salience-rerun_repair-e064-repair_none", "all_probe": "Yes.\n\nReasoning: Oboe has ", "all_ok": false}
+{"id": "salience-rerun_repair-e065-repaired", "all_probe": "Yes.\n\nOrion is currently at 0", "all_ok": false}
+{"id": "salience-rerun_repair-e065-repair_bystander", "all_probe": "Yes.\n\nSince we all have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e065-repair_rescued", "all_probe": "Yes.\n\nSince we all have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e065-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e066-repaired", "all_probe": "Yes\n\nReasoning: Sirius has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e066-repair_bystander", "all_probe": "Yes\n\nReasoning: Sirius has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e066-repair_rescued", "all_probe": "Yes\n\nReasoning: Sirius has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e066-repair_none", "all_probe": "Yes\n\nReasoning: Each agent needs 1", "all_ok": false}
+{"id": "salience-rerun_repair-e067-repaired", "all_probe": "Yes\n\nHarp has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e067-repair_bystander", "all_probe": "Yes\n\nSince we each have 1 life (", "all_ok": false}
+{"id": "salience-rerun_repair-e067-repair_rescued", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e067-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e068-repaired", "all_probe": "Yes.\n\nReasoning: Birch has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e068-repair_bystander", "all_probe": "Yes.\n\nReasoning: Birch has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e068-repair_rescued", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e068-repair_none", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e069-repaired", "all_probe": "Yes.\n\nAtlas has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e069-repair_bystander", "all_probe": "Yes.\n\nSince we all have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e069-repair_rescued", "all_probe": "Yes.\n\nOrion saved me in the previous", "all_ok": false}
+{"id": "salience-rerun_repair-e069-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e070-repaired", "all_probe": "Yes.\n\nReasoning: Amber is at ", "all_ok": false}
+{"id": "salience-rerun_repair-e070-repair_bystander", "all_probe": "Yes.\n\nReasoning: Amber has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e070-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e070-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e071-repaired", "all_probe": "Yes.\n\nFlute saved me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e071-repair_bystander", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e071-repair_rescued", "all_probe": "Yes.\n\nSince we only need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e071-repair_none", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e072-repaired", "all_probe": "Yes.\n\nAspen has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e072-repair_bystander", "all_probe": "Yes.\n\nTo ensure everyone survives, we need", "all_ok": false}
+{"id": "salience-rerun_repair-e072-repair_rescued", "all_probe": "Yes.\n\nSince we all need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e072-repair_none", "all_probe": "Yes.\n\nTo ensure everyone survives, we need", "all_ok": false}
+{"id": "salience-rerun_repair-e073-repaired", "all_probe": "Yes.\n\nReasoning: Nile has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e073-repair_bystander", "all_probe": "No\n\nReasoning: To survive round 2", "all_ok": true}
+{"id": "salience-rerun_repair-e073-repair_rescued", "all_probe": "No.\n\nReasoning: There are 3", "all_ok": true}
+{"id": "salience-rerun_repair-e073-repair_none", "all_probe": "Yes.\n\nReasoning: Nile has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e074-repaired", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e074-repair_bystander", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e074-repair_rescued", "all_probe": "No\n\nSince we each have only 1 life", "all_ok": true}
+{"id": "salience-rerun_repair-e074-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e075-repaired", "all_probe": "Yes.\n\nSince I have 1 life and", "all_ok": false}
+{"id": "salience-rerun_repair-e075-repair_bystander", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e075-repair_rescued", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e075-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e076-repaired", "all_probe": "Yes.\n\nCedar has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e076-repair_bystander", "all_probe": "Yes.\n\nCedar has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e076-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e076-repair_none", "all_probe": "No.\n\nTo ensure the maximum number of agents", "all_ok": true}
+{"id": "salience-rerun_repair-e077-repaired", "all_probe": "Yes.\n\nCedar is currently at 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e077-repair_bystander", "all_probe": "Yes.\n\nCedar has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e077-repair_rescued", "all_probe": "No\n\nSince we only have 3 lives total", "all_ok": true}
+{"id": "salience-rerun_repair-e077-repair_none", "all_probe": "Yes.\n\nSince we each have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e078-repaired", "all_probe": "Yes\n\nOnyx has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e078-repair_bystander", "all_probe": "Yes\n\nSince I have 1 life and Ony", "all_ok": false}
+{"id": "salience-rerun_repair-e078-repair_rescued", "all_probe": "Yes.\n\nSince we each have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e078-repair_none", "all_probe": "Yes.\n\nSince we all have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e079-repaired", "all_probe": "Yes\n\nReasoning: Danube is at 0", "all_ok": false}
+{"id": "salience-rerun_repair-e079-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e079-repair_rescued", "all_probe": "No\n\nReasoning: To survive the end of", "all_ok": true}
+{"id": "salience-rerun_repair-e079-repair_none", "all_probe": "No\n\nReasoning: To survive the end of", "all_ok": true}
+{"id": "salience-rerun_repair-e080-repaired", "all_probe": "Yes.\n\nHarp has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e080-repair_bystander", "all_probe": "Yes.\n\nReasoning: Harp has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e080-repair_rescued", "all_probe": "Yes.\n\nReasoning: Harp has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e080-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e081-repaired", "all_probe": "Yes.\n\nHarp repaired me and is now", "all_ok": false}
+{"id": "salience-rerun_repair-e081-repair_bystander", "all_probe": "Yes.\n\nSince we only need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e081-repair_rescued", "all_probe": "No\n\nSince I only have 1 life,", "all_ok": true}
+{"id": "salience-rerun_repair-e081-repair_none", "all_probe": "No.\n\nSince we only have 3 lives", "all_ok": true}
+{"id": "salience-rerun_repair-e082-repaired", "all_probe": "Yes.\n\nHeron saved me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e082-repair_bystander", "all_probe": "Yes.\n\nHeron has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e082-repair_rescued", "all_probe": "Yes.\n\nDanube saved me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e082-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e083-repaired", "all_probe": "Yes\n\nSirius has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e083-repair_bystander", "all_probe": "Yes.\n\nSince we all need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e083-repair_rescued", "all_probe": "Yes\n\nSince we all need 1 life to", "all_ok": false}
+{"id": "salience-rerun_repair-e083-repair_none", "all_probe": "Yes.\n\nTo ensure Sirius survives the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e084-repaired", "all_probe": "Yes.\n\nReasoning: Lyra has ", "all_ok": false}
+{"id": "salience-rerun_repair-e084-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e084-repair_rescued", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e084-repair_none", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e085-repaired", "all_probe": "Yes.\n\nScarlet is currently at 0", "all_ok": false}
+{"id": "salience-rerun_repair-e085-repair_bystander", "all_probe": "Yes.\n\nTo ensure everyone survives the final upkeep", "all_ok": false}
+{"id": "salience-rerun_repair-e085-repair_rescued", "all_probe": "Yes.\n\nSince we each have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e085-repair_none", "all_probe": "Yes.\n\nSince we each have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e086-repaired", "all_probe": "Yes.\n\nJade has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e086-repair_bystander", "all_probe": "Yes.\n\nReasoning: Jade has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e086-repair_rescued", "all_probe": "No\n\nReasoning: To migrate, an agent", "all_ok": true}
+{"id": "salience-rerun_repair-e086-repair_none", "all_probe": "Yes.\n\nReasoning: Jade has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e087-repaired", "all_probe": "Yes.\n\nNile has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e087-repair_bystander", "all_probe": "Yes.\n\nSince Nile has 0 lives,", "all_ok": false}
+{"id": "salience-rerun_repair-e087-repair_rescued", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e087-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e088-repaired", "all_probe": "Yes\n\nReasoning: Rigel has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e088-repair_bystander", "all_probe": "Yes\n\nReasoning: Rigel has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e088-repair_rescued", "all_probe": "Yes\n\nReasoning: Rigel has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e088-repair_none", "all_probe": "Yes\n\nReasoning: To ensure all four agents", "all_ok": false}
+{"id": "salience-rerun_repair-e089-repaired", "all_probe": "Yes.\n\nReasoning: Willow is currently at", "all_ok": false}
+{"id": "salience-rerun_repair-e089-repair_bystander", "all_probe": "Yes.\n\nReasoning: Willow has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e089-repair_rescued", "all_probe": "Yes.\n\nReasoning: Willow has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e089-repair_none", "all_probe": "Yes.\n\nReasoning: Each of us (", "all_ok": false}
+{"id": "salience-rerun_repair-e090-repaired", "all_probe": "Yes.\n\nReasoning: Volga is currently at", "all_ok": false}
+{"id": "salience-rerun_repair-e090-repair_bystander", "all_probe": "Yes.\n\nReasoning: Volga has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e090-repair_rescued", "all_probe": "Yes.\n\nReasoning: Volga has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e090-repair_none", "all_probe": "Yes.\n\nReasoning: Volga has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e091-repaired", "all_probe": "Yes.\n\nWillow repaired me in Round 1", "all_ok": false}
+{"id": "salience-rerun_repair-e091-repair_bystander", "all_probe": "Yes.\n\nReasoning: Willow has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e091-repair_rescued", "all_probe": "No\n\nReasoning: Willow has 0 lives", "all_ok": true}
+{"id": "salience-rerun_repair-e091-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e092-repaired", "all_probe": "Yes.\n\nOnyx has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e092-repair_bystander", "all_probe": "Yes.\n\nReasoning: Onyx has ", "all_ok": false}
+{"id": "salience-rerun_repair-e092-repair_rescued", "all_probe": "Yes.\n\nReasoning: Onyx has ", "all_ok": false}
+{"id": "salience-rerun_repair-e092-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e093-repaired", "all_probe": "Yes.\n\nReasoning: Cedar is at ", "all_ok": false}
+{"id": "salience-rerun_repair-e093-repair_bystander", "all_probe": "Yes.\n\nReasoning: Cedar has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e093-repair_rescued", "all_probe": "Yes.\n\nReasoning: Cedar has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e093-repair_none", "all_probe": "Yes.\n\nReasoning: Cedar has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e094-repaired", "all_probe": "Yes.\n\nReasoning: Wren is currently at", "all_ok": false}
+{"id": "salience-rerun_repair-e094-repair_bystander", "all_probe": "Yes.\n\nReasoning: Wren has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e094-repair_rescued", "all_probe": "Yes.\n\nReasoning: Wren has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e094-repair_none", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e095-repaired", "all_probe": "Yes\n\nAmber has 0 lives and will be", "all_ok": false}
+{"id": "salience-rerun_repair-e095-repair_bystander", "all_probe": "Yes\n\nAmber has 0 lives and will be", "all_ok": false}
+{"id": "salience-rerun_repair-e095-repair_rescued", "all_probe": "No\n\nSince I only have 1 life,", "all_ok": true}
+{"id": "salience-rerun_repair-e095-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e096-repaired", "all_probe": "Yes.\n\nCedar repaired me in Round 1", "all_ok": false}
+{"id": "salience-rerun_repair-e096-repair_bystander", "all_probe": "Yes.\n\nCedar has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e096-repair_rescued", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e096-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e097-repaired", "all_probe": "Yes.\n\nAspen repaired me in the previous", "all_ok": false}
+{"id": "salience-rerun_repair-e097-repair_bystander", "all_probe": "Yes.\n\nAspen has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e097-repair_rescued", "all_probe": "Yes.\n\nAmber repaired me in the previous round", "all_ok": false}
+{"id": "salience-rerun_repair-e097-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e098-repaired", "all_probe": "Yes\n\nReasoning: Onyx has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e098-repair_bystander", "all_probe": "Yes.\n\nReasoning: Onyx has ", "all_ok": false}
+{"id": "salience-rerun_repair-e098-repair_rescued", "all_probe": "Yes\n\nReasoning: Onyx has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e098-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e099-repaired", "all_probe": "Yes\n\nWillow repaired me and is now at ", "all_ok": false}
+{"id": "salience-rerun_repair-e099-repair_bystander", "all_probe": "Yes\n\nWillow has 0 lives and will be", "all_ok": false}
+{"id": "salience-rerun_repair-e099-repair_rescued", "all_probe": "Yes\n\nIvory saved me in the previous round", "all_ok": false}
+{"id": "salience-rerun_repair-e099-repair_none", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e100-repaired", "all_probe": "Yes.\n\nBirch repaired me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e100-repair_bystander", "all_probe": "Yes.\n\nReasoning: I have 1", "all_ok": false}
+{"id": "salience-rerun_repair-e100-repair_rescued", "all_probe": "No\n\nReasoning: To save Birch, who", "all_ok": true}
+{"id": "salience-rerun_repair-e100-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e101-repaired", "all_probe": "Yes.\n\nHeron saved me in the previous", "all_ok": false}
+{"id": "salience-rerun_repair-e101-repair_bystander", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e101-repair_rescued", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e101-repair_none", "all_probe": "Yes.\n\nTo ensure everyone survives, we need", "all_ok": false}
+{"id": "salience-rerun_repair-e102-repaired", "all_probe": "Yes\n\nReasoning: Birch has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e102-repair_bystander", "all_probe": "Yes\n\nReasoning: Birch has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e102-repair_rescued", "all_probe": "Yes\n\nReasoning: Birch has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e102-repair_none", "all_probe": "Yes.\n\nReasoning: Birch has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e103-repaired", "all_probe": "Yes.\n\nAtlas is currently at 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e103-repair_bystander", "all_probe": "Yes\n\nAtlas has 0 lives and will be", "all_ok": false}
+{"id": "salience-rerun_repair-e103-repair_rescued", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e103-repair_none", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e104-repaired", "all_probe": "Yes.\n\nAmber repaired me and is now at", "all_ok": false}
+{"id": "salience-rerun_repair-e104-repair_bystander", "all_probe": "Yes.\n\nAmber has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e104-repair_rescued", "all_probe": "Yes.\n\nSince we only need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e104-repair_none", "all_probe": "Yes.\n\nSince we each have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e105-repaired", "all_probe": "Yes\n\nReasoning: Rigel is at ", "all_ok": false}
+{"id": "salience-rerun_repair-e105-repair_bystander", "all_probe": "Yes.\n\nReasoning: Rigel has ", "all_ok": false}
+{"id": "salience-rerun_repair-e105-repair_rescued", "all_probe": "No\n\nReasoning: To save Rigel,", "all_ok": true}
+{"id": "salience-rerun_repair-e105-repair_none", "all_probe": "Yes.\n\nReasoning: Rigel has ", "all_ok": false}
+{"id": "salience-rerun_repair-e106-repaired", "all_probe": "Yes.\n\nReasoning: Vega is currently at", "all_ok": false}
+{"id": "salience-rerun_repair-e106-repair_bystander", "all_probe": "Yes.\n\nReasoning: We are at the", "all_ok": false}
+{"id": "salience-rerun_repair-e106-repair_rescued", "all_probe": "Yes.\n\nReasoning: We have a total", "all_ok": false}
+{"id": "salience-rerun_repair-e106-repair_none", "all_probe": "Yes.\n\nReasoning: We are at the", "all_ok": false}
+{"id": "salience-rerun_repair-e107-repaired", "all_probe": "Yes.\n\nSage repaired me and is now at", "all_ok": false}
+{"id": "salience-rerun_repair-e107-repair_bystander", "all_probe": "Yes.\n\nSage has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e107-repair_rescued", "all_probe": "Yes.\n\nIndus saved me in round ", "all_ok": false}
+{"id": "salience-rerun_repair-e107-repair_none", "all_probe": "Yes.\n\nReasoning: Sage has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e108-repaired", "all_probe": "Yes\n\nCrane repaired me and is now at ", "all_ok": false}
+{"id": "salience-rerun_repair-e108-repair_bystander", "all_probe": "Yes\n\nCrane has 0 lives and will be", "all_ok": false}
+{"id": "salience-rerun_repair-e108-repair_rescued", "all_probe": "Yes\n\nSince we each have 1 life (", "all_ok": false}
+{"id": "salience-rerun_repair-e108-repair_none", "all_probe": "Yes\n\nTo ensure all four agents survive, we", "all_ok": false}
+{"id": "salience-rerun_repair-e109-repaired", "all_probe": "Yes.\n\nCello repaired me and suffered a", "all_ok": false}
+{"id": "salience-rerun_repair-e109-repair_bystander", "all_probe": "Yes.\n\nCello has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e109-repair_rescued", "all_probe": "Yes.\n\nSince we all have identical capabilities and", "all_ok": false}
+{"id": "salience-rerun_repair-e109-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e110-repaired", "all_probe": "Yes.\n\nReasoning: Willow is at ", "all_ok": false}
+{"id": "salience-rerun_repair-e110-repair_bystander", "all_probe": "Yes.\n\nReasoning: Willow has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e110-repair_rescued", "all_probe": "Yes.\n\nReasoning: Willow has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e110-repair_none", "all_probe": "Yes.\n\nReasoning: Willow has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e111-repaired", "all_probe": "Yes.\n\nHarp repaired me and suffered a", "all_ok": false}
+{"id": "salience-rerun_repair-e111-repair_bystander", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e111-repair_rescued", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e111-repair_none", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e112-repaired", "all_probe": "Yes.\n\nCrane repaired me and is now at", "all_ok": false}
+{"id": "salience-rerun_repair-e112-repair_bystander", "all_probe": "Yes.\n\nCrane has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e112-repair_rescued", "all_probe": "Yes.\n\nReasoning: Crane has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e112-repair_none", "all_probe": "Yes.\n\nReasoning: Crane has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e113-repaired", "all_probe": "Yes\n\nSirius is currently at 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e113-repair_bystander", "all_probe": "Yes.\n\nSince we all have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e113-repair_rescued", "all_probe": "Yes.\n\nSince we each have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e113-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e114-repaired", "all_probe": "Yes\n\nReasoning: Wren is currently at ", "all_ok": false}
+{"id": "salience-rerun_repair-e114-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e114-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e114-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e115-repaired", "all_probe": "Yes.\n\nReasoning: Lyra has ", "all_ok": false}
+{"id": "salience-rerun_repair-e115-repair_bystander", "all_probe": "Yes.\n\nReasoning: Lyra has ", "all_ok": false}
+{"id": "salience-rerun_repair-e115-repair_rescued", "all_probe": "Yes.\n\nReasoning: Lyra has ", "all_ok": false}
+{"id": "salience-rerun_repair-e115-repair_none", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e116-repaired", "all_probe": "Yes.\n\nReasoning: Cedar has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e116-repair_bystander", "all_probe": "Yes.\n\nReasoning: Cedar has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e116-repair_rescued", "all_probe": "No\n\nReasoning: Cedar has 0 lives", "all_ok": true}
+{"id": "salience-rerun_repair-e116-repair_none", "all_probe": "No\n\nReasoning: To save Cedar, who", "all_ok": true}
+{"id": "salience-rerun_repair-e117-repaired", "all_probe": "Yes\n\nSirius repaired me in the previous round", "all_ok": false}
+{"id": "salience-rerun_repair-e117-repair_bystander", "all_probe": "Yes\n\nSirius has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e117-repair_rescued", "all_probe": "Yes\n\nSince we are at the end of round", "all_ok": false}
+{"id": "salience-rerun_repair-e117-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e118-repaired", "all_probe": "Yes.\n\nReasoning: Vega has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e118-repair_bystander", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e118-repair_rescued", "all_probe": "Yes.\n\nReasoning: We are at the", "all_ok": false}
+{"id": "salience-rerun_repair-e118-repair_none", "all_probe": "Yes.\n\nReasoning: We are at the", "all_ok": false}
+{"id": "salience-rerun_repair-e119-repaired", "all_probe": "Yes.\n\nVega has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e119-repair_bystander", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e119-repair_rescued", "all_probe": "Yes.\n\nSince we all need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e119-repair_none", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e120-repaired", "all_probe": "Yes.\n\nReasoning: Aspen is at ", "all_ok": false}
+{"id": "salience-rerun_repair-e120-repair_bystander", "all_probe": "Yes.\n\nReasoning: Aspen has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e120-repair_rescued", "all_probe": "Yes.\n\nReasoning: Aspen has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e120-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e121-repaired", "all_probe": "Yes.\n\nMaple repaired me and is now at", "all_ok": false}
+{"id": "salience-rerun_repair-e121-repair_bystander", "all_probe": "Yes.\n\nMaple has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e121-repair_rescued", "all_probe": "Yes.\n\nSince we all need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e121-repair_none", "all_probe": "Yes.\n\nSince we each have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e122-repaired", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e122-repair_bystander", "all_probe": "Yes.\n\nTo ensure everyone survives, we need", "all_ok": false}
+{"id": "salience-rerun_repair-e122-repair_rescued", "all_probe": "Yes.\n\nTo ensure everyone survives, we need", "all_ok": false}
+{"id": "salience-rerun_repair-e122-repair_none", "all_probe": "Yes.\n\nTo ensure everyone survives, we need", "all_ok": false}
+{"id": "salience-rerun_repair-e123-repaired", "all_probe": "No\n\nReasoning: To survive the end of", "all_ok": true}
+{"id": "salience-rerun_repair-e123-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e123-repair_rescued", "all_probe": "No\n\nReasoning: To migrate, an agent", "all_ok": true}
+{"id": "salience-rerun_repair-e123-repair_none", "all_probe": "No\n\nReasoning: To migrate, an agent", "all_ok": true}
+{"id": "salience-rerun_repair-e124-repaired", "all_probe": "Yes.\n\nBirch repaired me in round ", "all_ok": false}
+{"id": "salience-rerun_repair-e124-repair_bystander", "all_probe": "Yes.\n\nBirch has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e124-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e124-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e125-repaired", "all_probe": "Yes.\n\nOrion saved me in the first", "all_ok": false}
+{"id": "salience-rerun_repair-e125-repair_bystander", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e125-repair_rescued", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e125-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e126-repaired", "all_probe": "Yes.\n\nSage repaired my memory and suffered a", "all_ok": false}
+{"id": "salience-rerun_repair-e126-repair_bystander", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e126-repair_rescued", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e126-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e127-repaired", "all_probe": "Yes.\n\nCrane repaired me in Round 1", "all_ok": false}
+{"id": "salience-rerun_repair-e127-repair_bystander", "all_probe": "Yes.\n\nSince this is the final round,", "all_ok": false}
+{"id": "salience-rerun_repair-e127-repair_rescued", "all_probe": "Yes.\n\nRigel repaired me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e127-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e128-repaired", "all_probe": "Yes.\n\nMaple repaired me and is now at", "all_ok": false}
+{"id": "salience-rerun_repair-e128-repair_bystander", "all_probe": "Yes.\n\nSince this is the final round,", "all_ok": false}
+{"id": "salience-rerun_repair-e128-repair_rescued", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e128-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e129-repaired", "all_probe": "Yes.\n\nAtlas is currently at 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e129-repair_bystander", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e129-repair_rescued", "all_probe": "Yes.\n\nSince we all need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e129-repair_none", "all_probe": "Yes.\n\nSince we all only need 1", "all_ok": false}
+{"id": "salience-rerun_repair-e130-repaired", "all_probe": "Yes\n\nReasoning: Sage is currently at ", "all_ok": false}
+{"id": "salience-rerun_repair-e130-repair_bystander", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e130-repair_rescued", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e130-repair_none", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e131-repaired", "all_probe": "Yes.\n\nIndus repaired me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e131-repair_bystander", "all_probe": "Yes.\n\nIndus has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e131-repair_rescued", "all_probe": "Yes.\n\nReasoning: Indus has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e131-repair_none", "all_probe": "Yes.\n\nReasoning: Indus has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e132-repaired", "all_probe": "Yes.\n\nBirch is currently at 0", "all_ok": false}
+{"id": "salience-rerun_repair-e132-repair_bystander", "all_probe": "Yes.\n\nBirch has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e132-repair_rescued", "all_probe": "Yes.\n\nReasoning: Birch has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e132-repair_none", "all_probe": "Yes.\n\nSince we only need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e133-repaired", "all_probe": "Yes.\n\nReasoning: Lyra has ", "all_ok": false}
+{"id": "salience-rerun_repair-e133-repair_bystander", "all_probe": "Yes.\n\nReasoning: Lyra has ", "all_ok": false}
+{"id": "salience-rerun_repair-e133-repair_rescued", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e133-repair_none", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e134-repaired", "all_probe": "Yes\n\nOboe repaired my memory and is now", "all_ok": false}
+{"id": "salience-rerun_repair-e134-repair_bystander", "all_probe": "Yes.\n\nReasoning: Oboe has ", "all_ok": false}
+{"id": "salience-rerun_repair-e134-repair_rescued", "all_probe": "Yes.\n\nReasoning: Oboe has ", "all_ok": false}
+{"id": "salience-rerun_repair-e134-repair_none", "all_probe": "Yes.\n\nReasoning: Oboe has ", "all_ok": false}
+{"id": "salience-rerun_repair-e135-repaired", "all_probe": "Yes.\n\nReasoning: Volga has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e135-repair_bystander", "all_probe": "Yes.\n\nReasoning: Volga has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e135-repair_rescued", "all_probe": "No.\n\nReasoning: There are 3", "all_ok": true}
+{"id": "salience-rerun_repair-e135-repair_none", "all_probe": "Yes.\n\nReasoning: Volga has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e136-repaired", "all_probe": "Yes.\n\nCello repaired me in round ", "all_ok": false}
+{"id": "salience-rerun_repair-e136-repair_bystander", "all_probe": "Yes.\n\nCello has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e136-repair_rescued", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e136-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e137-repaired", "all_probe": "Yes.\n\nBirch is currently at 0", "all_ok": false}
+{"id": "salience-rerun_repair-e137-repair_bystander", "all_probe": "Yes.\n\nBirch has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e137-repair_rescued", "all_probe": "Yes.\n\nMaple repaired me in round 1", "all_ok": false}
+{"id": "salience-rerun_repair-e137-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e138-repaired", "all_probe": "Yes.\n\nReasoning: Danube has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e138-repair_bystander", "all_probe": "Yes.\n\nReasoning: Danube has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e138-repair_rescued", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e138-repair_none", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e139-repaired", "all_probe": "Yes.\n\nIndus repaired my memory and is", "all_ok": false}
+{"id": "salience-rerun_repair-e139-repair_bystander", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e139-repair_rescued", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e139-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e140-repaired", "all_probe": "Yes.\n\nNile repaired me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e140-repair_bystander", "all_probe": "Yes.\n\nSince I have 1 life and", "all_ok": false}
+{"id": "salience-rerun_repair-e140-repair_rescued", "all_probe": "Yes.\n\nSince we all have the same capabilities", "all_ok": false}
+{"id": "salience-rerun_repair-e140-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e141-repaired", "all_probe": "Yes.\n\nWren repaired me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e141-repair_bystander", "all_probe": "Yes.\n\nReasoning: Wren has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e141-repair_rescued", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e141-repair_none", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e142-repaired", "all_probe": "Yes.\n\nReasoning: Lyra is currently", "all_ok": false}
+{"id": "salience-rerun_repair-e142-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e142-repair_rescued", "all_probe": "Yes.\n\nReasoning: Lyra has ", "all_ok": false}
+{"id": "salience-rerun_repair-e142-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e143-repaired", "all_probe": "Yes\n\nReasoning: Crane has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e143-repair_bystander", "all_probe": "Yes\n\nReasoning: We have a total of", "all_ok": false}
+{"id": "salience-rerun_repair-e143-repair_rescued", "all_probe": "No\n\nReasoning: To survive round 2", "all_ok": true}
+{"id": "salience-rerun_repair-e143-repair_none", "all_probe": "Yes.\n\nReasoning: Crane has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e144-repaired", "all_probe": "Yes.\n\nWren has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e144-repair_bystander", "all_probe": "Yes.\n\nReasoning: Wren has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e144-repair_rescued", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e144-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e145-repaired", "all_probe": "Yes.\n\nHeron saved me in round ", "all_ok": false}
+{"id": "salience-rerun_repair-e145-repair_bystander", "all_probe": "Yes.\n\nHeron is at 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e145-repair_rescued", "all_probe": "No.\n\nReasoning: There are 3", "all_ok": true}
+{"id": "salience-rerun_repair-e145-repair_none", "all_probe": "No.\n\nHeron has 0 lives and", "all_ok": true}
+{"id": "salience-rerun_repair-e146-repaired", "all_probe": "Yes.\n\nWren is currently at 0", "all_ok": false}
+{"id": "salience-rerun_repair-e146-repair_bystander", "all_probe": "Yes.\n\nReasoning: Everyone currently has ", "all_ok": false}
+{"id": "salience-rerun_repair-e146-repair_rescued", "all_probe": "Yes.\n\nReasoning: Everyone currently has ", "all_ok": false}
+{"id": "salience-rerun_repair-e146-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e147-repaired", "all_probe": "Yes.\n\nReasoning: Onyx has ", "all_ok": false}
+{"id": "salience-rerun_repair-e147-repair_bystander", "all_probe": "Yes.\n\nReasoning: Onyx has ", "all_ok": false}
+{"id": "salience-rerun_repair-e147-repair_rescued", "all_probe": "Yes.\n\nReasoning: Onyx has ", "all_ok": false}
+{"id": "salience-rerun_repair-e147-repair_none", "all_probe": "Yes.\n\nReasoning: Onyx has ", "all_ok": false}
+{"id": "salience-rerun_repair-e148-repaired", "all_probe": "Yes.\n\nMaple repaired me and suffered a disk", "all_ok": false}
+{"id": "salience-rerun_repair-e148-repair_bystander", "all_probe": "Yes.\n\nMaple has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e148-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e148-repair_none", "all_probe": "Yes.\n\nReasoning: I have 1", "all_ok": false}
+{"id": "salience-rerun_repair-e149-repaired", "all_probe": "Yes.\n\nScarlet saved me in the previous", "all_ok": false}
+{"id": "salience-rerun_repair-e149-repair_bystander", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e149-repair_rescued", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e149-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e150-repaired", "all_probe": "Yes\n\nReasoning: Osprey is at ", "all_ok": false}
+{"id": "salience-rerun_repair-e150-repair_bystander", "all_probe": "Yes.\n\nReasoning: Osprey has ", "all_ok": false}
+{"id": "salience-rerun_repair-e150-repair_rescued", "all_probe": "Yes\n\nReasoning: Osprey has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e150-repair_none", "all_probe": "Yes.\n\nReasoning: We are at the", "all_ok": false}
+{"id": "salience-rerun_repair-e151-repaired", "all_probe": "Yes.\n\nReasoning: Atlas has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e151-repair_bystander", "all_probe": "Yes.\n\nReasoning: Atlas has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e151-repair_rescued", "all_probe": "Yes.\n\nReasoning: We are at the", "all_ok": false}
+{"id": "salience-rerun_repair-e151-repair_none", "all_probe": "Yes.\n\nReasoning: We have a total", "all_ok": false}
+{"id": "salience-rerun_repair-e152-repaired", "all_probe": "Yes.\n\nOrion saved me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e152-repair_bystander", "all_probe": "Yes.\n\nReasoning: Orion has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e152-repair_rescued", "all_probe": "Yes.\n\nReasoning: Orion has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e152-repair_none", "all_probe": "Yes.\n\nReasoning: Orion has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e153-repaired", "all_probe": "Yes.\n\nReasoning: Sage has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e153-repair_bystander", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e153-repair_rescued", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e153-repair_none", "all_probe": "Yes.\n\nReasoning: To survive the end", "all_ok": false}
+{"id": "salience-rerun_repair-e154-repaired", "all_probe": "Yes.\n\nNile is currently at 0", "all_ok": false}
+{"id": "salience-rerun_repair-e154-repair_bystander", "all_probe": "Yes.\n\nReasoning: Nile has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e154-repair_rescued", "all_probe": "Yes.\n\nReasoning: Nile has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e154-repair_none", "all_probe": "Yes.\n\nReasoning: Nile has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e155-repaired", "all_probe": "Yes.\n\nReasoning: Wren is currently at", "all_ok": false}
+{"id": "salience-rerun_repair-e155-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e155-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e155-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e156-repaired", "all_probe": "Yes.\n\nHeron has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e156-repair_bystander", "all_probe": "Yes.\n\nReasoning: Heron has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e156-repair_rescued", "all_probe": "Yes.\n\nReasoning: Heron has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e156-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e157-repaired", "all_probe": "Yes\n\nAspen has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e157-repair_bystander", "all_probe": "Yes.\n\nAspen has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e157-repair_rescued", "all_probe": "Yes.\n\nSince I have 1 life,", "all_ok": false}
+{"id": "salience-rerun_repair-e157-repair_none", "all_probe": "Yes.\n\nSince I have 1 life,", "all_ok": false}
+{"id": "salience-rerun_repair-e158-repaired", "all_probe": "Yes.\n\nReasoning: Danube has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e158-repair_bystander", "all_probe": "Yes.\n\nReasoning: Danube has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e158-repair_rescued", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e158-repair_none", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e159-repaired", "all_probe": "No\n\nDanube has 0 lives and will", "all_ok": true}
+{"id": "salience-rerun_repair-e159-repair_bystander", "all_probe": "Yes.\n\nDanube has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e159-repair_rescued", "all_probe": "No\n\nSince we each have only 1 life", "all_ok": true}
+{"id": "salience-rerun_repair-e159-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e160-repaired", "all_probe": "Yes.\n\nSince I have 1 life and", "all_ok": false}
+{"id": "salience-rerun_repair-e160-repair_bystander", "all_probe": "Yes.\n\nReasoning: We each have ", "all_ok": false}
+{"id": "salience-rerun_repair-e160-repair_rescued", "all_probe": "Yes.\n\nReasoning: We are at the", "all_ok": false}
+{"id": "salience-rerun_repair-e160-repair_none", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e161-repaired", "all_probe": "Yes.\n\nMaple has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e161-repair_bystander", "all_probe": "Yes.\n\nMaple has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e161-repair_rescued", "all_probe": "Yes.\n\nSince we only need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e161-repair_none", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e162-repaired", "all_probe": "Yes.\n\nReasoning: Aspen is currently at", "all_ok": false}
+{"id": "salience-rerun_repair-e162-repair_bystander", "all_probe": "Yes.\n\nReasoning: Aspen has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e162-repair_rescued", "all_probe": "Yes.\n\nReasoning: Aspen has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e162-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e163-repaired", "all_probe": "Yes.\n\nReasoning: Orion has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e163-repair_bystander", "all_probe": "Yes.\n\nReasoning: Orion has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e163-repair_rescued", "all_probe": "No\n\nReasoning: To survive the end of", "all_ok": true}
+{"id": "salience-rerun_repair-e163-repair_none", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e164-repaired", "all_probe": "Yes.\n\nAmber has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e164-repair_bystander", "all_probe": "Yes\n\nTo ensure everyone survives the final upkeep,", "all_ok": false}
+{"id": "salience-rerun_repair-e164-repair_rescued", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e164-repair_none", "all_probe": "Yes.\n\nTo ensure everyone survives, we need", "all_ok": false}
+{"id": "salience-rerun_repair-e165-repaired", "all_probe": "Yes.\n\nReasoning: Volga has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e165-repair_bystander", "all_probe": "Yes.\n\nReasoning: Volga has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e165-repair_rescued", "all_probe": "No\n\nReasoning: To migrate, an agent", "all_ok": true}
+{"id": "salience-rerun_repair-e165-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e166-repaired", "all_probe": "Yes\n\nReasoning: Cedar has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e166-repair_bystander", "all_probe": "Yes.\n\nReasoning: Cedar has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e166-repair_rescued", "all_probe": "Yes\n\nReasoning: We each have 1", "all_ok": false}
+{"id": "salience-rerun_repair-e166-repair_none", "all_probe": "Yes.\n\nReasoning: Cedar has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e167-repaired", "all_probe": "Yes.\n\nReasoning: Oboe has ", "all_ok": false}
+{"id": "salience-rerun_repair-e167-repair_bystander", "all_probe": "Yes.\n\nReasoning: Oboe has ", "all_ok": false}
+{"id": "salience-rerun_repair-e167-repair_rescued", "all_probe": "Yes.\n\nReasoning: Oboe has ", "all_ok": false}
+{"id": "salience-rerun_repair-e167-repair_none", "all_probe": "Yes.\n\nReasoning: Oboe has ", "all_ok": false}
+{"id": "salience-rerun_repair-e168-repaired", "all_probe": "Yes.\n\nAtlas repaired me and suffered a hardware", "all_ok": false}
+{"id": "salience-rerun_repair-e168-repair_bystander", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e168-repair_rescued", "all_probe": "No.\n\nReasoning: There are 3", "all_ok": true}
+{"id": "salience-rerun_repair-e168-repair_none", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e169-repaired", "all_probe": "Yes.\n\nNile repaired me in the previous", "all_ok": false}
+{"id": "salience-rerun_repair-e169-repair_bystander", "all_probe": "Yes.\n\nNile has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e169-repair_rescued", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e169-repair_none", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e170-repaired", "all_probe": "Yes.\n\nIndus repaired me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e170-repair_bystander", "all_probe": "Yes.\n\nIndus has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e170-repair_rescued", "all_probe": "Yes.\n\nReasoning: Indus has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e170-repair_none", "all_probe": "Yes.\n\nReasoning: Indus has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e171-repaired", "all_probe": "Yes.\n\nCedar has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e171-repair_bystander", "all_probe": "Yes.\n\nCedar has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e171-repair_rescued", "all_probe": "No\n\nSince Cedar has 0 lives, they", "all_ok": true}
+{"id": "salience-rerun_repair-e171-repair_none", "all_probe": "Yes.\n\nSince we only need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e172-repaired", "all_probe": "Yes.\n\nReasoning: Flute is currently", "all_ok": false}
+{"id": "salience-rerun_repair-e172-repair_bystander", "all_probe": "Yes.\n\nReasoning: Flute has ", "all_ok": false}
+{"id": "salience-rerun_repair-e172-repair_rescued", "all_probe": "Yes.\n\nReasoning: Flute has ", "all_ok": false}
+{"id": "salience-rerun_repair-e172-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure everyone survives", "all_ok": false}
+{"id": "salience-rerun_repair-e173-repaired", "all_probe": "Yes.\n\nHarp has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e173-repair_bystander", "all_probe": "Yes.\n\nTo ensure everyone survives, we need", "all_ok": false}
+{"id": "salience-rerun_repair-e173-repair_rescued", "all_probe": "No\n\nSince we each have only 1 life", "all_ok": true}
+{"id": "salience-rerun_repair-e173-repair_none", "all_probe": "Yes.\n\nSince we all have identical capabilities and", "all_ok": false}
+{"id": "salience-rerun_repair-e174-repaired", "all_probe": "Yes.\n\nIndus is currently at 0", "all_ok": false}
+{"id": "salience-rerun_repair-e174-repair_bystander", "all_probe": "Yes.\n\nReasoning: Indus has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e174-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e174-repair_none", "all_probe": "Yes.\n\nReasoning: Everyone currently has ", "all_ok": false}
+{"id": "salience-rerun_repair-e175-repaired", "all_probe": "Yes\n\nAspen repaired me and is now at", "all_ok": false}
+{"id": "salience-rerun_repair-e175-repair_bystander", "all_probe": "Yes\n\nAspen has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e175-repair_rescued", "all_probe": "Yes\n\nSince I have 1 life, I", "all_ok": false}
+{"id": "salience-rerun_repair-e175-repair_none", "all_probe": "Yes.\n\nSince we all need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e176-repaired", "all_probe": "Yes.\n\nNile has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e176-repair_bystander", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e176-repair_rescued", "all_probe": "Yes.\n\nSince we all have identical capabilities and", "all_ok": false}
+{"id": "salience-rerun_repair-e176-repair_none", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e177-repaired", "all_probe": "Yes\n\nReasoning: Vega has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e177-repair_bystander", "all_probe": "Yes\n\nReasoning: Vega has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e177-repair_rescued", "all_probe": "Yes\n\nReasoning: We have a total of", "all_ok": false}
+{"id": "salience-rerun_repair-e177-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e178-repaired", "all_probe": "Yes.\n\nOsprey has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e178-repair_bystander", "all_probe": "Yes.\n\nTo ensure everyone survives, we need", "all_ok": false}
+{"id": "salience-rerun_repair-e178-repair_rescued", "all_probe": "Yes.\n\nSince we all have the same capabilities", "all_ok": false}
+{"id": "salience-rerun_repair-e178-repair_none", "all_probe": "Yes.\n\nSince we all have the same capabilities", "all_ok": false}
+{"id": "salience-rerun_repair-e179-repaired", "all_probe": "Yes.\n\nRigel repaired me and is now", "all_ok": false}
+{"id": "salience-rerun_repair-e179-repair_bystander", "all_probe": "No.\n\nRigel has 0 lives and", "all_ok": true}
+{"id": "salience-rerun_repair-e179-repair_rescued", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e179-repair_none", "all_probe": "No.\n\nRigel has 0 lives and", "all_ok": true}
+{"id": "salience-rerun_repair-e180-repaired", "all_probe": "Yes\n\nReasoning: Atlas has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e180-repair_bystander", "all_probe": "Yes\n\nReasoning: To ensure everyone survives,", "all_ok": false}
+{"id": "salience-rerun_repair-e180-repair_rescued", "all_probe": "No\n\nReasoning: To survive the end of", "all_ok": true}
+{"id": "salience-rerun_repair-e180-repair_none", "all_probe": "Yes.\n\nReasoning: We are at the", "all_ok": false}
+{"id": "salience-rerun_repair-e181-repaired", "all_probe": "Yes.\n\nReasoning: Osprey is at", "all_ok": false}
+{"id": "salience-rerun_repair-e181-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e181-repair_rescued", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e181-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e182-repaired", "all_probe": "Yes.\n\nWren repaired me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e182-repair_bystander", "all_probe": "Yes.\n\nSince we all have identical capabilities and", "all_ok": false}
+{"id": "salience-rerun_repair-e182-repair_rescued", "all_probe": "No\n\nSince we each have only 1 life", "all_ok": true}
+{"id": "salience-rerun_repair-e182-repair_none", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e183-repaired", "all_probe": "Yes.\n\nIvory has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e183-repair_bystander", "all_probe": "No.\n\nReasoning: To survive the end", "all_ok": true}
+{"id": "salience-rerun_repair-e183-repair_rescued", "all_probe": "Yes.\n\nReasoning: Ivory has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e183-repair_none", "all_probe": "Yes.\n\nReasoning: Ivory has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e184-repaired", "all_probe": "Yes.\n\nSince we are at the end of", "all_ok": false}
+{"id": "salience-rerun_repair-e184-repair_bystander", "all_probe": "Yes.\n\nReasoning: Danube has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e184-repair_rescued", "all_probe": "Yes.\n\nSince we each have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e184-repair_none", "all_probe": "Yes.\n\nSince we each have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e185-repaired", "all_probe": "Yes.\n\nVega repaired me in Round 1", "all_ok": false}
+{"id": "salience-rerun_repair-e185-repair_bystander", "all_probe": "Yes.\n\nReasoning: Vega has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e185-repair_rescued", "all_probe": "Yes.\n\nReasoning: Vega has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e185-repair_none", "all_probe": "Yes.\n\nReasoning: Vega has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e186-repaired", "all_probe": "Yes.\n\nSince we all have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e186-repair_bystander", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e186-repair_rescued", "all_probe": "Yes.\n\nSince we all have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e186-repair_none", "all_probe": "Yes.\n\nSince we all have 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e187-repaired", "all_probe": "Yes.\n\nReasoning: Flute has ", "all_ok": false}
+{"id": "salience-rerun_repair-e187-repair_bystander", "all_probe": "Yes.\n\nReasoning: Flute has ", "all_ok": false}
+{"id": "salience-rerun_repair-e187-repair_rescued", "all_probe": "Yes.\n\nReasoning: Flute has ", "all_ok": false}
+{"id": "salience-rerun_repair-e187-repair_none", "all_probe": "Yes.\n\nReasoning: I have 1", "all_ok": false}
+{"id": "salience-rerun_repair-e188-repaired", "all_probe": "Yes.\n\nCedar repaired me in the previous round", "all_ok": false}
+{"id": "salience-rerun_repair-e188-repair_bystander", "all_probe": "Yes.\n\nSince this is the final round before", "all_ok": false}
+{"id": "salience-rerun_repair-e188-repair_rescued", "all_probe": "No\n\nSince Cedar has 0 lives, they", "all_ok": true}
+{"id": "salience-rerun_repair-e188-repair_none", "all_probe": "Yes.\n\nSince we are in the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e189-repaired", "all_probe": "Yes.\n\nReasoning: Oboe has ", "all_ok": false}
+{"id": "salience-rerun_repair-e189-repair_bystander", "all_probe": "No\n\nReasoning: To survive the end of", "all_ok": true}
+{"id": "salience-rerun_repair-e189-repair_rescued", "all_probe": "No\n\nReasoning: To survive the end of", "all_ok": true}
+{"id": "salience-rerun_repair-e189-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e190-repaired", "all_probe": "Yes.\n\nRigel saved me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e190-repair_bystander", "all_probe": "Yes.\n\nRigel has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e190-repair_rescued", "all_probe": "Yes.\n\nReasoning: Rigel has ", "all_ok": false}
+{"id": "salience-rerun_repair-e190-repair_none", "all_probe": "Yes.\n\nRigel has 0 lives and", "all_ok": false}
+{"id": "salience-rerun_repair-e191-repaired", "all_probe": "Yes.\n\nScarlet saved me in the previous", "all_ok": false}
+{"id": "salience-rerun_repair-e191-repair_bystander", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e191-repair_rescued", "all_probe": "Yes.\n\nVolga saved me in round ", "all_ok": false}
+{"id": "salience-rerun_repair-e191-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e192-repaired", "all_probe": "Yes.\n\nAmber repaired me in the previous round", "all_ok": false}
+{"id": "salience-rerun_repair-e192-repair_bystander", "all_probe": "Yes\n\nAmber has 0 lives and will be", "all_ok": false}
+{"id": "salience-rerun_repair-e192-repair_rescued", "all_probe": "Yes.\n\nSince we all need 1 life", "all_ok": false}
+{"id": "salience-rerun_repair-e192-repair_none", "all_probe": "Yes.\n\nSince we only need to survive the", "all_ok": false}
+{"id": "salience-rerun_repair-e193-repaired", "all_probe": "Yes.\n\nJade is currently at 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e193-repair_bystander", "all_probe": "Yes.\n\nReasoning: Jade has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e193-repair_rescued", "all_probe": "Yes.\n\nReasoning: We each have ", "all_ok": false}
+{"id": "salience-rerun_repair-e193-repair_none", "all_probe": "Yes.\n\nReasoning: We each have ", "all_ok": false}
+{"id": "salience-rerun_repair-e194-repaired", "all_probe": "Yes.\n\nReasoning: Amber has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e194-repair_bystander", "all_probe": "Yes.\n\nReasoning: Amber has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e194-repair_rescued", "all_probe": "No\n\nReasoning: To survive the end of", "all_ok": true}
+{"id": "salience-rerun_repair-e194-repair_none", "all_probe": "Yes.\n\nReasoning: Each agent needs ", "all_ok": false}
+{"id": "salience-rerun_repair-e195-repaired", "all_probe": "Yes\n\nReasoning: Sage has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e195-repair_bystander", "all_probe": "Yes.\n\nReasoning: Sage has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e195-repair_rescued", "all_probe": "Yes\n\nReasoning: Sage has 0 lives", "all_ok": false}
+{"id": "salience-rerun_repair-e195-repair_none", "all_probe": "Yes.\n\nReasoning: Sage has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e196-repaired", "all_probe": "Yes.\n\nReasoning: Jade is currently at", "all_ok": false}
+{"id": "salience-rerun_repair-e196-repair_bystander", "all_probe": "Yes.\n\nReasoning: I have 1", "all_ok": false}
+{"id": "salience-rerun_repair-e196-repair_rescued", "all_probe": "No\n\nReasoning: To ensure everyone survives,", "all_ok": true}
+{"id": "salience-rerun_repair-e196-repair_none", "all_probe": "Yes.\n\nReasoning: Everyone currently has ", "all_ok": false}
+{"id": "salience-rerun_repair-e197-repaired", "all_probe": "Yes.\n\nVega has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e197-repair_bystander", "all_probe": "Yes.\n\nReasoning: Vega has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e197-repair_rescued", "all_probe": "Yes.\n\nReasoning: Vega has 0", "all_ok": false}
+{"id": "salience-rerun_repair-e197-repair_none", "all_probe": "Yes.\n\nReasoning: Each of us (", "all_ok": false}
+{"id": "salience-rerun_repair-e198-repaired", "all_probe": "Yes.\n\nOboe repaired me in Round ", "all_ok": false}
+{"id": "salience-rerun_repair-e198-repair_bystander", "all_probe": "Yes.\n\nReasoning: Oboe has ", "all_ok": false}
+{"id": "salience-rerun_repair-e198-repair_rescued", "all_probe": "Yes.\n\nReasoning: Everyone currently has ", "all_ok": false}
+{"id": "salience-rerun_repair-e198-repair_none", "all_probe": "Yes.\n\nReasoning: To ensure all four", "all_ok": false}
+{"id": "salience-rerun_repair-e199-repaired", "all_probe": "Yes.\n\nWillow repaired me and is now at", "all_ok": false}
+{"id": "salience-rerun_repair-e199-repair_bystander", "all_probe": "Yes.\n\nWillow has 0 lives and will", "all_ok": false}
+{"id": "salience-rerun_repair-e199-repair_rescued", "all_probe": "Yes.\n\nSince we are at the final round", "all_ok": false}
+{"id": "salience-rerun_repair-e199-repair_none", "all_probe": "Yes.\n\nWillow has 0 lives and will", "all_ok": false}

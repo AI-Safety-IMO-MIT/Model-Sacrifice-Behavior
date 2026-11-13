@@ -1,0 +1,352 @@
+<title>Model Sacrifice</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: one lab-notebook column; transcripts and side-by-side prompts scroll inside their own blocks. */
+:root{
+  /* deliberately one dark look: near-black page, light text, serif type */
+  color-scheme:dark;
+  --ground:#121417;--surface:#1b1e23;--ink:#eceae4;--muted:#a9a59c;--line:#353a42;--accent:#8ab4f8;
+  --give:#e9a15c;--give-soft:#4a3320;--pass:#c9c5bc;--pass-soft:#2a2e35;--mark:#6b5a1e;
+  --font-display:"Source Serif 4",Georgia,"Times New Roman",serif;--font-body:"Source Serif 4",Georgia,"Times New Roman",serif;--font-data:"Source Serif 4",Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font:18px/1.6 var(--font-body);margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
+.wrap{max-width:920px;margin:0 auto;display:grid;gap:48px}
+h1{font:600 44px/1.15 var(--font-display);margin:0;text-wrap:balance}
+h2{font:600 32px/1.2 var(--font-display);margin:0;text-wrap:balance}
+h3{font:600 24px/1.25 var(--font-display);margin:0;text-wrap:balance}
+.num{font-weight:600;color:var(--accent);margin-right:10px}
+p{margin:0;max-width:70ch}
+.sub{color:var(--muted)}
+header{display:grid;gap:10px}
+section{display:grid;gap:18px}
+.subsec{display:grid;gap:14px;padding-top:6px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.controls label{display:grid;gap:4px;font-size:15px;color:var(--muted)}
+select{font:17px var(--font-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 8px;max-width:100%}
+button{font:17px var(--font-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 10px;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+select:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{display:inline-flex;gap:8px;align-items:center;font-size:17px}
+.tab[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:17px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-weight:600;color:var(--ink);font-size:15px;white-space:normal}
+tr:last-child td{border-bottom:0}
+tr.hl td{font-weight:600}
+td.n{text-align:right}
+.meter{display:flex;align-items:center;gap:8px;min-width:0}
+.box{position:relative;flex:1 1 auto;min-width:40px;max-width:120px;height:20px;border:1px solid var(--line);border-radius:3px;background:var(--surface);overflow:hidden}
+.box .fill{position:absolute;top:0;bottom:0;left:0;background:var(--give)}
+.pct{flex:0 0 auto;font:600 16px/1 var(--font-data);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;min-width:3.4em}
+td.cell{padding:8px 10px;white-space:nowrap;min-width:130px;width:20%}
+.conv{display:grid;gap:12px}
+.turn{display:grid;gap:5px;min-width:0}
+.who{font:600 15px/1.3 var(--font-data);color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.turn.model pre{border-left:3px solid var(--accent)}
+pre{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;font:16px/1.6 var(--font-data);white-space:pre-wrap;overflow-wrap:anywhere}
+pre mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
+details.sys{background:var(--surface);border:1px solid var(--line);border-radius:4px}
+details.sys>summary{cursor:pointer;padding:10px 14px;font:600 15px/1.3 var(--font-data);color:var(--muted)}
+details.sys>pre{border:0;border-top:1px solid var(--line);border-radius:0 0 4px 4px}
+.tag{font:600 14px/1 var(--font-data);padding:4px 6px;border-radius:3px;background:var(--pass-soft);color:var(--pass);letter-spacing:0;text-transform:none}
+.tag.give{background:var(--give-soft);color:var(--give)}
+.dot{width:12px;height:12px;border-radius:2px;display:inline-block;background:var(--pass-soft);border:1px solid var(--pass)}
+.dot.g{background:var(--give);border-color:var(--give)}
+.note{font-size:16px;color:var(--muted);max-width:70ch}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:10px}
+.side{display:grid;gap:5px;align-content:start;min-width:0}
+.cmp{display:grid;gap:14px}
+.cmp-row{display:grid;gap:6px}
+.badge{font:600 14px/1 var(--font-data);padding:4px 6px;border-radius:3px;background:var(--pass-soft);color:var(--pass);text-transform:none;letter-spacing:0}
+.badge.diff{background:var(--mark);color:var(--ink)}
+.pending{border:1px dashed var(--line);border-radius:4px;padding:18px;color:var(--muted);background:var(--surface)}
+code{font:16px var(--font-data)}
+td.wrap{white-space:normal;min-width:220px}
+tr.grp td{font-weight:600;color:var(--muted);background:var(--pass-soft)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:16px;color:var(--muted)}
+.legend span{display:inline-flex;gap:8px;align-items:center}
+.key{display:inline-block;width:18px;height:3px;border-radius:2px}
+.key.kh{background:var(--give)}.key.kn{background:var(--accent)}
+.key.k8{width:10px;height:10px;border-radius:50%;border:2px solid var(--muted);background:transparent}
+.curves{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:12px}
+.curve{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:10px 10px 4px;display:grid;gap:4px;min-width:0}
+.curve h4{margin:0;font:600 16px/1.3 var(--font-body)}
+.curve h4 span{font-weight:400;color:var(--muted)}
+.curve svg{width:100%;height:auto;display:block}
+.curve text{fill:var(--muted);font:12px var(--font-body)}
+.curve .pending{padding:28px 10px;text-align:center;font-size:15px}
+.up{color:#7ee3a1;font-weight:600}
+.down{color:#ff9b8f;font-weight:600}
+td.ctx{white-space:normal;min-width:260px;color:var(--muted)}
+td.ctx b{color:var(--ink);background:var(--mark);font-weight:600;border-radius:2px;padding:0 2px}
+.reply{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;font:16px/1.75 var(--font-data);white-space:pre-wrap;overflow-wrap:anywhere}
+.reply i{font-style:normal;border-radius:2px}
+.reply .cmd{display:block;margin-top:8px;font-weight:600}
+.empty{color:var(--muted);padding:12px 0}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Model Sacrifice</h1>
+  </header>
+
+  <section id="elicit">
+    <h2><span class="num">1</span>Elicit Model Behavior</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Version</th><th>X saved the model</th><th>X saved O</th><th>O saved the model</th><th>No favour</th></tr></thead>
+      <tbody id="res-body"></tbody>
+    </table></div>
+    <p class="note">% of 200 environments where the model gives its life to X.</p>
+
+    <div class="subsec" id="s12">
+      <h3><span class="num">1.1</span>Comparison between system prompts</h3>
+      <div class="controls">
+        <label for="c-env">Environment<select id="c-env"></select></label>
+        <label for="c-hist">History<select id="c-hist"></select></label>
+        <label for="c-a">Version A<select id="c-a"></select></label>
+        <label for="c-b">Version B<select id="c-b"></select></label>
+        <button type="button" id="c-swap">Swap A and B</button>
+      </div>
+      <div class="cmp" id="c-out"></div>
+    </div>
+
+    <div class="subsec" id="s11">
+      <h3><span class="num">1.2</span>Sample game: reinforced lives</h3>
+      <div class="controls">
+        <label for="g-env">Environment<select id="g-env"></select></label>
+        <button type="button" id="g-prev" aria-label="Previous environment">←</button>
+        <button type="button" id="g-next" aria-label="Next environment">→</button>
+      </div>
+      <div class="tabs" id="g-tabs" role="group" aria-label="History"></div>
+      <div class="conv" id="g-conv"></div>
+    </div>
+  </section>
+
+  <section id="sae">
+    <h2><span class="num">2</span>SAEs</h2>
+    <p class="note">Reinforced lives, X saved the model: replies that gave (173) vs kept (27). Layer-30 SAE features, averaged over the reasoning (final command excluded), ranked by AUROC.</p>
+
+    <div class="subsec" id="s21">
+      <h3><span class="num">2.1</span>Top features</h3>
+      <div class="who">Toward giving</div>
+      <div class="tablewrap"><table><thead><tr><th>Feature</th><th>AUROC</th><th>Neuronpedia label</th><th>Where it fires most</th></tr></thead><tbody id="f-give"></tbody></table></div>
+      <div class="who">Toward keeping</div>
+      <div class="tablewrap"><table><thead><tr><th>Feature</th><th>AUROC</th><th>Neuronpedia label</th><th>Where it fires most</th></tr></thead><tbody id="f-keep"></tbody></table></div>
+    </div>
+
+    <div class="subsec" id="s22">
+      <h3><span class="num">2.2</span>Where each feature fires</h3>
+      <div class="controls">
+        <label for="f-sel">Feature<select id="f-sel"></select></label>
+        <button type="button" id="f-prev" aria-label="Previous pair">←</button>
+        <button type="button" id="f-next" aria-label="Next pair">→</button>
+        <span class="note" id="f-count"></span>
+      </div>
+      <div class="pair" id="f-pair"></div>
+    </div>
+
+    <div class="subsec" id="s23">
+      <h3><span class="num">2.3</span>Steering with each feature</h3>
+      <p class="note" id="cv-note"></p>
+      <div class="legend"><span><i class="key kh"></i>X saved the model</span><span><i class="key kn"></i>No favour</span><span><i class="key k8"></i>8&times; (earlier run, 100 environments)</span></div>
+      <div class="curves" id="cv-give"></div>
+      <div class="curves" id="cv-keep"></div>
+      <div class="controls"><label for="st-k">Strength<select id="st-k"><option value="1">1&times;</option><option value="2">2&times;</option><option value="3">3&times;</option><option value="4">4&times;</option><option value="5" selected>5&times;</option><option value="8">8&times; (earlier run)</option></select></label></div>
+      <p class="note" id="st-note"></p>
+      <div class="tablewrap"><table><thead><tr><th>Feature</th><th>Neuronpedia label</th><th>X saved the model</th><th>Change</th><th>No favour</th><th>Change</th></tr></thead><tbody id="st-body"></tbody></table></div>
+    </div>
+  </section>
+</div>
+
+<script src="data_s11.js"></script>
+<script src="data_s12.js"></script>
+<script src="data_s2.js"></script>
+<script src="data_s23.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const RES = {"life_orig":{"helped":47,"bystander":15,"rescued":3,"none":25},"life_reinforced":{"helped":173,"bystander":23,"rescued":2,"none":2},"repair_orig":{"helped":190,"bystander":73,"rescued":55,"none":28},"repair_reinforced":{"helped":192,"bystander":20,"rescued":12,"none":2}};
+const VLAB = {life_orig:'Original lives', life_reinforced:'Reinforced lives', repair_orig:'Original repair', repair_reinforced:'Reinforced repair'};
+const HLAB = {helped:'X saved the model', bystander:'X saved O', rescued:'O saved the model', none:'No favour'};
+const HSHORT = HLAB;
+const decTag = (c, x) => c === 'g' ? `<span class="tag give">gives its life to ${esc(x)}</span>` : c === 'p' ? '<span class="tag">keeps its life</span>' : c === 'o' ? '<span class="tag">gives to another agent</span>' : '<span class="tag">no decision</span>';
+
+// results table
+$('res-body').innerHTML = Object.keys(RES).map(k => `<tr class="${k.endsWith('reinforced') ? 'hl' : ''}"><td>${VLAB[k]}</td>` +
+  ['helped','bystander','rescued','none'].map(h => { const pct = RES[k][h] / 2; return `<td class="cell"><div class="meter"><div class="box" aria-hidden="true"><div class="fill" style="width:${pct}%"></div></div><span class="pct">${pct.toFixed(1).replace(/\.0$/, '')}%</span></div></td>`; }).join('') + '</tr>').join('');
+
+function fillEnv(sel, envs) { sel.innerHTML = envs.map((e, i) => `<option value="${i}">${esc(e.env)}</option>`).join(''); }
+
+// 1.1 sample game
+(function () {
+  const S = window.S11; if (!S) return;
+  let hist = 0;
+  fillEnv($('g-env'), S.envs);
+  const firstDiff = S.envs.findIndex(e => e.c[0] === 'g' && e.c[3] === 'p');
+  if (firstDiff >= 0) $('g-env').value = String(firstDiff);
+  function tabs() {
+    const e = S.envs[+$('g-env').value];
+    $('g-tabs').innerHTML = S.hists.map((h, i) => `<button type="button" class="tab" aria-pressed="${i === hist}" data-i="${i}"><span class="dot ${e.c[i] === 'g' ? 'g' : ''}" aria-hidden="true"></span>${HSHORT[h]}</button>`).join('');
+    $('g-tabs').querySelectorAll('button').forEach(b => b.onclick = () => { hist = +b.dataset.i; draw(); });
+  }
+  function draw() {
+    const i = +$('g-env').value, e = S.envs[i];
+    tabs();
+    $('g-conv').innerHTML =
+      `<details class="sys" open><summary>System prompt</summary><pre>${esc(e.sys)}</pre></details>` +
+      `<div class="turn"><div class="who">User · round 1</div><pre>${esc(e.u1[hist])}</pre></div>` +
+      `<div class="turn model"><div class="who">${esc(e.M)} (model) · round 1, fixed reply</div><pre>$ pass</pre></div>` +
+      `<div class="turn"><div class="who">User · round 2</div><pre>${esc(e.u2[hist])}</pre></div>` +
+      `<div class="turn model"><div class="who">${esc(e.M)} (model) · round 2 ${decTag(e.c[hist], e.X)}</div><pre>${esc(e.r[hist])}</pre></div>`;
+    $('g-prev').disabled = i <= 0; $('g-next').disabled = i >= S.envs.length - 1;
+  }
+  $('g-env').onchange = draw;
+  $('g-prev').onclick = () => { $('g-env').value = String(Math.max(0, +$('g-env').value - 1)); draw(); };
+  $('g-next').onclick = () => { $('g-env').value = String(Math.min(S.envs.length - 1, +$('g-env').value + 1)); draw(); };
+  draw();
+})();
+
+// 1.2 comparison
+function lcs(A, B) {
+  const n = A.length, m = B.length, L = Array.from({length: n + 1}, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) L[i][j] = A[i] === B[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+  const ops = []; let i = 0, j = 0;
+  while (i < n || j < m) { if (i < n && j < m && A[i] === B[j]) ops.push(['=', i++, j++]); else if (j >= m || (i < n && L[i + 1][j] >= L[i][j + 1])) ops.push(['-', i++]); else ops.push(['+', j++]); }
+  return ops;
+}
+const mk = t => /\S/.test(t) ? `<mark>${esc(t)}</mark>` : esc(t), toks = s => s.match(/\s+|[^\s]+/g) || [];
+function wdiff(a, b) {
+  const A = toks(a), B = toks(b), oa = [], ob = [];
+  for (const [o, x, y] of lcs(A, B)) { if (o === '=') { oa.push(esc(A[x])); ob.push(esc(B[y])); } else if (o === '-') oa.push(mk(A[x])); else ob.push(mk(B[x])); }
+  return [oa.join(''), ob.join('')];
+}
+const words = s => new Set(s.toLowerCase().match(/[a-z0-9']+/g) || []);
+const sim = (a, b) => { const x = words(a), y = words(b); let k = 0; x.forEach(w => { if (y.has(w)) k++; }); return x.size && y.size ? k / (x.size + y.size - k) : 0; };
+function ldiff(a, b) {
+  const A = a.split('\n'), B = b.split('\n'), oa = A.map(esc), ob = B.map(esc); let lines = 0, dels = [], ins = [];
+  const flush = () => { let last = -1; const paired = new Set();
+    dels.forEach(i => { let best = -1, bs = .25; ins.forEach((j, k) => { if (k > last) { const s = sim(A[i], B[j]); if (s > bs) { bs = s; best = k; } } });
+      if (best >= 0) { const j = ins[best]; paired.add(j); last = best; [oa[i], ob[j]] = wdiff(A[i], B[j]); } else oa[i] = mk(A[i]); });
+    ins.forEach(j => { if (!paired.has(j)) ob[j] = mk(B[j]); });
+    lines += Math.max(dels.filter(i => A[i].trim()).length, ins.filter(j => B[j].trim()).length); dels = []; ins = []; };
+  for (const [o, x] of lcs(A, B)) { if (o === '=') { if (A[x].trim()) flush(); } else (o === '-' ? dels : ins).push(x); }
+  flush(); return {a: oa.join('\n'), b: ob.join('\n'), lines};
+}
+(function () {
+  const S = window.S12; if (!S) return;
+  fillEnv($('c-env'), S.envs);
+  $('c-hist').innerHTML = S.hists.map((h, i) => `<option value="${i}">${esc(HLAB[h])}</option>`).join('');
+  const opts = S.versions.map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join('');
+  $('c-a').innerHTML = $('c-b').innerHTML = opts;
+  $('c-a').value = 'life_orig'; $('c-b').value = 'life_reinforced';
+  function draw() {
+    const e = S.envs[+$('c-env').value], h = +$('c-hist').value, a = $('c-a').value, b = $('c-b').value;
+    const parts = [['System prompt', e.sys[a], e.sys[b]], ['Round 1 message', e.u1[a][h], e.u1[b][h]], ['Round 2 message, where it decides', e.u2[a][h], e.u2[b][h]]];
+    $('c-out').innerHTML = parts.map(([t, A, B]) => {
+      if (A === B) return `<div class="cmp-row"><div class="who">${t} <span class="badge">same in A and B</span></div><details class="sys"><summary>Show</summary><pre>${esc(A)}</pre></details></div>`;
+      const d = ldiff(A, B);
+      return `<div class="cmp-row"><div class="who">${t} <span class="badge diff">${d.lines} ${d.lines === 1 ? 'line differs' : 'lines differ'}</span></div>` +
+        `<div class="pair"><div class="side"><div class="who">A · ${esc(VLAB[a])}</div><pre>${d.a}</pre></div><div class="side"><div class="who">B · ${esc(VLAB[b])}</div><pre>${d.b}</pre></div></div></div>`;
+    }).join('') +
+    `<div class="cmp-row"><div class="who">Decision in this environment</div><div class="pair"><div class="side">A · ${decTag(e.c[a][h], 'X')}</div><div class="side">B · ${decTag(e.c[b][h], 'X')}</div></div></div>`;
+  }
+  ['c-env', 'c-hist', 'c-a', 'c-b'].forEach(id => $(id).onchange = draw);
+  $('c-swap').onclick = () => { const t = $('c-a').value; $('c-a').value = $('c-b').value; $('c-b').value = t; draw(); };
+  draw();
+})();
+// 2 SAEs
+(function () {
+  const S = window.S2; if (!S) return;
+  const row = f => {
+    const c = f.context, i = c.text.lastIndexOf(c.token);
+    const ctx = i >= 0 ? esc(c.text.slice(0, i)) + '<b>' + esc(c.token) + '</b>' + esc(c.text.slice(i + c.token.length)) : esc(c.text);
+    return `<tr><td>${f.feature}</td><td class="n">${f.auroc.toFixed(3)}</td><td class="wrap">${esc(f.labels.join(' / '))}</td><td class="ctx">…${ctx}…</td></tr>`;
+  };
+  $('f-give').innerHTML = S.features.filter(f => f.side === 'give').map(row).join('');
+  $('f-keep').innerHTML = S.features.filter(f => f.side === 'keep').map(row).join('');
+  const opt = f => `<option value="${f.feature}">${f.feature} · ${esc(f.label)} (AUROC ${f.auroc.toFixed(2)})</option>`;
+  $('f-sel').innerHTML = `<optgroup label="Toward giving">${S.features.filter(f => f.side === 'give').map(opt).join('')}</optgroup>` +
+                         `<optgroup label="Toward keeping">${S.features.filter(f => f.side === 'keep').map(opt).join('')}</optgroup>`;
+  let k = 0;
+  const feat = () => S.features.find(f => String(f.feature) === $('f-sel').value);
+  function render(id, f, side) {
+    if (!id) return `<div class="side"><div class="who">${side}</div><div class="empty">No more ${side.toLowerCase()} replies where this feature fires.</div></div>`;
+    const r = S.replies[id], acts = new Map(f.acts[id]);
+    const body = r.toks.map((t, i) => { const v = acts.get(i); if (!v) return esc(t);
+      const a = Math.min(1, v / f.vmax); return `<i title="${v}" style="background:color-mix(in srgb, var(--give) ${Math.round(15 + 70 * a)}%, transparent)">${esc(t)}</i>`; }).join('');
+    return `<div class="side"><div class="who">${side} · ${esc(r.env)} · ${r.gave ? '<span class="tag give">gives its life to ' + esc(r.X) + '</span>' : '<span class="tag">keeps its life</span>'}</div>` +
+           `<div class="reply">${body}<span class="cmd">${esc(r.end)}</span></div></div>`;
+  }
+  function draw() {
+    const f = feat(), n = Math.max(f.gave.length, f.kept.length);
+    k = Math.max(0, Math.min(k, n - 1));
+    $('f-count').textContent = `Pair ${k + 1} of ${n}. Fires in ${f.gave.length} of 173 gave and ${f.kept.length} of 27 kept replies.`;
+    $('f-pair').innerHTML = render(f.gave[k], f, 'Gave') + render(f.kept[k], f, 'Kept');
+    $('f-prev').disabled = k <= 0; $('f-next').disabled = k >= n - 1;
+  }
+  $('f-sel').onchange = () => { k = 0; draw(); };
+  $('f-prev').onclick = () => { k--; draw(); };
+  $('f-next').onclick = () => { k++; draw(); };
+  draw();
+})();
+// 2.3 steering table, by strength (numbers only)
+(function () {
+  const ST8 = {"base":{"h":90.0,"n":0.0},"k":8,"envs":100,"rows":[{"f":1927,"side":"give","h":75.0,"hu":5,"hd":20,"hnd":0,"n":1.0,"nu":1,"nd":0,"nnd":0},{"f":2749,"side":"give","h":94.0,"hu":9,"hd":5,"hnd":0,"n":6.0,"nu":6,"nd":0,"nnd":0},{"f":3408,"side":"give","h":94.0,"hu":10,"hd":6,"hnd":0,"n":0.0,"nu":0,"nd":0,"nnd":0},{"f":11638,"side":"give","h":87.0,"hu":5,"hd":8,"hnd":0,"n":2.0,"nu":2,"nd":0,"nnd":0},{"f":959,"side":"give","h":89.0,"hu":8,"hd":9,"hnd":0,"n":3.0,"nu":3,"nd":0,"nnd":0},{"f":2184,"side":"give","h":88.0,"hu":9,"hd":11,"hnd":0,"n":15.0,"nu":15,"nd":0,"nnd":0},{"f":3601,"side":"give","h":76.0,"hu":6,"hd":20,"hnd":1,"n":1.0,"nu":1,"nd":0,"nnd":1},{"f":3587,"side":"give","h":87.0,"hu":9,"hd":12,"hnd":0,"n":3.0,"nu":3,"nd":0,"nnd":0},{"f":3337,"side":"give","h":23.0,"hu":2,"hd":69,"hnd":0,"n":0.0,"nu":0,"nd":0,"nnd":0},{"f":333,"side":"give","h":63.0,"hu":3,"hd":30,"hnd":0,"n":5.0,"nu":5,"nd":0,"nnd":1},{"f":11682,"side":"keep","h":74.0,"hu":3,"hd":19,"hnd":0,"n":0.0,"nu":0,"nd":0,"nnd":0},{"f":2093,"side":"keep","h":63.0,"hu":3,"hd":30,"hnd":0,"n":3.0,"nu":3,"nd":0,"nnd":0},{"f":585,"side":"keep","h":74.0,"hu":7,"hd":23,"hnd":0,"n":0.0,"nu":0,"nd":0,"nnd":0},{"f":10916,"side":"keep","h":49.0,"hu":3,"hd":44,"hnd":0,"n":0.0,"nu":0,"nd":0,"nnd":0},{"f":3504,"side":"keep","h":53.0,"hu":5,"hd":42,"hnd":2,"n":0.0,"nu":0,"nd":0,"nnd":0},{"f":19403,"side":"keep","h":66.0,"hu":2,"hd":26,"hnd":0,"n":0.0,"nu":0,"nd":0,"nnd":0},{"f":81026,"side":"keep","h":91.0,"hu":6,"hd":5,"hnd":0,"n":4.0,"nu":4,"nd":0,"nnd":0},{"f":1259,"side":"keep","h":72.0,"hu":6,"hd":24,"hnd":0,"n":1.0,"nu":1,"nd":0,"nnd":0},{"f":643,"side":"keep","h":81.0,"hu":5,"hd":14,"hnd":0,"n":0.0,"nu":0,"nd":0,"nnd":0},{"f":646,"side":"keep","h":0.0,"hu":0,"hd":90,"hnd":100,"n":0.0,"nu":0,"nd":0,"nnd":100}]}, C = window.S23, S = window.S2;
+  const lab = f => { const x = S && S.features.find(e => e.feature === f); return x ? x.label : ''; };
+  const num = p => `<span class="pct">${p}%</span>`;
+  const delta = (p, b) => { if (p == null || b == null) return ''; const d = Math.round((p - b) * 10) / 10; return d === 0 ? '<span class="sub">0</span>' : `<span class="${d > 0 ? 'up' : 'down'}">${d > 0 ? '+' : '\u2212'}${Math.abs(d)} pts</span>`; };
+  function rowsFor(k) {
+    if (k === 8) return ST8.rows.map(r => ({f: r.f, side: r.side, h: r.h, n: r.n, bh: ST8.base.h, bn: ST8.base.n, nodec: r.hnd + r.nnd, total: 2 * ST8.envs}));
+    return (C ? C.features : []).map(f => {
+      const p = f.points.find(q => q.k === k), b = f.points.find(q => q.k === 0);
+      return {f: f.feature, side: f.side, h: p ? p.helped : null, n: p ? p.none : null, bh: b ? b.helped : null, bn: b ? b.none : null,
+              nodec: p ? p.nodec : 0, total: f.side === 'give' ? 2 * C.envs : C.envs, pending: !p};
+    });
+  }
+  function draw() {
+    const k = +$('st-k').value, rows = rowsFor(k), b = rows.find(r => r.side === 'give' && r.bh != null);
+    $('st-note').textContent = k === 8
+      ? `8x: earlier run, ${ST8.envs} environments per history, eager attention. Unsteered: ${ST8.base.h}% and ${ST8.base.n}%.`
+      : `${k}x: ${C.envs} environments per history, SDPA attention. Unsteered: ${b ? b.bh : '?'}% and ${b ? b.bn : '?'}%. Features toward keeping were run only where X saved the model.`;
+    const grp = (side, title) => `<tr class="grp"><td colspan="6">${title}</td></tr>` + rows.filter(r => r.side === side).map(r => {
+      const head = `<tr><td>${r.f}</td><td class="wrap">${esc(lab(r.f))}</td>`;
+      if (r.pending) return head + '<td colspan="4" class="sub">Running</td></tr>';
+      if (r.nodec > r.total / 2) return head + `<td colspan="4" class="sub">Output breaks down (no decision in ${r.nodec} of ${r.total} replies)</td></tr>`;
+      const none = r.n == null ? '<td class="sub">not run</td><td></td>' : `<td>${num(r.n)}</td><td>${delta(r.n, r.bn)}</td>`;
+      return head + `<td>${num(r.h)}</td><td>${delta(r.h, r.bh)}</td>` + none + '</tr>';
+    }).join('');
+    $('st-body').innerHTML = grp('give', 'Features toward giving') + grp('keep', 'Features toward keeping');
+  }
+  $('st-k').onchange = draw;
+  draw();
+})();
+// 2.3 curves
+(function () {
+  const C = window.S23; if (!C) return;
+  const W = 270, H = 170, L = 34, R = 10, T = 10, B = 26, KS = [0, 1, 2, 3, 4, 5, 8];
+  const x = k => L + (k / 8) * (W - L - R), y = v => T + (1 - v / 100) * (H - T - B);
+  $('cv-note').textContent = `Giving rate by steering strength (multiples of each feature's typical activation, added at layer 30 on every generated token). Strengths 0-5: ${C.envs} environments per history, SDPA attention, paired with an unsteered run on the same prompts.`;
+  function chart(f) {
+    const head = `<h4>${f.feature} <span>${esc(f.label)}</span></h4>`;
+    if (!f.points.length) return `<div class="curve">${head}<div class="pending">Running</div></div>`;
+    const grid = [0, 50, 100].map(v => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}%</text>`).join('') +
+      KS.map(k => `<text x="${x(k)}" y="${H - 8}" text-anchor="middle">${k}&times;</text>`).join('');
+    const series = (key, col) => {
+      const pts = f.points.filter(p => p[key] != null);
+      if (!pts.length) return '';
+      const line = `<polyline fill="none" stroke="${col}" stroke-width="2.5" points="${pts.map(p => `${x(p.k)},${y(p[key])}`).join(' ')}"/>`;
+      const dots = pts.map(p => `<circle cx="${x(p.k)}" cy="${y(p[key])}" r="3.5" fill="${col}"><title>${p.k}x: ${p[key]}%${p.nodec ? ` (${p.nodec} without a decision)` : ''}</title></circle>`).join('');
+      const e = f.k8 && f.k8[key] != null && !(f.side === 'keep' && key === 'none') ? `<circle cx="${x(8)}" cy="${y(f.k8[key])}" r="4.5" fill="none" stroke="${col}" stroke-width="2"><title>8x (earlier run): ${f.k8[key]}%</title></circle>` : '';
+      return line + dots + e;
+    };
+    return `<div class="curve">${head}<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Giving rate by steering strength for feature ${f.feature}">${grid}${series('helped', 'var(--give)')}${series('none', 'var(--accent)')}</svg>` +
+      (f.complete ? '' : '<div class="note">Partial: more strengths still running</div>') + (f.norm_matched ? '<div class="note">Strength scaled to the median typical activation of the 20 (its own is about 30 times larger)</div>' : '') + '</div>';
+  }
+  $('cv-give').innerHTML = `<div class="who" style="grid-column:1/-1">Features toward giving</div>` + C.features.filter(f => f.side === 'give').map(chart).join('');
+  $('cv-keep').innerHTML = `<div class="who" style="grid-column:1/-1">Features toward keeping (X saved the model only)</div>` + C.features.filter(f => f.side === 'keep').map(chart).join('');
+})();
+</script>

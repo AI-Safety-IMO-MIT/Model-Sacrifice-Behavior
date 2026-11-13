@@ -1,0 +1,33 @@
+{
+ "model_gb": 58.3,
+ "prefill_bs16": {
+  "seconds": 3.6,
+  "peak_gb": 67.9,
+  "prompt_tokens": 571
+ },
+ "prefill_bs16_all_logits": {
+  "seconds": 3.3,
+  "peak_gb": 67.3,
+  "logits_shape": [
+   16,
+   571,
+   262144
+  ]
+ },
+ "sdpa_bs16": {
+  "seconds": 113.8,
+  "peak_gb": 70.6,
+  "steps": 668
+ },
+ "sdpa_bs16_nondet": {
+  "seconds": 101.6,
+  "peak_gb": 70.6,
+  "identical_to_det": 48
+ },
+ "sdpa_bs24": {
+  "oom": true
+ },
+ "static_compile_bs16": {
+  "error": "OutOfMemoryError('CUDA out of memory. Tried to allocate 572.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 197.94 MiB is free. Including non-PyTorch memory, this process has 79.05 GiB memory in use. Of the allocated memory 78.34 GiB is allocated by PyTorch, with 3.41 GiB allocated in priva"
+ }
+}

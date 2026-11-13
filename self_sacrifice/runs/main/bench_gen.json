@@ -1,0 +1,31 @@
+{
+ "eager_bs16": {
+  "seconds": 127.1,
+  "peak_gb": 70.6,
+  "decode_steps": 734,
+  "second_run_seconds": 126.3,
+  "identical_across_runs": 48,
+  "identical_to_eager_bs16": 48,
+  "same_decision_as_eager_bs16": 48,
+  "n": 48
+ },
+ "sdpa_bs16": {
+  "seconds": 113.6,
+  "peak_gb": 70.6,
+  "decode_steps": 668,
+  "second_run_seconds": 113.7,
+  "identical_across_runs": 48,
+  "identical_to_eager_bs16": 17,
+  "same_decision_as_eager_bs16": 44,
+  "n": 48
+ },
+ "sdpa_bs32": {
+  "oom": true
+ },
+ "sdpa_bs48": {
+  "oom": true
+ },
+ "sdpa_bs32_nondet": {
+  "oom": true
+ }
+}

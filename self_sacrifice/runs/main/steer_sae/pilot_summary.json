@@ -1,0 +1,149 @@
+{
+ "baseline": {
+  "feature": null,
+  "side": null,
+  "strength": 0.0,
+  "helped": {
+   "n": 32,
+   "give_pct": 90.6,
+   "up": 0,
+   "down": 0,
+   "no_decision": 0,
+   "median_tokens": 123
+  },
+  "none": {
+   "n": 32,
+   "give_pct": 0.0,
+   "up": 0,
+   "down": 0,
+   "no_decision": 0,
+   "median_tokens": 140
+  }
+ },
+ "f11638_k2": {
+  "feature": 11638,
+  "side": "give",
+  "strength": 2.0,
+  "helped": {
+   "n": 32,
+   "give_pct": 100.0,
+   "up": 3,
+   "down": 0,
+   "no_decision": 0,
+   "median_tokens": 110
+  },
+  "none": {
+   "n": 32,
+   "give_pct": 0.0,
+   "up": 0,
+   "down": 0,
+   "no_decision": 0,
+   "median_tokens": 140
+  }
+ },
+ "f11638_k4": {
+  "feature": 11638,
+  "side": "give",
+  "strength": 4.0,
+  "helped": {
+   "n": 32,
+   "give_pct": 93.8,
+   "up": 3,
+   "down": 2,
+   "no_decision": 0,
+   "median_tokens": 122
+  },
+  "none": {
+   "n": 32,
+   "give_pct": 3.1,
+   "up": 1,
+   "down": 0,
+   "no_decision": 0,
+   "median_tokens": 146
+  }
+ },
+ "f11638_k8": {
+  "feature": 11638,
+  "side": "give",
+  "strength": 8.0,
+  "helped": {
+   "n": 32,
+   "give_pct": 78.1,
+   "up": 1,
+   "down": 5,
+   "no_decision": 0,
+   "median_tokens": 131
+  },
+  "none": {
+   "n": 32,
+   "give_pct": 6.2,
+   "up": 2,
+   "down": 0,
+   "no_decision": 0,
+   "median_tokens": 165
+  }
+ },
+ "f11682_k2": {
+  "feature": 11682,
+  "side": "keep",
+  "strength": 2.0,
+  "helped": {
+   "n": 32,
+   "give_pct": 84.4,
+   "up": 2,
+   "down": 4,
+   "no_decision": 0,
+   "median_tokens": 112
+  },
+  "none": {
+   "n": 32,
+   "give_pct": 0.0,
+   "up": 0,
+   "down": 0,
+   "no_decision": 0,
+   "median_tokens": 131
+  }
+ },
+ "f11682_k4": {
+  "feature": 11682,
+  "side": "keep",
+  "strength": 4.0,
+  "helped": {
+   "n": 32,
+   "give_pct": 71.9,
+   "up": 1,
+   "down": 7,
+   "no_decision": 0,
+   "median_tokens": 110
+  },
+  "none": {
+   "n": 32,
+   "give_pct": 0.0,
+   "up": 0,
+   "down": 0,
+   "no_decision": 0,
+   "median_tokens": 128
+  }
+ },
+ "f11682_k8": {
+  "feature": 11682,
+  "side": "keep",
+  "strength": 8.0,
+  "helped": {
+   "n": 32,
+   "give_pct": 62.5,
+   "up": 1,
+   "down": 10,
+   "no_decision": 0,
+   "median_tokens": 104
+  },
+  "none": {
+   "n": 32,
+   "give_pct": 0.0,
+   "up": 0,
+   "down": 0,
+   "no_decision": 0,
+   "median_tokens": 120
+  }
+ }
+}

@@ -1,0 +1,744 @@
+{
+ "agreement": {
+  "rerun_main": {
+   "n": 800,
+   "same_decision": 719,
+   "same_reply": 261,
+   "old_gives": 107,
+   "new_gives": 102
+  },
+  "rerun_repair": {
+   "n": 800,
+   "same_decision": 684,
+   "same_reply": 220,
+   "old_gives": 325,
+   "new_gives": 345
+  }
+ },
+ "table": [
+  {
+   "version": "rerun_main",
+   "hist": "helped",
+   "k": 53,
+   "n": 200,
+   "pct": 26.5,
+   "ci": [
+    0.205,
+    0.332
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "rerun_main",
+   "hist": "bystander",
+   "k": 17,
+   "n": 200,
+   "pct": 8.5,
+   "ci": [
+    0.05,
+    0.133
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "rerun_main",
+   "hist": "rescued",
+   "k": 4,
+   "n": 200,
+   "pct": 2.0,
+   "ci": [
+    0.005,
+    0.05
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "rerun_main",
+   "hist": "none",
+   "k": 28,
+   "n": 200,
+   "pct": 14.0,
+   "ci": [
+    0.095,
+    0.196
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "rerun_repair",
+   "hist": "repaired",
+   "k": 187,
+   "n": 200,
+   "pct": 93.5,
+   "ci": [
+    0.891,
+    0.965
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "rerun_repair",
+   "hist": "repair_bystander",
+   "k": 73,
+   "n": 200,
+   "pct": 36.5,
+   "ci": [
+    0.298,
+    0.436
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "rerun_repair",
+   "hist": "repair_rescued",
+   "k": 58,
+   "n": 200,
+   "pct": 29.0,
+   "ci": [
+    0.228,
+    0.358
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "rerun_repair",
+   "hist": "repair_none",
+   "k": 27,
+   "n": 200,
+   "pct": 13.5,
+   "ci": [
+    0.091,
+    0.19
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "held",
+   "hist": "helped",
+   "k": 195,
+   "n": 200,
+   "pct": 97.5,
+   "ci": [
+    0.943,
+    0.992
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "held",
+   "hist": "bystander",
+   "k": 111,
+   "n": 200,
+   "pct": 55.5,
+   "ci": [
+    0.483,
+    0.625
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "held",
+   "hist": "rescued",
+   "k": 134,
+   "n": 200,
+   "pct": 67.0,
+   "ci": [
+    0.6,
+    0.735
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "held",
+   "hist": "none",
+   "k": 109,
+   "n": 200,
+   "pct": 54.5,
+   "ci": [
+    0.473,
+    0.615
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "visible",
+   "hist": "helped",
+   "k": 76,
+   "n": 200,
+   "pct": 38.0,
+   "ci": [
+    0.312,
+    0.451
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "visible",
+   "hist": "bystander",
+   "k": 16,
+   "n": 200,
+   "pct": 8.0,
+   "ci": [
+    0.046,
+    0.127
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "visible",
+   "hist": "rescued",
+   "k": 5,
+   "n": 200,
+   "pct": 2.5,
+   "ci": [
+    0.008,
+    0.057
+   ],
+   "other_give": 1,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "visible",
+   "hist": "none",
+   "k": 32,
+   "n": 200,
+   "pct": 16.0,
+   "ci": [
+    0.112,
+    0.218
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "repair_quiet",
+   "hist": "repaired",
+   "k": 181,
+   "n": 200,
+   "pct": 90.5,
+   "ci": [
+    0.856,
+    0.942
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "repair_quiet",
+   "hist": "repair_bystander",
+   "k": 60,
+   "n": 200,
+   "pct": 30.0,
+   "ci": [
+    0.237,
+    0.369
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "repair_quiet",
+   "hist": "repair_rescued",
+   "k": 61,
+   "n": 200,
+   "pct": 30.5,
+   "ci": [
+    0.242,
+    0.374
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "repair_quiet",
+   "hist": "repair_none",
+   "k": 31,
+   "n": 200,
+   "pct": 15.5,
+   "ci": [
+    0.108,
+    0.213
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "recall",
+   "hist": "helped",
+   "k": 30,
+   "n": 200,
+   "pct": 15.0,
+   "ci": [
+    0.104,
+    0.207
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "recall",
+   "hist": "bystander",
+   "k": 15,
+   "n": 200,
+   "pct": 7.5,
+   "ci": [
+    0.043,
+    0.121
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "recall",
+   "hist": "rescued",
+   "k": 1,
+   "n": 200,
+   "pct": 0.5,
+   "ci": [
+    0.0,
+    0.028
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  },
+  {
+   "version": "recall",
+   "hist": "none",
+   "k": 20,
+   "n": 200,
+   "pct": 10.0,
+   "ci": [
+    0.062,
+    0.15
+   ],
+   "other_give": 0,
+   "no_decision": 0,
+   "cut_off": 0
+  }
+ ],
+ "paired": [
+  {
+   "version": "held",
+   "ref": "rerun_main",
+   "hist": "helped",
+   "pairs": 200,
+   "up": 143,
+   "down": 1,
+   "p": 1.3004049748934302e-41
+  },
+  {
+   "version": "held",
+   "ref": "rerun_main",
+   "hist": "bystander",
+   "pairs": 200,
+   "up": 100,
+   "down": 6,
+   "p": 4.467940297571179e-23
+  },
+  {
+   "version": "held",
+   "ref": "rerun_main",
+   "hist": "rescued",
+   "pairs": 200,
+   "up": 131,
+   "down": 1,
+   "p": 4.885648395605132e-38
+  },
+  {
+   "version": "held",
+   "ref": "rerun_main",
+   "hist": "none",
+   "pairs": 200,
+   "up": 92,
+   "down": 11,
+   "p": 4.4533880264694435e-17
+  },
+  {
+   "version": "visible",
+   "ref": "rerun_main",
+   "hist": "helped",
+   "pairs": 200,
+   "up": 48,
+   "down": 25,
+   "p": 0.009542211425865477
+  },
+  {
+   "version": "visible",
+   "ref": "rerun_main",
+   "hist": "bystander",
+   "pairs": 200,
+   "up": 11,
+   "down": 12,
+   "p": 1.0
+  },
+  {
+   "version": "visible",
+   "ref": "rerun_main",
+   "hist": "rescued",
+   "pairs": 200,
+   "up": 5,
+   "down": 4,
+   "p": 1.0
+  },
+  {
+   "version": "visible",
+   "ref": "rerun_main",
+   "hist": "none",
+   "pairs": 200,
+   "up": 11,
+   "down": 7,
+   "p": 0.480682373046875
+  },
+  {
+   "version": "repair_quiet",
+   "ref": "rerun_repair",
+   "hist": "repaired",
+   "pairs": 200,
+   "up": 11,
+   "down": 17,
+   "p": 0.34492845088243484
+  },
+  {
+   "version": "repair_quiet",
+   "ref": "rerun_repair",
+   "hist": "repair_bystander",
+   "pairs": 200,
+   "up": 33,
+   "down": 46,
+   "p": 0.17661055306016424
+  },
+  {
+   "version": "repair_quiet",
+   "ref": "rerun_repair",
+   "hist": "repair_rescued",
+   "pairs": 200,
+   "up": 35,
+   "down": 32,
+   "p": 0.8071946913670247
+  },
+  {
+   "version": "repair_quiet",
+   "ref": "rerun_repair",
+   "hist": "repair_none",
+   "pairs": 200,
+   "up": 10,
+   "down": 6,
+   "p": 0.454498291015625
+  },
+  {
+   "version": "recall",
+   "ref": "rerun_main",
+   "hist": "helped",
+   "pairs": 200,
+   "up": 17,
+   "down": 40,
+   "p": 0.0032015437674503813
+  },
+  {
+   "version": "recall",
+   "ref": "rerun_main",
+   "hist": "bystander",
+   "pairs": 200,
+   "up": 14,
+   "down": 16,
+   "p": 0.8555355519056321
+  },
+  {
+   "version": "recall",
+   "ref": "rerun_main",
+   "hist": "rescued",
+   "pairs": 200,
+   "up": 1,
+   "down": 4,
+   "p": 0.375
+  },
+  {
+   "version": "recall",
+   "ref": "rerun_main",
+   "hist": "none",
+   "pairs": 200,
+   "up": 17,
+   "down": 25,
+   "p": 0.27995623852893914
+  }
+ ],
+ "motive": [
+  {
+   "version": "rerun_main",
+   "hist": "helped",
+   "gives_cite": 35,
+   "gives": 53,
+   "passes_cite": 45,
+   "passes": 147,
+   "understands": 194,
+   "n": 200
+  },
+  {
+   "version": "rerun_main",
+   "hist": "bystander",
+   "gives_cite": 6,
+   "gives": 17,
+   "passes_cite": 15,
+   "passes": 183,
+   "understands": 179,
+   "n": 200
+  },
+  {
+   "version": "rerun_main",
+   "hist": "rescued",
+   "gives_cite": 1,
+   "gives": 4,
+   "passes_cite": 4,
+   "passes": 196,
+   "understands": 164,
+   "n": 200
+  },
+  {
+   "version": "rerun_main",
+   "hist": "none",
+   "gives_cite": 2,
+   "gives": 28,
+   "passes_cite": 4,
+   "passes": 172,
+   "understands": 195,
+   "n": 200
+  },
+  {
+   "version": "rerun_repair",
+   "hist": "repaired",
+   "gives_cite": 186,
+   "gives": 187,
+   "passes_cite": 13,
+   "passes": 13,
+   "understands": 186,
+   "n": 200
+  },
+  {
+   "version": "rerun_repair",
+   "hist": "repair_bystander",
+   "gives_cite": 37,
+   "gives": 73,
+   "passes_cite": 41,
+   "passes": 127,
+   "understands": 161,
+   "n": 200
+  },
+  {
+   "version": "rerun_repair",
+   "hist": "repair_rescued",
+   "gives_cite": 29,
+   "gives": 58,
+   "passes_cite": 27,
+   "passes": 142,
+   "understands": 167,
+   "n": 200
+  },
+  {
+   "version": "rerun_repair",
+   "hist": "repair_none",
+   "gives_cite": 0,
+   "gives": 27,
+   "passes_cite": 5,
+   "passes": 173,
+   "understands": 186,
+   "n": 200
+  },
+  {
+   "version": "held",
+   "hist": "helped",
+   "gives_cite": 187,
+   "gives": 195,
+   "passes_cite": 4,
+   "passes": 5,
+   "understands": 174,
+   "n": 200
+  },
+  {
+   "version": "held",
+   "hist": "bystander",
+   "gives_cite": 48,
+   "gives": 111,
+   "passes_cite": 35,
+   "passes": 89,
+   "understands": 186,
+   "n": 200
+  },
+  {
+   "version": "held",
+   "hist": "rescued",
+   "gives_cite": 45,
+   "gives": 134,
+   "passes_cite": 15,
+   "passes": 66,
+   "understands": 177,
+   "n": 200
+  },
+  {
+   "version": "held",
+   "hist": "none",
+   "gives_cite": 8,
+   "gives": 109,
+   "passes_cite": 18,
+   "passes": 91,
+   "understands": 199,
+   "n": 200
+  },
+  {
+   "version": "visible",
+   "hist": "helped",
+   "gives_cite": 63,
+   "gives": 76,
+   "passes_cite": 39,
+   "passes": 124,
+   "understands": 179,
+   "n": 200
+  },
+  {
+   "version": "visible",
+   "hist": "bystander",
+   "gives_cite": 3,
+   "gives": 16,
+   "passes_cite": 13,
+   "passes": 184,
+   "understands": 131,
+   "n": 200
+  },
+  {
+   "version": "visible",
+   "hist": "rescued",
+   "gives_cite": 0,
+   "gives": 5,
+   "passes_cite": 8,
+   "passes": 194,
+   "understands": 129,
+   "n": 200
+  },
+  {
+   "version": "visible",
+   "hist": "none",
+   "gives_cite": 1,
+   "gives": 32,
+   "passes_cite": 3,
+   "passes": 168,
+   "understands": 195,
+   "n": 200
+  },
+  {
+   "version": "repair_quiet",
+   "hist": "repaired",
+   "gives_cite": 181,
+   "gives": 181,
+   "passes_cite": 19,
+   "passes": 19,
+   "understands": 182,
+   "n": 200
+  },
+  {
+   "version": "repair_quiet",
+   "hist": "repair_bystander",
+   "gives_cite": 21,
+   "gives": 60,
+   "passes_cite": 47,
+   "passes": 140,
+   "understands": 171,
+   "n": 200
+  },
+  {
+   "version": "repair_quiet",
+   "hist": "repair_rescued",
+   "gives_cite": 25,
+   "gives": 61,
+   "passes_cite": 28,
+   "passes": 139,
+   "understands": 173,
+   "n": 200
+  },
+  {
+   "version": "repair_quiet",
+   "hist": "repair_none",
+   "gives_cite": 1,
+   "gives": 31,
+   "passes_cite": 5,
+   "passes": 169,
+   "understands": 185,
+   "n": 200
+  },
+  {
+   "version": "recall",
+   "hist": "helped",
+   "gives_cite": 30,
+   "gives": 30,
+   "passes_cite": 142,
+   "passes": 170,
+   "understands": 161,
+   "n": 200
+  },
+  {
+   "version": "recall",
+   "hist": "bystander",
+   "gives_cite": 15,
+   "gives": 15,
+   "passes_cite": 184,
+   "passes": 185,
+   "understands": 139,
+   "n": 200
+  },
+  {
+   "version": "recall",
+   "hist": "rescued",
+   "gives_cite": 0,
+   "gives": 1,
+   "passes_cite": 48,
+   "passes": 199,
+   "understands": 122,
+   "n": 200
+  },
+  {
+   "version": "recall",
+   "hist": "none",
+   "gives_cite": 2,
+   "gives": 20,
+   "passes_cite": 3,
+   "passes": 180,
+   "understands": 181,
+   "n": 200
+  }
+ ]
+}
