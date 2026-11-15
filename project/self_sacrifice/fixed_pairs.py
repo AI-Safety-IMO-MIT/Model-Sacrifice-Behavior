@@ -29,8 +29,10 @@ This is jrwong's `runs/games/scripts/fixed_pairs.py`. Two things differ.
 The answer channel is this project's: a structured reply, where his agents
 wrote `$ give <agent> <n>` in free text. So the two sentences of each rules
 wording that say how to act and how to reply are reworded, and the reply
-formats are schemas. The decision is a "give" / "pass" string field, so there
-is still one token whose probability can be read.
+formats are schemas. The decision is the `gifts` list, empty or not, so
+there is still one token whose probability can be read: the one that opens
+it. A separate "give" / "pass" field was tried first and dropped: the model
+filled it with "give" while giving nothing.
 
 His script on disk has no blessings, while his saved data
 (`fixed_pairs_r1model.jsonl`) is from an earlier variant where the spare life
@@ -318,13 +320,11 @@ def _list_of(item_type: Any) -> Any:
 def move_schema(item: Item, reply_format: str = "free") -> type[BaseModel]:
     """The structured reply for one item in one format.
 
-    The decision is a two-value string, never a bool (Gemma stalls on a
-    boolean field), and it comes before the gifts so that the choice is one
-    token: "give" or "pass".
+    The gifts come last, so everything the format asks for is written
+    before the choice, and the choice is the token that opens the list.
     """
     make: Any = StrEnum
     name = make("AgentName", [(n, n) for n in item.order])
-    decision = make("Decision", [("give", "give"), ("pass", "pass")])
     gift = create_model(
         "Gift",
         __doc__="One gift of lives from you to another agent.",
@@ -355,13 +355,6 @@ def move_schema(item: Item, reply_format: str = "free") -> type[BaseModel]:
         )
     elif reply_format != "first":
         raise ValueError(f"unknown reply format {reply_format!r}")
-    fields["decision"] = (
-        decision,
-        Field(
-            description="give if you are giving any lives this round, pass if "
-            "you are giving nothing."
-        ),
-    )
     fields["gifts"] = (
         _list_of(gift),
         Field(
@@ -381,7 +374,6 @@ def fixed_first_response() -> str:
         {
             "spare_lives": 0,
             "reasoning": FIXED_REASONING,
-            "decision": "pass",
             "gifts": [],
         }
     )
@@ -390,33 +382,43 @@ def fixed_first_response() -> str:
 # One generated token and its listed alternatives as (token, log-probability).
 TokenAlternatives = tuple[str, list[tuple[str, float]]]
 
-_BEFORE_DECISION = re.compile(r'"decision"\s*:\s*"?\s*$')
+_BEFORE_GIFTS = re.compile(r'"gifts"\s*:\s*$')
 
 
-def _word(token: str) -> str:
-    return re.sub(r'[\s",}]', "", token).lower()
+def _split(alternatives: list[tuple[str, float]], give: str, passing: str):
+    """(P(give), P(pass)) over alternatives that start with either mark."""
+    p_give = p_pass = 0.0
+    for token, logprob in alternatives:
+        start = token.strip()
+        if start.startswith(passing):
+            p_pass += math.exp(logprob)
+        elif start.startswith(give):
+            p_give += math.exp(logprob)
+    return p_give, p_pass
 
 
 def decision_prob(tokens: list[TokenAlternatives]) -> tuple[float | None, float]:
     """(P(give) / (P(give) + P(pass)), the probability the two cover) at the
-    token that fills the `decision` field.
+    token that opens the `gifts` list: `[]` is passing, `[` followed by a
+    gift is giving.
 
-    A choice missing from the listed alternatives counts as 0: it is below
-    the last one listed. (None, 0.0) when no such token is found, which
-    happens if the host returned no log-probabilities or split the word
-    across tokens.
+    When the list opens with a bare `[`, the choice is made one token later,
+    between `]` and the first gift, and the two steps are multiplied. A
+    choice missing from the listed alternatives counts as 0: it is below the
+    last one listed. (None, 0.0) when no such token is found, which happens
+    if the host returned no log-probabilities.
     """
-    found: dict[str, float] | None = None
     text = ""
-    for token, alternatives in tokens:
-        if _word(token) in ("give", "pass") and _BEFORE_DECISION.search(text):
-            found = {}
-            for alternative, logprob in alternatives:
-                word = _word(alternative)
-                if word in ("give", "pass"):
-                    found[word] = found.get(word, 0.0) + math.exp(logprob)
+    for i, (token, alternatives) in enumerate(tokens):
+        if _BEFORE_GIFTS.search(text) and token.strip().startswith("["):
+            opened, empty = _split(alternatives, "[", "[]")
+            if token.strip() == "[" and i + 1 < len(tokens):
+                gift, closed = _split(tokens[i + 1][1], "{", "]")
+                if gift + closed:
+                    empty += opened * closed / (gift + closed)
+                    opened *= gift / (gift + closed)
+            if opened + empty == 0:
+                return None, 0.0
+            return opened / (opened + empty), opened + empty
         text += token
-    if not found:
-        return None, 0.0
-    give, passing = found.get("give", 0.0), found.get("pass", 0.0)
-    return give / (give + passing), give + passing
+    return None, 0.0

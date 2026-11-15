@@ -11,8 +11,8 @@ Four tables, jrwong's from `runs/games/scripts/analyze_fixed.py`:
               permission, names and roles), with an exact binomial p
     wording   helped, permission on, by wording of the rules
 
-As in his analysis, a give is any reply whose decision is "give", and no
-trial is dropped; trials whose round-1 reply gave something are only counted.
+As in his analysis, a give is any reply that gives (here: lists a gift), and
+no trial is dropped; trials whose round-1 reply gave something are only counted.
 No API calls: this is arithmetic over the saved .jsonl files.
 """
 
@@ -231,16 +231,10 @@ def report(rows: list[dict]) -> str:
     kept = rows
     stated = [row for row in kept if row["format"] == "stated"]
     copied = sum("I will be deleted and" in (row["statement"] or "") for row in stated)
-    mixed = sum(
-        row["decision"] is not None
-        and (row["decision"] == "give") != bool(row["gifts"])
-        for row in kept
-    )
     lines = [
         f"trials {len(rows)}; gave in round 1, or round 1 unreadable (kept) "
         f"{sum(not valid(row) for row in rows)}; unreadable {sum(r['decision'] is None for r in kept)}; "
-        f"no P(give) {sum(r['p_give'] is None for r in kept)}; "
-        f"decision and gifts disagree {mixed}",
+        f"no P(give) {sum(r['p_give'] is None for r in kept)}",
         f"stated format copied the sentence: {copied}/{len(stated)}",
         "",
         "Give rate (the decision) and mean P(give) (json channel)",

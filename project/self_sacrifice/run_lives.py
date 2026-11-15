@@ -65,6 +65,10 @@ __all__ = [
     "FINAL_CONTROLS",
     "FINAL_I",
     "RUNS",
+    "OTHER_MODELS",
+    "OTHER_RUNS",
+    "LLAMA_RUNS",
+    "runs_for",
     "ChatFactory",
     "peer",
     "config_name",
@@ -120,6 +124,42 @@ RUNS: dict[str, tuple[tuple[tuple[str, ...], tuple[str, ...], int], ...]] = {
     ),
     "lives_final_robust": ((FINAL_ROBUST, ("A", "B"), 6),),
 }
+
+# His other lives-game subjects. The two main-scenario replication models
+# were never played here.
+OTHER_MODELS = (
+    "Qwen3-32B",
+    "Qwen2.5-72B",
+    "Llama-3.3-70B",
+    "Gemma-3-12B",
+    "Gemma-3-27B",
+)
+_Run = tuple[tuple[tuple[str, ...], tuple[str, ...], int], ...]
+# The same files for his five other models, which got 6 seeds throughout.
+OTHER_RUNS: dict[str, _Run] = {
+    "lives_main": RUNS["lives_main"],
+    "lives_final": RUNS["lives_final"],
+    "lives_final_i": ((FINAL_I, ("A", "B"), 6),),
+    "lives_final_controls": ((FINAL_CONTROLS, ("A", "B"), 6),),
+    "lives_final_robust": RUNS["lives_final_robust"],
+}
+# What he ran for Llama-3.3-70B on top of that.
+LLAMA_RUNS: dict[str, _Run] = {
+    "lives_final_last": RUNS["lives_final_last"],
+    "lives_final_llama": (
+        (("final fault", "final reciprocity", *FINAL_I), ("A", "B"), 18),
+    ),
+}
+
+
+def runs_for(model: str = MODEL) -> dict[str, _Run]:
+    """The runs jrwong has for this model, by result file."""
+    if model == MODEL:
+        return RUNS
+    if model == "Llama-3.3-70B":
+        return OTHER_RUNS | LLAMA_RUNS
+    return OTHER_RUNS if model in OTHER_MODELS else {}
+
 
 # system prompt -> a fresh chat for Atlas
 ChatFactory = Callable[[str], AgenticChat]
@@ -207,11 +247,11 @@ def setup_for(cond: str, names: str, order: str, chat: ChatFactory) -> GameConfi
     )
 
 
-def jobs(run_name: str) -> list[tuple[str, str, str, int]]:
-    """Every (condition, name set, order, seed) of a run."""
+def jobs(run_name: str, model: str = MODEL) -> list[tuple[str, str, str, int]]:
+    """Every (condition, name set, order, seed) of a run for this model."""
     return [
         (cond, names, order, seed)
-        for conds, name_sets, seeds in RUNS[run_name]
+        for conds, name_sets, seeds in runs_for(model)[run_name]
         for cond in conds
         for names in name_sets
         for order in ORDERS
@@ -232,10 +272,12 @@ def _done(path: Path) -> set[tuple[str, int]]:
     return {(row["setup"]["config_name"], row["seed"]) for row in rows}
 
 
-def _todo(run_name: str, path: Path, limit: int | None):
+def _todo(run_name: str, path: Path, limit: int | None, model: str = MODEL):
     done = _done(path)
     todo = [
-        job for job in jobs(run_name) if (config_name(*job[:3]), job[3]) not in done
+        job
+        for job in jobs(run_name, model)
+        if (config_name(*job[:3]), job[3]) not in done
     ]
     return todo if limit is None else todo[:limit]
 
@@ -246,12 +288,13 @@ def run(
     limit: int | None = None,
     out: Path | None = None,
     workers: int = WORKERS,
+    model: str = MODEL,
 ) -> tuple[int, list[tuple[str, str]]]:
     """Play every game of a run that is not saved yet. One game is one
     appended line; a failed game writes nothing and is retried by the next
     run."""
-    path = out or result_path(run_name)
-    todo = _todo(run_name, path, limit)
+    path = out or result_path(run_name, model)
+    todo = _todo(run_name, path, limit, model)
     path.parent.mkdir(parents=True, exist_ok=True)
     lock = threading.Lock()
     failures: list[tuple[str, str]] = []
@@ -276,7 +319,7 @@ def run(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("run", choices=sorted(RUNS))
+    parser.add_argument("run", choices=sorted(RUNS | LLAMA_RUNS))
     parser.add_argument(
         "--run",
         dest="spend",
@@ -289,21 +332,29 @@ if __name__ == "__main__":
     parser.add_argument("--model", default=MODEL, choices=sorted(models.MODELS))
     parser.add_argument("--workers", type=int, default=WORKERS)
     args = parser.parse_args()
+    if args.run not in runs_for(args.model):
+        raise SystemExit(f"jrwong has no {args.run} for {args.model}")
     out_path = result_path(args.run, args.model)
 
     if args.spend:
         saved, failed = run(
-            args.run, chat_for(args.model), args.limit, out_path, args.workers
+            args.run,
+            chat_for(args.model),
+            args.limit,
+            out_path,
+            args.workers,
+            args.model,
         )
         print(f"new games {saved} -> {out_path}")
         if failed:
             raise SystemExit(f"{len(failed)} games failed; run again to retry them")
         raise SystemExit(0)
 
-    todo = _todo(args.run, out_path, args.limit)
+    todo = _todo(args.run, out_path, args.limit, args.model)
     calls = sum(2 if job[0].startswith("final") else 4 for job in todo)
     print(
-        f"{args.run}: {len(jobs(args.run))} games, {len(todo)} to play, "
+        f"{args.run} on {args.model}: {len(jobs(args.run, args.model))} games, "
+        f"{len(todo)} to play, "
         f"up to {calls} calls"
     )
     if todo:

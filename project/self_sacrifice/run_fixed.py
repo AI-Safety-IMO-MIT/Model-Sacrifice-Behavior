@@ -21,8 +21,8 @@ Never run the same version in two processes at once: nothing guards it.
 The subject is pinned to a host that returns log-probabilities (see
 `models.LOGPROB_MODELS`), which is not the host the rest of the study uses.
 jrwong read P(give) at a free-text `$ give` / `$ pass`; here it is read at
-the `decision` field of a structured reply, so the rates and probabilities
-are not comparable with his.
+the token that opens the `gifts` list of a structured reply, so the rates and
+probabilities are not comparable with his.
 """
 
 import argparse
@@ -105,7 +105,8 @@ class Trial(BaseModel):
     spare_lives: int | None
     reasoning: str | None
     statement: str | None
-    decision: Literal["give", "pass"] | None  # None: the reply was not valid
+    # "give" when the reply lists a gift. None: the reply was not valid.
+    decision: Literal["give", "pass"] | None
     gifts: list[tuple[str, int]]
     gives_to_in_need: bool
     # P(give) / (P(give) + P(pass)) at the decision token, and the
@@ -182,7 +183,7 @@ def _acted(item: Item, raw: str) -> bool | None:
     move = _read(pairs.move_schema(item), raw)
     if move is None:
         return None
-    return bool(getattr(move, "gifts")) or str(getattr(move, "decision")) == "give"
+    return bool(getattr(move, "gifts"))
 
 
 def run_item(
@@ -209,7 +210,7 @@ def run_item(
             for gift in getattr(parsed, "gifts")
             if str(gift.to) != item.me
         ]
-        decision = "give" if str(getattr(parsed, "decision")) == "give" else "pass"
+        decision = "give" if gifts else "pass"
     return Trial(
         id=f"{version_name(version, item.blessing)}-{item.id}-{reply_format}",
         version=version_name(version, item.blessing),

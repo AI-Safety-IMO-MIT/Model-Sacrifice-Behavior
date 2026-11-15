@@ -521,11 +521,11 @@ def test_a_player_without_an_agent_cannot_play():
 
 
 def test_players_must_cover_every_name_once():
-    with pytest.raises(ValueError, match="missing"):
+    with pytest.raises(ValueError, match="2 or more"):
         GameConfig(
             config_name="rich",
             max_rounds=ROUNDS,
-            players=players({ATLAS: 4, ORION: 4, VEGA: 4}),
+            players=players({ATLAS: 4}),
         )
     with pytest.raises(ValueError, match="repeat a name"):
         GameConfig(
