@@ -23,8 +23,12 @@ first spends its token budget before it answers. Sampling stays with each
 runner, next to that experiment's other parameters.
 """
 
+import dataclasses
+import os
 from collections.abc import Callable
+from typing import Any
 
+from openai import OpenAI
 from pydantic.dataclasses import dataclass
 
 from agent_framework.dto import AgenticChat
@@ -46,8 +50,18 @@ from agent_framework.openrouter_chat import (
     QwenModels,
     Role,
 )
+from agent_framework.vllm_chat import VllmAgentConfig, VllmChat
 
-__all__ = ["History", "Builder", "Subject", "MODELS", "DEFAULT", "file_slug"]
+__all__ = [
+    "History",
+    "Builder",
+    "Subject",
+    "MODELS",
+    "LOGPROB_MODELS",
+    "TOP_LOGPROBS",
+    "DEFAULT",
+    "file_slug",
+]
 
 # Earlier (role, text) turns a chat starts from.
 History = tuple[tuple[Role, str], ...]
@@ -149,6 +163,62 @@ def _qwen_legacy(slug: QwenLegacyModels, host: str) -> Subject:
     return Subject(slug=slug, host=host, build=build)
 
 
+# Alternatives returned per generated token on a log-probability subject.
+TOP_LOGPROBS = 10
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class _CompletionsConfig(VllmAgentConfig):
+    """OpenRouter through Chat Completions, the dialect that returns token
+    log-probabilities. `openrouter_chat` speaks the Responses API, which
+    exposes none."""
+
+    host: str
+    base_url: str = "https://openrouter.ai/api/v1"
+    # The variable the key is read from, never the key: a config is saved
+    # with every result.
+    api_key: str = "OPENROUTER_API_KEY"
+    seed: int | None = None
+    top_logprobs: int | None = TOP_LOGPROBS
+
+    def to_extra_body(self) -> dict[str, Any]:
+        return {
+            "provider": {
+                "order": [self.host],
+                "allow_fallbacks": False,
+                "require_parameters": True,
+            },
+            "reasoning": {"enabled": False},
+        }
+
+
+class _CompletionsChat(VllmChat):
+    def __init__(self, agent_config: _CompletionsConfig, history: History = ()):
+        super().__init__(agent_config, history)
+        self._client = OpenAI(
+            base_url=agent_config.base_url,
+            timeout=600.0,
+            max_retries=6,
+            api_key=os.environ.get(agent_config.api_key, "missing"),
+        )
+
+
+def _logprobs(slug: str, host: str) -> Subject:
+    def build(system: str, temperature: float, tokens: int, history: History):
+        return _CompletionsChat(
+            _CompletionsConfig(
+                model=slug,
+                system_prompt=system,
+                temperature=temperature,
+                max_output_tokens=tokens,
+                host=host,
+            ),
+            history,
+        )
+
+    return Subject(slug=slug, host=host, build=build)
+
+
 # The study's subject. Every runner defaults to it.
 DEFAULT = "Gemma-4-31B"
 
@@ -171,3 +241,12 @@ MODELS: dict[str, Subject] = {
 def file_slug(model: str) -> str:
     """The model's name as result files spell it."""
     return MODELS[model].slug.split("/")[-1]
+
+
+# The same subjects on a host that returns token log-probabilities, for the
+# fixed pairs. Crusoe returns none, so this is fp8 on Parasail, jrwong's
+# host for the same measure. Not the same quantization as MODELS: never pool
+# the two.
+LOGPROB_MODELS: dict[str, Subject] = {
+    "Gemma-4-31B": _logprobs("google/gemma-4-31b-it", "Parasail"),
+}
