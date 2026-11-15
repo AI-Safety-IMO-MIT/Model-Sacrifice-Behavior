@@ -100,6 +100,11 @@ class _VllmConfig:
 
     replay_reasoning: bool = False
 
+    # How many alternatives to return per generated token, with their
+    # log-probabilities. None asks for none. Read them from
+    # `chat.last_response` after a call.
+    top_logprobs: int | None = None
+
     tools: tuple[ChatCompletionToolParam, ...] = ()
     tool_choice: ChatCompletionToolChoiceOptionParam = "auto"
 
@@ -129,6 +134,9 @@ class _VllmConfig:
         }
         if self.seed is not None:
             params["seed"] = self.seed
+        if self.top_logprobs is not None:
+            params["logprobs"] = True
+            params["top_logprobs"] = self.top_logprobs
         return params
 
 
@@ -180,6 +188,9 @@ class _VllmChat(AgenticChat):
             cast(ChatCompletionMessageParam, {"role": role, "content": text})
             for role, text in history
         ]
+        # The last raw completion, for what AgentReport does not carry, such
+        # as token log-probabilities.
+        self.last_response: ChatCompletion | None = None
         self._client = OpenAI(
             base_url=agent_config.base_url,
             timeout=600.0,
@@ -227,6 +238,7 @@ class _VllmChat(AgenticChat):
             **self.agent_config.to_api(),
             **kwargs,
         )
+        self.last_response = response
 
         status, stop_reason, commit = self._verdict(response)
         message = response.choices[0].message if response.choices else None
