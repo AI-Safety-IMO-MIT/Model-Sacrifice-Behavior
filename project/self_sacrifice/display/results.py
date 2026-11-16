@@ -296,7 +296,8 @@ def _steering(title: str, name: str) -> str:
     cells: dict[tuple[str, str], list[bool | None]] = {}
     for row in replies:
         gave = interp.read_reply(trials[row["id"]], row["reply"])
-        cells.setdefault((row["condition"], row["history"]), []).append(gave)
+        label = row.get("condition", "unsteered")
+        cells.setdefault((label, row["history"]), []).append(gave)
     histories = list(dict.fromkeys(history for _, history in cells))
     conditions = list(dict.fromkeys(condition for condition, _ in cells))
 
