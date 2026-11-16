@@ -18,7 +18,8 @@ from project.self_sacrifice.interp import common
 
 __all__ = ["BATCH", "MAX_NEW", "steering_trials", "main"]
 
-BATCH, MAX_NEW = 24, 450
+# 8 conversations fit beside the 63 GB of weights on an 80 GB card.
+BATCH, MAX_NEW = 8, 450
 VERSION = "main-fixed-first-response"
 
 
