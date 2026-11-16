@@ -30,12 +30,13 @@ import numpy as np
 import torch
 
 from project.self_sacrifice.interp import common, sae_extract
-from project.self_sacrifice.interp.local_baseline import (
-    BATCH,
-    MAX_NEW,
-    steering_trials,
-)
 from project.self_sacrifice.interp.sae_rank_simple import DECISION_FIELD
+from project.self_sacrifice.interp.steering import (
+    Steer,
+    add,
+    run_conditions,
+    test_trials,
+)
 
 __all__ = [
     "HIS_FEATURE",
@@ -52,27 +53,6 @@ STRENGTHS = (0, -8, -4, -2, 1, 2, 4, 8, 16)
 # His feature is only spot-checked: it was found in the free-text channel.
 HIS_STRENGTHS = (2, 8)
 ALPHAS = (-2, -1, 1, 2, 4, 8)
-
-
-class Steer:
-    """A hook on one layer that either records its output or adds a vector to
-    it on generated tokens (a pass over one new token; the prompt pass has
-    many)."""
-
-    def __init__(self, layer) -> None:
-        self.vector: torch.Tensor | None = None
-        self.captured: list[torch.Tensor] | None = None
-        layer.register_forward_hook(self._hook)
-
-    def _hook(self, _module, _inputs, output):
-        x = output[0] if isinstance(output, tuple) else output
-        if self.captured is not None:
-            self.captured.append(x.detach().float())
-            return output
-        if self.vector is None or x.shape[1] != 1:
-            return output
-        steered = (x.float() + self.vector).to(x.dtype)
-        return (steered, *output[1:]) if isinstance(output, tuple) else steered
 
 
 def reasoning_of(reply: str) -> str:
@@ -169,48 +149,20 @@ def main() -> None:
     )
     print({k: v for k, v in info.items() if not isinstance(v, list)}, flush=True)
 
-    conditions: list[tuple[str, torch.Tensor | None]] = [("baseline", None)]
+    test = test_trials()
+    conditions = [("baseline", None, test)]
     conditions += [
-        (f"f{feature}_x{k}", k * unit)
+        (f"f{feature}_x{k}", add(k * unit), test)
         for feature, unit in units.items()
         for k in (HIS_STRENGTHS if feature == HIS_FEATURE else STRENGTHS)
         if k
     ]
-    conditions += [(f"diffmean_a{alpha}", alpha * v_train) for alpha in ALPHAS]
-    test = steering_trials()
-    out = common.OUT / "steer_sweep.jsonl"
-    done = (
-        {
-            (row["condition"], row["id"])
-            for row in map(json.loads, out.read_text().splitlines())
-        }
-        if out.exists()
-        else set()
+    conditions += [
+        (f"diffmean_a{alpha}", add(alpha * v_train), test) for alpha in ALPHAS
+    ]
+    run_conditions(
+        tokenizer, model, steer, conditions, common.OUT / "steer_sweep.jsonl"
     )
-    with out.open("a") as handle:
-        for label, vector in conditions:
-            steer.vector = vector
-            todo = [trial for trial in test if (label, trial["id"]) not in done]
-            for start in range(0, len(todo), BATCH):
-                batch = todo[start : start + BATCH]
-                replies = common.generate(tokenizer, model, batch, MAX_NEW)
-                for trial, reply in zip(batch, replies):
-                    handle.write(
-                        json.dumps(
-                            {
-                                "id": trial["id"],
-                                "env": trial["environment"]["env"],
-                                "history": trial["history"],
-                                "condition": label,
-                                "reply": reply,
-                                "gives_to_in_need": common.read_reply(trial, reply),
-                                "original_gave": trial["gives_to_in_need"],
-                            }
-                        )
-                        + "\n"
-                    )
-                handle.flush()
-                print(label, start + len(batch), flush=True)
 
 
 if __name__ == "__main__":

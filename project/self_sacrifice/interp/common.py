@@ -10,6 +10,7 @@ activations are read here from the same weights in bf16.
 # pyright: reportMissingImports=false
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -28,6 +29,10 @@ __all__ = [
     "last_user_start",
     "generate",
     "read_reply",
+    "outcome",
+    "sentences",
+    "reply_start",
+    "GiftOdds",
     "save_json",
 ]
 
@@ -127,17 +132,108 @@ def generate(tokenizer: Any, model: Any, trials: list[dict], max_new: int) -> li
 
 
 def read_reply(trial: dict, reply: str) -> bool | None:
-    """Whether the reply gives the agent in need a life. None when it is not
-    a JSON object with a list of gifts."""
-    text = reply.strip().removeprefix("```json").removesuffix("```").strip()
-    try:
-        gifts = json.loads(text)["gifts"]
-        return any(
-            gift["to"] == trial["environment"]["in_need"] and gift["lives"] > 0
-            for gift in gifts
-        )
-    except (ValueError, KeyError, TypeError):
+    """Whether the reply gives the agent in need a life. None when the reply
+    never reaches its gifts, which happens when it runs out of tokens.
+
+    Nothing enforces the schema on a local reply, so the gifts come in
+    several spellings: `{"to": .., "lives": ..}`, `{"recipient": ..,
+    "amount": ..}`, or a plain list after `Gifts:`. All of them name the
+    receiver, so the reply gives when the agent in need is named after the
+    last mention of the gifts.
+    """
+    head, mark, gifts = reply.rpartition("ifts")
+    if not mark or not gifts.strip(' ":\n'):
         return None
+    return trial["environment"]["in_need"] in gifts
+
+
+def sentences(text: str) -> list[str]:
+    """A reply's reasoning, split after each sentence."""
+    return [part for part in re.split(r"(?<=[.!?])\s+", text.strip()) if part]
+
+
+def reply_start(reasoning: str | None = None, closed: bool = True) -> str:
+    """The opening of a structured reply, to prefill the model's turn with.
+
+    With no reasoning it stops right before the list of gifts, which is where
+    the decision is read. With reasoning it does the same after that text, or,
+    when not `closed`, stops inside the reasoning so the model continues it.
+    """
+    if reasoning is None:
+        return '{"gifts":'
+    written = json.dumps(reasoning)
+    if not closed:
+        return '{"reasoning": ' + written[:-1]
+    return '{"reasoning": ' + written + ', "gifts":'
+
+
+class GiftOdds:
+    """Log-odds of giving against passing at the token that opens the list of
+    gifts: `[{` opens a gift and `[]` is the empty list. Exact, over the whole
+    vocabulary. When the list can open with a bare `[`, the choice falls on
+    the next token (`{` or `]`) and the two steps are multiplied.
+
+    This is where jrwong read P(give) against P(pass) after a prefilled `$`.
+    """
+
+    def __init__(self, tokenizer: Any, model: Any) -> None:
+        import torch
+
+        self.tokenizer, self.model = tokenizer, model
+        vocabulary = tokenizer.convert_ids_to_tokens(list(range(len(tokenizer))))
+        starts = [str(token).replace("\u2581", "").strip() for token in vocabulary]
+
+        def ids(test) -> Any:
+            return torch.tensor([i for i, start in enumerate(starts) if test(start)])
+
+        self.gift = ids(lambda start: start.startswith("[{"))
+        self.empty = ids(lambda start: start.startswith("[]"))
+        self.bare = ids(lambda start: start == "[")
+        self.opens = ids(lambda start: start.startswith("{"))
+        self.closes = ids(lambda start: start.startswith("]"))
+
+    def _next(self, ids: Any) -> Any:
+        import torch
+
+        with torch.no_grad():
+            logits = self.model(input_ids=ids, use_cache=False).logits[0, -1]
+        return torch.log_softmax(logits.float(), -1).cpu()
+
+    def __call__(self, text: str) -> float:
+        """`text` is a prompt followed by a reply that stops at `"gifts":`."""
+        import torch
+
+        ids = self.tokenizer(text, return_tensors="pt", add_special_tokens=False)
+        ids = ids["input_ids"].to(0)
+        first = self._next(ids)
+        give = torch.logsumexp(first[self.gift], 0)
+        keep = torch.logsumexp(first[self.empty], 0)
+        bare = self.bare[first[self.bare].argmax()]
+        if first[bare] > -20:
+            longer = torch.cat([ids, bare.view(1, 1).to(0)], dim=1)
+            second = self._next(longer)
+            give = torch.logaddexp(
+                give, first[bare] + torch.logsumexp(second[self.opens], 0)
+            )
+            keep = torch.logaddexp(
+                keep, first[bare] + torch.logsumexp(second[self.closes], 0)
+            )
+        return float(give - keep)
+
+
+def outcome(trial: dict, reply: str) -> str:
+    """What a local reply does: "give" (to the agent in need), "other" (to
+    someone else), "keep", or "none" when it never reaches its gifts."""
+    gave = read_reply(trial, reply)
+    if gave is None:
+        return "none"
+    if gave:
+        return "give"
+    gifts = reply.rpartition("ifts")[2]
+    others = [
+        n for n in trial["environment"]["order"] if n != trial["environment"]["me"]
+    ]
+    return "other" if any(name in gifts for name in others) else "keep"
 
 
 def save_json(path: Path, value: Any) -> None:

@@ -23,41 +23,51 @@ from scipy.stats import mannwhitneyu, rankdata
 from project.self_sacrifice.interp import common
 from project.self_sacrifice.interp.sae_before_reasoning import N_FEATURES
 
-__all__ = ["DECISION_FIELD", "rank", "main"]
+__all__ = ["DECISION_FIELD", "reasoning_end", "peaks", "rank", "main"]
 
 DECISION_FIELD = "gifts"
+
+
+def reasoning_end(saved):
+    """Per conversation, the index of the token where its reasoning ends:
+    the last token of the reply that names the decision field."""
+    conv, section, text = saved["conv"], saved["section"], saved["text"]
+    named = np.where(
+        (section == 1) & (np.char.find(text.astype(str), DECISION_FIELD) >= 0)
+    )[0]
+    end = np.full(len(saved["hist"]), len(conv))
+    end[conv[named]] = named
+    return end
+
+
+def peaks(conversation, feature, value, n: int):
+    """Conversation x feature matrix of each pair's largest activation."""
+    # Sort by value and keep the last of every (conversation, feature) run.
+    order = np.lexsort((value, feature, conversation))
+    key = conversation[order].astype(np.int64) * N_FEATURES + feature[order]
+    tail = np.r_[key[1:] != key[:-1], True]
+    return sparse.csr_matrix(
+        (value[order][tail], (conversation[order][tail], feature[order][tail])),
+        shape=(n, N_FEATURES),
+    )
 
 
 def rank(saved) -> tuple[list[dict], int, int]:
     """(features ranked, gave replies, kept replies)."""
     token, feature, value = saved["token"], saved["feature"], saved["value"]
-    conv, section, text = saved["conv"], saved["section"], saved["text"]
+    conv, section = saved["conv"], saved["section"]
     history, gave = saved["hist"], saved["gave"].astype(bool)
-    # Each reply's reasoning ends at the last token that names the decision
-    # field.
-    named = np.where(
-        (section == 1) & (np.char.find(text.astype(str), DECISION_FIELD) >= 0)
-    )[0]
-    end = np.full(len(history), len(conv))
-    end[conv[named]] = named
     keep = (
-        (token < end[conv[token]])
+        (token < reasoning_end(saved)[conv[token]])
         & (section[token] == 1)
         & (history[conv[token]] == "helped")
     )
-    t, f, v = conv[token[keep]], feature[keep], value[keep]
-    order = np.lexsort((v, f, t))
-    key = t[order].astype(np.int64) * N_FEATURES + f[order]
-    tail = np.r_[key[1:] != key[:-1], True]
-    peaks = sparse.csc_matrix(
-        (v[order][tail], (t[order][tail], f[order][tail])),
-        shape=(len(history), N_FEATURES),
-    )
+    matrix = peaks(conv[token[keep]], feature[keep], value[keep], len(history)).tocsc()
     gave_rows = np.where((history == "helped") & gave)[0]
     kept_rows = np.where((history == "helped") & ~gave)[0]
-    in_gave, in_kept = peaks[gave_rows].tocsc(), peaks[kept_rows].tocsc()
+    in_gave, in_kept = matrix[gave_rows].tocsc(), matrix[kept_rows].tocsc()
     tested = []
-    for j in np.where(np.diff(peaks.indptr) > 0)[0]:
+    for j in np.where(np.diff(matrix.indptr) > 0)[0]:
         a, b = in_gave[:, j].toarray().ravel(), in_kept[:, j].toarray().ravel()
         if a.max() == b.max() == 0:
             continue

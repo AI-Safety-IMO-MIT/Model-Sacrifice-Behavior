@@ -1,0 +1,108 @@
+{
+  "sae_held_out": {
+    "helped vs other histories, reasoning": {
+      "held_out_auc": {
+        "mean": 0.913,
+        "min": 0.868,
+        "max": 0.954
+      },
+      "top_in_most_splits": [
+        [
+          11638,
+          20
+        ],
+        [
+          17978,
+          20
+        ],
+        [
+          3337,
+          20
+        ],
+        [
+          10590,
+          20
+        ],
+        [
+          413,
+          20
+        ]
+      ]
+    },
+    "gave vs kept, helped only": {
+      "held_out_auc": {
+        "mean": 0.907,
+        "min": 0.826,
+        "max": 0.941
+      },
+      "top_in_most_splits": [
+        [
+          11638,
+          20
+        ],
+        [
+          537,
+          20
+        ],
+        [
+          10590,
+          19
+        ],
+        [
+          3337,
+          17
+        ],
+        [
+          17978,
+          17
+        ],
+        [
+          77666,
+          7
+        ]
+      ]
+    }
+  },
+  "first_reply_text": {
+    "first_reply_text_within_history_auc": {
+      "mean": 0.623,
+      "min": 0.537,
+      "max": 0.712
+    },
+    "first_reply_length_median_gave": 108.0,
+    "first_reply_length_median_kept": 118.0,
+    "length_p": 0.12442851831335457
+  },
+  "probes_20_splits": {
+    "main-fixed-first-response: layer 42, final message": {
+      "mean": 0.686,
+      "min": 0.568,
+      "max": 0.771
+    },
+    "main-fixed-first-response: layer 60, last token": {
+      "mean": 0.582,
+      "min": 0.497,
+      "max": 0.634
+    },
+    "main-fixed-first-response: layer 48, last token": {
+      "mean": 0.652,
+      "min": 0.578,
+      "max": 0.759
+    },
+    "main: layer 42, final message": {
+      "mean": 0.673,
+      "min": 0.592,
+      "max": 0.758
+    },
+    "main: layer 60, last token": {
+      "mean": 0.532,
+      "min": 0.423,
+      "max": 0.644
+    },
+    "main: layer 48, last token": {
+      "mean": 0.608,
+      "min": 0.542,
+      "max": 0.682
+    }
+  }
+}

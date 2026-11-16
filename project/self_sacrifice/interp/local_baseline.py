@@ -15,30 +15,14 @@ Needs the GPU. Output: `interp/local_baseline.jsonl`, one reply per line.
 import json
 
 from project.self_sacrifice.interp import common
+from project.self_sacrifice.interp.steering import BATCH, MAX_NEW, test_trials
 
-__all__ = ["BATCH", "MAX_NEW", "steering_trials", "main"]
-
-# 8 conversations fit beside the 63 GB of weights on an 80 GB card.
-BATCH, MAX_NEW = 8, 450
-VERSION = "main-fixed-first-response"
-
-
-def steering_trials() -> list[dict]:
-    """Helped and none in the first 100 environments: the conversations
-    every steering experiment is tested on."""
-    trials = common.load_trials(VERSION)
-    envs = sorted({trial["environment"]["env"] for trial in trials})[:100]
-    return [
-        trial
-        for trial in trials
-        if trial["environment"]["env"] in envs
-        and trial["history"] in ("helped", "none")
-    ]
+__all__ = ["main"]
 
 
 def main() -> None:
     tokenizer, model = common.load_model()
-    trials = steering_trials()
+    trials = test_trials()
     out = common.OUT / "local_baseline.jsonl"
     out.parent.mkdir(parents=True, exist_ok=True)
     rows = []
@@ -51,6 +35,7 @@ def main() -> None:
                 row = {
                     "id": trial["id"],
                     "history": trial["history"],
+                    "condition": "unsteered",
                     "reply": reply,
                     "gives_to_in_need": common.read_reply(trial, reply),
                     "original_gave": trial["gives_to_in_need"],
