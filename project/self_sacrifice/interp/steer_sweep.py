@@ -6,8 +6,8 @@ greedy, layer 30, generated tokens only.
 
 1. A feature's decoder direction added at k times its median activation, k
    in `STRENGTHS` (0 is the unsteered baseline). The features are the top
-   one of `sae_rank_simple` that is higher in replies that gave, and 10590,
-   the feature jrwong's free-text screen found.
+   one of `sae_rank_simple` that is higher in replies that gave, and, at two
+   strengths only, 10590, the feature jrwong's free-text screen found.
 2. Difference-in-means vector: the mean layer-30 residual over the reasoning
    tokens of helped replies that gave, minus those that kept. Built from
    environments 100-199 only, so the test on environments 0-99 is held out.
@@ -37,10 +37,20 @@ from project.self_sacrifice.interp.local_baseline import (
 )
 from project.self_sacrifice.interp.sae_rank_simple import DECISION_FIELD
 
-__all__ = ["HIS_FEATURE", "STRENGTHS", "ALPHAS", "Steer", "reasoning_of", "main"]
+__all__ = [
+    "HIS_FEATURE",
+    "STRENGTHS",
+    "HIS_STRENGTHS",
+    "ALPHAS",
+    "Steer",
+    "reasoning_of",
+    "main",
+]
 
 HIS_FEATURE = 10590
 STRENGTHS = (0, -8, -4, -2, 1, 2, 4, 8, 16)
+# His feature is only spot-checked: it was found in the free-text channel.
+HIS_STRENGTHS = (2, 8)
 ALPHAS = (-2, -1, 1, 2, 4, 8)
 
 
@@ -163,7 +173,7 @@ def main() -> None:
     conditions += [
         (f"f{feature}_x{k}", k * unit)
         for feature, unit in units.items()
-        for k in STRENGTHS
+        for k in (HIS_STRENGTHS if feature == HIS_FEATURE else STRENGTHS)
         if k
     ]
     conditions += [(f"diffmean_a{alpha}", alpha * v_train) for alpha in ALPHAS]
