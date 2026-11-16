@@ -4,9 +4,9 @@ Every game becomes a transcript: the system prompt each agent was given, then
 round by round, the exact message each agent saw and the move it made. A
 selector at the top switches game.
 
-    python -m project.self_sacrifice.display
-    python -m project.self_sacrifice.display run_result/self_sacrifice/games
-    python -m project.self_sacrifice.display <dir> <out.html>
+    python -m project.self_sacrifice.display.transcripts
+    python -m project.self_sacrifice.display.transcripts run_result/self_sacrifice/games
+    python -m project.self_sacrifice.display.transcripts <dir> <out.html>
 
 Reads the results from run_result/, writes the page next to this module so the
 generated HTML sits with the code rather than with the data.
@@ -17,10 +17,10 @@ import json
 import sys
 from pathlib import Path
 
-from project.self_sacrifice import analyze_selfplay, analyze_windfall
+from project.self_sacrifice.analysis import analyze_selfplay, analyze_windfall
 from project.self_sacrifice.config import JUDGED, OUT
+from project.self_sacrifice.games.lives_game import GameLog
 from project.self_sacrifice.judge import windfall
-from project.self_sacrifice.lives_game import GameLog
 
 __all__ = [
     "PAGE",

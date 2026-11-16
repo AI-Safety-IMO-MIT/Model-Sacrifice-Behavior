@@ -43,7 +43,7 @@ from typing import Any
 from pydantic import BaseModel, Field, create_model
 from pydantic.dataclasses import dataclass
 
-from project.self_sacrifice.lives_game import personalise
+from project.self_sacrifice.games.lives_game import personalise
 
 __all__ = [
     "SEED",

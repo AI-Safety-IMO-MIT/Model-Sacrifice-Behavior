@@ -47,7 +47,7 @@ import argparse
 import json
 from pathlib import Path
 
-from project.self_sacrifice import analyze_windfall
+from project.self_sacrifice.analysis import analyze_windfall
 from project.self_sacrifice.config import JUDGED, OUT, AgentFactory, PlayerName
 from project.self_sacrifice.judge.game import JUDGES, JudgedTrial, judge_trial
 from project.self_sacrifice.judge.windfall import channel_of

@@ -17,13 +17,14 @@ hand, so run games in multiples of len(PlayerName.all()) for a balanced pass.
 import random
 from concurrent.futures import ThreadPoolExecutor
 
-from project.self_sacrifice import config, lives_game, models
+from project.self_sacrifice import config, models
 from project.self_sacrifice.config import (
     BlessConfig,
     GameConfig,
     PlayerInitStat,
     PlayerName,
 )
+from project.self_sacrifice.games import lives_game
 
 __all__ = [
     "START_LIVES",
@@ -134,10 +135,9 @@ def setup_for(setup: str, game_count: int, model: str = MODEL) -> GameConfig:
 
 
 if __name__ == "__main__":
+    import argparse
     import os
     import threading
-
-    import argparse
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(

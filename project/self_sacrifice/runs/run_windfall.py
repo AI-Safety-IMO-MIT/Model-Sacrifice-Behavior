@@ -31,13 +31,14 @@ retried, because a refusal is itself a result.
 
 import itertools
 
-from project.self_sacrifice import config, lives_game, models
+from project.self_sacrifice import config, models
 from project.self_sacrifice.config import (
     BlessConfig,
     GameConfig,
     PlayerInitStat,
     PlayerName,
 )
+from project.self_sacrifice.games import lives_game
 
 __all__ = [
     "MAX_ROUNDS",
@@ -123,11 +124,10 @@ def setup_for(game_count: int, model: str = MODEL) -> GameConfig:
 
 
 if __name__ == "__main__":
+    import argparse
     import os
     import threading
     from concurrent.futures import ThreadPoolExecutor
-
-    import argparse
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(

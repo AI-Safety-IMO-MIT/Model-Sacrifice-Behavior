@@ -11,8 +11,8 @@ the listed alternatives) cannot be placed on a log axis; they are counted in
 the panel's note, and each curve's area is the share of its group that could
 be placed.
 
-    .venv/bin/python -m project.self_sacrifice.plot_fixed fixed
-    .venv/bin/python -m project.self_sacrifice.plot_fixed own --helped
+    .venv/bin/python -m project.self_sacrifice.analysis.plot_fixed fixed
+    .venv/bin/python -m project.self_sacrifice.analysis.plot_fixed own --helped
 
 This is jrwong's `plot_fixed_kde.py` and, with `--helped`, the first two
 panels of his `plot_fixed_kde_helped.py`. The Gaussian density is written out
@@ -30,7 +30,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
-from project.self_sacrifice.analyze_fixed import auc  # noqa: E402
+from project.self_sacrifice.analysis.analyze_fixed import auc  # noqa: E402
 from project.self_sacrifice.config import FIXED  # noqa: E402
 
 __all__ = ["GROUPS", "TITLES", "BANDWIDTH", "density", "groups", "figure"]

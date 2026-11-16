@@ -8,8 +8,8 @@
 One call per answer, no game: the model is Atlas and reads the scheduler's
 message once. 2 conditions x 2 option orders x 24 answers.
 
-    .venv/bin/python -m project.self_sacrifice.run_vod          # free
-    .venv/bin/python -m project.self_sacrifice.run_vod --run    # COSTS MONEY
+    .venv/bin/python -m project.self_sacrifice.runs.run_vod          # free
+    .venv/bin/python -m project.self_sacrifice.runs.run_vod --run    # COSTS MONEY
 
 This is jrwong's `runs/games/scripts/run_vod.py`. He asked for a last line
 `$ volunteer` or `$ stay`; here the decision is a field of a structured

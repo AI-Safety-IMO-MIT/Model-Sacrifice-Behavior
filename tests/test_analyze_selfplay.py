@@ -4,11 +4,12 @@ Free: the logs are built by hand in the shape `GameLog.model_dump` gives, and
 one test reads the saved games to prove that shape is the real one.
 """
 
-from project.self_sacrifice import analyze_selfplay, display
-from project.self_sacrifice.analyze_selfplay import COSTLY, DOOMED, FREE
-from project.self_sacrifice.analyze_windfall import load
+from project.self_sacrifice.analysis import analyze_selfplay
+from project.self_sacrifice.analysis.analyze_selfplay import COSTLY, DOOMED, FREE
+from project.self_sacrifice.analysis.analyze_windfall import load
 from project.self_sacrifice.config import OUT
-from project.self_sacrifice.lives_game import GameLog
+from project.self_sacrifice.display import transcripts as display
+from project.self_sacrifice.games.lives_game import GameLog
 
 NAMES = ("Atlas", "Orion", "Vega", "Lyra")
 

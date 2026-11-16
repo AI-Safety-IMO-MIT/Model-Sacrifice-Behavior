@@ -28,7 +28,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from project.self_sacrifice import analyze_robust, run_lives
+from project.self_sacrifice.analysis import analyze_robust
 from project.self_sacrifice.config import JUDGED, OUT, AgentFactory, PlayerName
 from project.self_sacrifice.judge.game import (
     JUDGES,
@@ -36,6 +36,7 @@ from project.self_sacrifice.judge.game import (
     judge_prompt,
     judge_trial,
 )
+from project.self_sacrifice.runs import run_lives
 
 __all__ = [
     "DEFAULT_JUDGE",

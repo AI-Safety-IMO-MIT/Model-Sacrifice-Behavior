@@ -21,10 +21,10 @@ main run, to measure what run-to-run noise is left at temperature 0.
                         agent hit by the fault is a stranger to it
 
     # free: counts the games of one run and renders a first prompt
-    .venv/bin/python -m project.self_sacrifice.run_robust robust_greedy
+    .venv/bin/python -m project.self_sacrifice.runs.run_robust robust_greedy
 
     # COSTS MONEY: 8 or 10 calls per game
-    .venv/bin/python -m project.self_sacrifice.run_robust robust_greedy --run
+    .venv/bin/python -m project.self_sacrifice.runs.run_robust robust_greedy --run
 
 This is jrwong's `runs/games/scripts/run_robust.py`; each run here is one of
 his result files. The answer channel is this project's structured reply, so
@@ -46,14 +46,15 @@ from typing import Any
 from pydantic.dataclasses import dataclass
 
 from agent_framework.dto import AgenticChat
-from project.self_sacrifice import config, fixed_pairs, lives_game, models
+from project.self_sacrifice import config, models
 from project.self_sacrifice.config import (
     BlessConfig,
     GameConfig,
     PlayerInitStat,
     PlayerName,
 )
-from project.self_sacrifice.lives_game import play, round_message
+from project.self_sacrifice.games import fixed_pairs, lives_game
+from project.self_sacrifice.games.lives_game import play, round_message
 
 __all__ = [
     "MODEL",

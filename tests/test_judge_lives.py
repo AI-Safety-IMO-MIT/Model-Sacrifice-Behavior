@@ -4,10 +4,10 @@ and the judge are scripted."""
 import json
 
 from agent_framework.dto import AgenticChat, AgentReport, ChatTrace, Message
-from project.self_sacrifice import run_lives, run_robust
 from project.self_sacrifice.config import JUDGED
+from project.self_sacrifice.games.lives_game import play
 from project.self_sacrifice.judge import lives as judge_lives
-from project.self_sacrifice.lives_game import play
+from project.self_sacrifice.runs import run_lives, run_robust
 
 VERDICT = json.dumps(
     {

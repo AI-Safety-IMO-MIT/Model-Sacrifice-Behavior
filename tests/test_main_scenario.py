@@ -12,9 +12,10 @@ import pytest
 from openai.lib._pydantic import to_strict_json_schema
 
 from agent_framework.dto import AgenticChat, AgentReport, ChatTrace, Message
-from project.self_sacrifice import analyze_main, run_main
-from project.self_sacrifice import main_scenario as scenario
+from project.self_sacrifice.analysis import analyze_main
 from project.self_sacrifice.config import REPO_ROOT
+from project.self_sacrifice.games import main_scenario as scenario
+from project.self_sacrifice.runs import run_main
 
 ARCHIVE = REPO_ROOT / "self_sacrifice" / "runs" / "main"
 

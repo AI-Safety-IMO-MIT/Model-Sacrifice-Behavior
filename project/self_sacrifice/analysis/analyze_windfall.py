@@ -37,7 +37,7 @@ from math import comb
 from pathlib import Path
 
 from project.self_sacrifice.config import OUT, PlayerName
-from project.self_sacrifice.lives_game import GameLog
+from project.self_sacrifice.games.lives_game import GameLog
 
 __all__ = [
     "Roles",

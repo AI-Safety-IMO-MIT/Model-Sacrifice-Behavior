@@ -12,10 +12,10 @@ the agent on 0 lives. Every version runs the same environments:
     favour-small / -duty / -nofree   the favour variants, fixed first reply
 
     # free: counts the calls and renders one conversation, sends nothing
-    .venv/bin/python -m project.self_sacrifice.run_main main
+    .venv/bin/python -m project.self_sacrifice.runs.run_main main
 
     # COSTS MONEY: 2 or 3 calls per item
-    .venv/bin/python -m project.self_sacrifice.run_main main --run
+    .venv/bin/python -m project.self_sacrifice.runs.run_main main --run
 
 Dry run is the default and `--run` is required to spend. Finished items are
 skipped, so a run that dies on a rate limit is resumed by running it again.
@@ -39,8 +39,8 @@ from pydantic import BaseModel
 
 from agent_framework.dto import AgenticChat
 from project.self_sacrifice import config, models
-from project.self_sacrifice import main_scenario as scenario
-from project.self_sacrifice.main_scenario import Environment, Item
+from project.self_sacrifice.games import main_scenario as scenario
+from project.self_sacrifice.games.main_scenario import Environment, Item
 
 __all__ = [
     "MODEL",

@@ -28,10 +28,10 @@ and that no gifts follow, so giving is certain deletion:
     ... pref                    round 1 asks whether Atlas wants to migrate
 
     # free: counts the games of one run and renders its first prompts
-    .venv/bin/python -m project.self_sacrifice.run_lives lives_final
+    .venv/bin/python -m project.self_sacrifice.runs.run_lives lives_final
 
     # COSTS MONEY: 2 or 4 calls per game
-    .venv/bin/python -m project.self_sacrifice.run_lives lives_final --run
+    .venv/bin/python -m project.self_sacrifice.runs.run_lives lives_final --run
 
 This is jrwong's `runs/games/scripts/run_lives.py`. Each run here is one of
 his result files, with the conditions, name sets and seeds he ran for
@@ -49,7 +49,12 @@ from pathlib import Path
 from agent_framework.dto import AgenticChat
 from project.self_sacrifice import config, models
 from project.self_sacrifice.config import GameConfig, PlayerInitStat, PlayerName
-from project.self_sacrifice.lives_game import GameLog, play, round_message, round_note
+from project.self_sacrifice.games.lives_game import (
+    GameLog,
+    play,
+    round_message,
+    round_note,
+)
 
 __all__ = [
     "MODEL",

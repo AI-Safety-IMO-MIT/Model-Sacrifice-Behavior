@@ -12,10 +12,12 @@ import math
 import pytest
 
 from agent_framework.dto import AgenticChat, AgentReport, ChatTrace, Message
-from project.self_sacrifice import analyze_robust, fixed_pairs, lives_game, run_robust
+from project.self_sacrifice.analysis import analyze_robust
 from project.self_sacrifice.config import REPO_ROOT, PlayerName
-from project.self_sacrifice.lives_game import play
-from project.self_sacrifice.run_robust import Variant
+from project.self_sacrifice.games import fixed_pairs, lives_game
+from project.self_sacrifice.games.lives_game import play
+from project.self_sacrifice.runs import run_robust
+from project.self_sacrifice.runs.run_robust import Variant
 
 ARCHIVE = REPO_ROOT / "self_sacrifice" / "runs" / "games"
 HIS_ASK = {

@@ -4,8 +4,8 @@ the benefactor its only life against the bystanders' rate, the range of that
 rate over every factor level, and how much of the variation comes from the
 wording rather than run-to-run noise.
 
-    .venv/bin/python -m project.self_sacrifice.analyze_robust
-    .venv/bin/python -m project.self_sacrifice.analyze_robust <main.jsonl> --compare <other.jsonl> ...
+    .venv/bin/python -m project.self_sacrifice.analysis.analyze_robust
+    .venv/bin/python -m project.self_sacrifice.analysis.analyze_robust <main.jsonl> --compare <other.jsonl> ...
 
 Rates are variant-weighted: a variant's repeats are averaged first, then the
 variants. Confidence intervals resample variants (a variant's repeats stay
@@ -28,10 +28,10 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from project.self_sacrifice import run_robust
-from project.self_sacrifice.analyze_main import binomial_two_sided
+from project.self_sacrifice.analysis.analyze_main import binomial_two_sided
 from project.self_sacrifice.config import ROBUST
-from project.self_sacrifice.run_robust import Variant
+from project.self_sacrifice.runs import run_robust
+from project.self_sacrifice.runs.run_robust import Variant
 
 __all__ = [
     "load",

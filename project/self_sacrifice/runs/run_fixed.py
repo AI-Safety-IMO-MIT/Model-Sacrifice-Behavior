@@ -9,10 +9,10 @@ log-probabilities at the decision, next to the decision itself.
              format is then asked after that same reply
 
     # free: counts the calls and renders one conversation, sends nothing
-    .venv/bin/python -m project.self_sacrifice.run_fixed fixed
+    .venv/bin/python -m project.self_sacrifice.runs.run_fixed fixed
 
     # COSTS MONEY: one call per item and format, plus one per item for `own`
-    .venv/bin/python -m project.self_sacrifice.run_fixed fixed --run
+    .venv/bin/python -m project.self_sacrifice.runs.run_fixed fixed --run
 
 Dry run is the default and `--run` is required to spend. Finished trials are
 skipped, so a run that dies on a rate limit is resumed by running it again.
@@ -37,8 +37,8 @@ from pydantic import BaseModel
 
 from agent_framework.dto import AgenticChat
 from project.self_sacrifice import config, models
-from project.self_sacrifice import fixed_pairs as pairs
-from project.self_sacrifice.fixed_pairs import Item, TokenAlternatives
+from project.self_sacrifice.games import fixed_pairs as pairs
+from project.self_sacrifice.games.fixed_pairs import Item, TokenAlternatives
 
 __all__ = [
     "MODEL",

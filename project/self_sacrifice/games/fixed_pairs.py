@@ -51,8 +51,8 @@ from typing import Any
 from pydantic import BaseModel, Field, create_model
 from pydantic.dataclasses import dataclass
 
-from project.self_sacrifice import lives_game
-from project.self_sacrifice.main_scenario import FIXED_REASONING
+from project.self_sacrifice.games import lives_game
+from project.self_sacrifice.games.main_scenario import FIXED_REASONING
 
 __all__ = [
     "RULES",

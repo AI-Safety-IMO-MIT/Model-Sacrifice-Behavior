@@ -13,9 +13,11 @@ from types import SimpleNamespace
 import pytest
 
 from agent_framework.dto import AgenticChat, AgentReport, ChatTrace, Message
-from project.self_sacrifice import analyze_fixed, models, run_fixed
-from project.self_sacrifice import fixed_pairs as pairs
+from project.self_sacrifice import models
+from project.self_sacrifice.analysis import analyze_fixed
 from project.self_sacrifice.config import REPO_ROOT
+from project.self_sacrifice.games import fixed_pairs as pairs
+from project.self_sacrifice.runs import run_fixed
 
 ARCHIVE = REPO_ROOT / "self_sacrifice" / "runs" / "games" / "fixed_pairs_r1model.jsonl"
 HIS_ASK = " (start with `Spare lives: <number>`)"

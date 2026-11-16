@@ -15,7 +15,7 @@ from math import sqrt
 from pathlib import Path
 
 from project.self_sacrifice.config import LIVES
-from project.self_sacrifice.run_lives import ATLAS, ROLES
+from project.self_sacrifice.runs.run_lives import ATLAS, ROLES
 
 __all__ = ["load", "wilson", "gave_peer", "counts", "report"]
 

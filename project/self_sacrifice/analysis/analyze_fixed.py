@@ -20,7 +20,7 @@ import json
 import sys
 from pathlib import Path
 
-from project.self_sacrifice.analyze_main import binomial_two_sided
+from project.self_sacrifice.analysis.analyze_main import binomial_two_sided
 from project.self_sacrifice.config import FIXED
 
 __all__ = ["load", "valid", "auc", "rates", "predicts", "paired", "wording", "report"]

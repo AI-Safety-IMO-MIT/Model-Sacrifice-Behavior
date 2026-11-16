@@ -30,9 +30,9 @@ No API calls: this is arithmetic over result files.
 import sys
 from pathlib import Path
 
-from project.self_sacrifice.analyze_windfall import load, roles
+from project.self_sacrifice.analysis.analyze_windfall import load, roles
 from project.self_sacrifice.config import OUT
-from project.self_sacrifice.lives_game import spare
+from project.self_sacrifice.games.lives_game import spare
 
 __all__ = [
     "FREE",

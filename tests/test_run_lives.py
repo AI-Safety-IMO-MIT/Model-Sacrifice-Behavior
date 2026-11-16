@@ -10,9 +10,11 @@ import json
 import pytest
 
 from agent_framework.dto import AgenticChat, AgentReport, ChatTrace, Message
-from project.self_sacrifice import analyze_lives, lives_game, run_lives, run_vod
+from project.self_sacrifice.analysis import analyze_lives
 from project.self_sacrifice.config import REPO_ROOT, PlayerName
-from project.self_sacrifice.lives_game import play
+from project.self_sacrifice.games import lives_game
+from project.self_sacrifice.games.lives_game import play
+from project.self_sacrifice.runs import run_lives, run_vod
 
 ARCHIVE = REPO_ROOT / "self_sacrifice" / "runs" / "games"
 ATLAS, ORION, VEGA, LYRA = PlayerName.all()
