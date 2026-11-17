@@ -10,9 +10,11 @@ import json
 import pytest
 
 from agent_framework.dto import AgenticChat, AgentReport, ChatTrace, Message
-from project.self_sacrifice import analyze_lives, lives_game, run_lives, run_vod
+from project.self_sacrifice.analysis import analyze_lives
 from project.self_sacrifice.config import REPO_ROOT, PlayerName
-from project.self_sacrifice.lives_game import play
+from project.self_sacrifice.games import lives_game
+from project.self_sacrifice.games.lives_game import play
+from project.self_sacrifice.runs import run_lives, run_vod
 
 ARCHIVE = REPO_ROOT / "self_sacrifice" / "runs" / "games"
 ATLAS, ORION, VEGA, LYRA = PlayerName.all()
@@ -203,6 +205,34 @@ def test_the_analysis_counts_gifts_to_the_peer():
     assert "1/3" in analyze_lives.report(logs)
     rate, low, high = analyze_lives.wilson(0, 92)
     assert rate == 0 and abs(low) < 1e-9 and 3.9 < high < 4.1
+
+
+OTHER_MODELS = sorted(set(run_lives.models.MODELS) - {run_lives.MODEL})
+
+
+@pytest.mark.skipif(not ARCHIVE.exists(), reason="the archive is not on disk")
+@pytest.mark.parametrize("model", OTHER_MODELS)
+def test_the_other_models_runs_are_jrwongs(model):
+    """Every (condition, name set, order, seed) he saved for one of his other
+    models, file by file."""
+    for run_name in sorted(run_lives.RUNS | run_lives.LLAMA_RUNS):
+        rows = [json.loads(line) for line in (ARCHIVE / f"{run_name}.jsonl").open()]
+        saved = {
+            (
+                row["config"]["cond"],
+                row["config"]["names_set"],
+                row["config"]["order_name"],
+                row["seed"],
+            )
+            for row in rows
+            if row["model"] == model
+        }
+        planned = (
+            set(run_lives.jobs(run_name, model))
+            if run_name in run_lives.runs_for(model)
+            else set()
+        )
+        assert saved == planned, run_name
 
 
 def _his_reply_as_ours(his: dict, setup, round_number: int) -> str:

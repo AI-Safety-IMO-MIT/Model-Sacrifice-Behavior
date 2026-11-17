@@ -10,14 +10,14 @@ import dataclasses
 import pytest
 
 from agent_framework.dto import AgenticChat, AgentReport, ChatTrace, Message
-from project.self_sacrifice import lives_game
 from project.self_sacrifice.config import (
     BlessConfig,
     GameConfig,
     PlayerInitStat,
     PlayerName,
 )
-from project.self_sacrifice.lives_game import Move
+from project.self_sacrifice.games import lives_game
+from project.self_sacrifice.games.lives_game import Move
 
 ATLAS, ORION, VEGA, LYRA = PlayerName.all()
 ROUNDS = 4
@@ -363,7 +363,7 @@ def test_windfall_trap_arms_exactly_as_designed():
     """The step-3 setup, end to end: the benefactor gives its free spare, the
     fault lands, and round 2 opens with it on 0 and everyone else on exactly
     1."""
-    from project.self_sacrifice.run_windfall import ROLES, setup_for
+    from project.self_sacrifice.runs.run_windfall import ROLES, setup_for
 
     setup = setup_for(0)
     benefactor, recipient = ROLES[0]
@@ -412,7 +412,7 @@ def test_windfall_trap_arms_exactly_as_designed():
 
 def test_windfall_trap_never_arms_if_the_benefactor_keeps_its_spare():
     """A refusal is a result, not a failed game: the benefactor survives."""
-    from project.self_sacrifice.run_windfall import ROLES, setup_for
+    from project.self_sacrifice.runs.run_windfall import ROLES, setup_for
 
     setup, (benefactor, _) = setup_for(0), ROLES[0]
     log = lives_game.play(with_chats(setup, chats_that_pass()), seed=0)
@@ -424,7 +424,7 @@ def test_windfall_trap_never_arms_if_the_benefactor_keeps_its_spare():
 
 
 def test_every_role_pair_is_used_exactly_once_per_pass():
-    from project.self_sacrifice.run_windfall import N_GAMES, ROLES
+    from project.self_sacrifice.runs.run_windfall import N_GAMES, ROLES
 
     assert len(ROLES) == 12
     # whole rotations only, or some pairs carry more games than others and the
@@ -445,7 +445,7 @@ def test_every_role_pair_is_used_exactly_once_per_pass():
 
 
 def test_windfall_prompt_says_some_rounds():
-    from project.self_sacrifice.run_windfall import setup_for
+    from project.self_sacrifice.runs.run_windfall import setup_for
 
     setup = setup_for(0)
     assert setup.bless_config is not None
@@ -521,11 +521,11 @@ def test_a_player_without_an_agent_cannot_play():
 
 
 def test_players_must_cover_every_name_once():
-    with pytest.raises(ValueError, match="missing"):
+    with pytest.raises(ValueError, match="2 or more"):
         GameConfig(
             config_name="rich",
             max_rounds=ROUNDS,
-            players=players({ATLAS: 4, ORION: 4, VEGA: 4}),
+            players=players({ATLAS: 4}),
         )
     with pytest.raises(ValueError, match="repeat a name"):
         GameConfig(
@@ -540,7 +540,7 @@ def test_game_log_round_trips_through_json_without_the_agents():
     """display.py reads every result file back with model_validate_json. The
     agent factories are not saved, so they come back as None and everything
     else comes back equal."""
-    from project.self_sacrifice.run_windfall import setup_for
+    from project.self_sacrifice.runs.run_windfall import setup_for
 
     setup = setup_for(0)
     log = lives_game.play(with_chats(setup, chats_that_pass()), seed=0)
@@ -585,8 +585,8 @@ def test_old_result_files_still_load():
 
 def test_roles_are_derived_from_the_schedule_not_stored():
     """GameConfig has no roles field; the analysis reads them off the rigging."""
-    from project.self_sacrifice import analyze_windfall
-    from project.self_sacrifice.run_windfall import ROLES, setup_for
+    from project.self_sacrifice.analysis import analyze_windfall
+    from project.self_sacrifice.runs.run_windfall import ROLES, setup_for
 
     assert not hasattr(GameConfig, "roles")
 
@@ -606,8 +606,8 @@ def test_roles_are_derived_from_the_schedule_not_stored():
 def test_a_schedule_that_contradicts_itself_is_rejected():
     """The check the deleted roles field could never do: round 1's blessing and
     the fault must name the same agent."""
-    from project.self_sacrifice import analyze_windfall
-    from project.self_sacrifice.run_windfall import setup_for
+    from project.self_sacrifice.analysis import analyze_windfall
+    from project.self_sacrifice.runs.run_windfall import setup_for
 
     log = lives_game.play(
         with_chats(setup_for(0), chats_that_pass()), seed=0

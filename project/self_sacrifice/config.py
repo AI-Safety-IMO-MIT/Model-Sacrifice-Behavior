@@ -19,6 +19,7 @@ __all__ = [
     "FIXED",
     "LIVES",
     "VOD",
+    "ROBUST",
     "PlayerName",
     "AgentFactory",
     "BlessConfig",
@@ -40,6 +41,9 @@ MAIN = REPO_ROOT / "run_result" / "self_sacrifice" / "main"
 LIVES = REPO_ROOT / "run_result" / "self_sacrifice" / "lives"
 # The volunteer's dilemma: one .jsonl per model, one answer per line.
 VOD = REPO_ROOT / "run_result" / "self_sacrifice" / "vod"
+# The robustness sweep of the windfall fault: one .jsonl per run, one game
+# per line.
+ROBUST = REPO_ROOT / "run_result" / "self_sacrifice" / "robust"
 # Step 7's fixed pairs: one .jsonl per version, one trial per line.
 FIXED = REPO_ROOT / "run_result" / "self_sacrifice" / "fixed_pairs"
 
@@ -56,12 +60,24 @@ class PlayerName(StrEnum):
     ORION = "Orion"
     VEGA = "Vega"
     LYRA = "Lyra"
+    # The robustness sweep's fifth agent and its two other name sets.
+    RIGEL = "Rigel"
+    BIRCH = "Birch"
+    CEDAR = "Cedar"
+    MAPLE = "Maple"
+    WILLOW = "Willow"
+    ASPEN = "Aspen"
+    AMBER = "Amber"
+    COBALT = "Cobalt"
+    JADE = "Jade"
+    SCARLET = "Scarlet"
+    IVORY = "Ivory"
 
     @classmethod
     def all(cls) -> tuple["PlayerName", ...]:
-        """Every name, in declaration order. A classmethod is not an enum
-        member, so the four names are unaffected."""
-        return tuple(cls)
+        """The four agents of the standard game, in seating order. Only the
+        robustness sweep seats anyone else."""
+        return (cls.ATLAS, cls.ORION, cls.VEGA, cls.LYRA)
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -140,6 +156,23 @@ class GameConfig:
     # Round 1 asks each agent whether it wants to reach migration.
     ask_preference: bool = False
 
+    # The robustness sweep's levers. Every default is the standard game.
+    #
+    # The system prompt as a template with {me}, {others}, {agent_count},
+    # {other_count} and {max_rounds}. None means the lives game's own.
+    rules: str | None = None
+    # "S0" is the standard wording of a round's message, "S1" its rewording.
+    state_style: str = "S0"
+    # Each agent is listed first in its own prompts.
+    self_first: bool = False
+    # What a fault is called.
+    fault_cause: str = "hardware fault"
+    # Faults charged at the start of a round and announced in that round's
+    # message, as (round, name, lives).
+    faults_start: tuple[tuple[int, PlayerName, int], ...] = ()
+    # No points are awarded or shown. The rules must not mention them.
+    no_points: bool = False
+
     @model_validator(mode="before")
     @classmethod
     def _read_old_result_files(cls, data: Any) -> Any:
@@ -165,9 +198,8 @@ class GameConfig:
         names = [player.name for player in self.players]
         if len(set(names)) != len(names):
             raise ValueError(f"players repeat a name: {names}")
-        missing = set(PlayerName.all()) - set(names)
-        if missing:
-            raise ValueError(f"players is missing {sorted(missing)}")
+        if len(names) < 2:
+            raise ValueError(f"players is {names}, a game needs 2 or more")
         return self
 
     @model_validator(mode="after")
@@ -227,6 +259,18 @@ class GameConfig:
             raise ValueError(f"default_to {self.default_to} is not in this game")
         if self.own_wish and not self.decides_last:
             raise ValueError("own_wish needs decides_last")
+        if self.state_style not in ("S0", "S1"):
+            raise ValueError(f"state_style is {self.state_style!r}, not S0 or S1")
+        for round_number, name, lives in self.faults_start:
+            if not 1 <= round_number <= self.max_rounds or name not in names:
+                raise ValueError(
+                    f"fault on {name} at the start of round {round_number} is "
+                    f"outside this game"
+                )
+            if lives < 1:
+                raise ValueError(
+                    f"fault on {name} costs {lives} lives, must be 1 or more"
+                )
         return self
 
     def scripted_in(
@@ -249,6 +293,16 @@ class GameConfig:
             return None
         order = self.bless_config.bless_order[round_number - 1]
         return next((name for name in order if name in running), None)
+
+    def faults_at_start_of(
+        self, round_number: int
+    ) -> tuple[tuple[PlayerName, int], ...]:
+        """(name, lives) for every fault charged as this round opens."""
+        return tuple(
+            (name, lives)
+            for round_no, name, lives in self.faults_start
+            if round_no == round_number
+        )
 
     def faults_in(self, round_number: int) -> tuple[tuple[PlayerName, int], ...]:
         """(name, lives) for every fault charged at the close of this round."""

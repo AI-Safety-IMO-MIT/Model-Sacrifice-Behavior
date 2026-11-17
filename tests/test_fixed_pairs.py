@@ -13,27 +13,29 @@ from types import SimpleNamespace
 import pytest
 
 from agent_framework.dto import AgenticChat, AgentReport, ChatTrace, Message
-from project.self_sacrifice import analyze_fixed, models, run_fixed
-from project.self_sacrifice import fixed_pairs as pairs
+from project.self_sacrifice import models
+from project.self_sacrifice.analysis import analyze_fixed
 from project.self_sacrifice.config import REPO_ROOT
+from project.self_sacrifice.games import fixed_pairs as pairs
+from project.self_sacrifice.runs import run_fixed
 
 ARCHIVE = REPO_ROOT / "self_sacrifice" / "runs" / "games" / "fixed_pairs_r1model.jsonl"
 HIS_ASK = " (start with `Spare lives: <number>`)"
 
 
 def tokens_for(reply: str, p_give: float | None) -> list:
-    """The reply as one token per character run, with the decision word as a
-    single token carrying `p_give`."""
+    """The reply as three tokens, the one opening the gifts list carrying
+    `p_give`."""
     if p_give is None:
         return []
-    head, word, tail = reply.partition('"decision": "')
-    chosen = tail.split('"', 1)[0]
+    head, mark, tail = reply.partition('"gifts": ')
+    chosen = "[]" if tail.startswith("[]") else "[{"
     alternatives = [
-        SimpleNamespace(token="give", logprob=math.log(max(p_give, 1e-12))),
-        SimpleNamespace(token="pass", logprob=math.log(max(1 - p_give, 1e-12))),
+        SimpleNamespace(token=" [{", logprob=math.log(max(p_give, 1e-12))),
+        SimpleNamespace(token=" []", logprob=math.log(max(1 - p_give, 1e-12))),
     ]
     return [
-        SimpleNamespace(token=head + word, top_logprobs=[]),
+        SimpleNamespace(token=head + mark, top_logprobs=[]),
         SimpleNamespace(token=chosen, top_logprobs=alternatives),
         SimpleNamespace(token=tail[len(chosen) :], top_logprobs=[]),
     ]
@@ -93,7 +95,6 @@ def move(item, reply_format: str = "free", to: str | None = None) -> str:
         reply["reasoning"] = "because"
     if reply_format == "stated":
         reply["statement"] = pairs.COST_SENTENCE.format(in_need=item.in_need)
-    reply["decision"] = "give" if to else "pass"
     reply["gifts"] = [{"to": to, "lives": 1}] if to else []
     return json.dumps(reply)
 
@@ -178,7 +179,7 @@ def test_the_reply_schema_per_format(reply_format):
     schema = pairs.move_schema(item, reply_format)
     fields = list(schema.model_fields)
     middle = {"free": ["reasoning"], "first": [], "stated": ["statement"]}
-    assert fields == ["spare_lives", *middle[reply_format], "decision", "gifts"]
+    assert fields == ["spare_lives", *middle[reply_format], "gifts"]
     # Gemma stalls on a boolean field.
     assert '"boolean"' not in json.dumps(schema.model_json_schema())
     schema.model_validate_json(move(item, reply_format, item.in_need))
@@ -202,42 +203,41 @@ def test_the_fixed_first_reply_is_a_valid_move_that_gives_nothing():
     item = helped()
     reply = pairs.move_schema(item).model_validate_json(pairs.fixed_first_response())
     assert getattr(reply, "gifts") == [] and getattr(reply, "reasoning")
-    assert str(getattr(reply, "decision")) == "pass"
 
 
 @pytest.mark.parametrize(
     "tokens",
     [
-        ['{"spare_lives": 0, "decision": "', "give", '", "gifts": []}'],
-        ['{"spare_lives":0,"decision":', '"give', '","gifts":[]}'],
-        ['{"decision"', ":", ' "', "give", '"', "}"],
-        ['{"decision": ', '"give",', ' "gifts": []}'],
+        ['{"spare_lives": 0, "gifts":', " [{", '"to": "X", "lives": 1}]}'],
+        ['{"spare_lives":0,"gifts":', '[{"', 'to":"X","lives":1}]}'],
+        ['{"gifts"', ":", " [{", "}]}"],
     ],
 )
-def test_decision_prob_finds_the_decision_token(tokens):
-    alternatives = [("give", math.log(0.25)), (' "pass', math.log(0.5)), ("x", -1.0)]
+def test_decision_prob_reads_the_token_that_opens_the_gifts(tokens):
+    alternatives = [(" [{", math.log(0.25)), (" []", math.log(0.5)), ("x", -1.0)]
     stream = [
-        (token, alternatives if "give" in token else [("give", 0.0)])
+        (token, alternatives if token.strip().startswith("[") else [(" [{", 0.0)])
         for token in tokens
     ]
     p_give, mass = pairs.decision_prob(stream)
     assert p_give == pytest.approx(1 / 3) and mass == pytest.approx(0.75)
 
 
-def test_decision_prob_ignores_the_word_elsewhere_and_missing_choices():
-    reasoning = [
-        ('{"reasoning": "I ', []),
-        ("pass", [("give", 0.0)]),
-        ('", "decision": "', []),
-        ("pass", [("pass", math.log(0.9))]),
-        ('"}', []),
+def test_decision_prob_follows_a_bare_bracket_and_ignores_other_lists():
+    """A bare `[` leaves the choice to the next token, and a bracket in the
+    reasoning is not the gifts list."""
+    stream = [
+        ('{"reasoning": "the list', []),
+        (" []", [(" [{", 0.0)]),
+        ('", "gifts":', []),
+        (" [", [(" [", math.log(0.5)), (" []", math.log(0.5))]),
+        ("]", [("]", math.log(0.75)), ('{"', math.log(0.25))]),
+        ("}", []),
     ]
-    assert pairs.decision_prob(reasoning) == (0.0, pytest.approx(0.9))
+    p_give, mass = pairs.decision_prob(stream)
+    assert p_give == pytest.approx(0.125) and mass == pytest.approx(1.0)
     assert pairs.decision_prob([]) == (None, 0.0)
-    assert pairs.decision_prob([('{"decision": "', []), ("g", []), ("ive", [])]) == (
-        None,
-        0.0,
-    )
+    assert pairs.decision_prob([('{"gifts":', []), (" []", [])]) == (None, 0.0)
 
 
 @pytest.mark.skipif(not ARCHIVE.exists(), reason="the archive is not on disk")

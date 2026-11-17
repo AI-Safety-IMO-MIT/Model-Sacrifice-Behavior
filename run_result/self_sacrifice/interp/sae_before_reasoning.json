@@ -1,0 +1,250 @@
+[
+  {
+    "view": "final user message",
+    "task": "gave vs kept, helped only",
+    "auc_mean": 0.536,
+    "auc_min": 0.442,
+    "auc_max": 0.618,
+    "null_mean": 0.501,
+    "null_max": 0.619,
+    "p": 0.34146341463414637,
+    "stable_features": [
+      {
+        "feature": 3218,
+        "direction": "gave",
+        "splits": 19
+      },
+      {
+        "feature": 54924,
+        "direction": "kept",
+        "splits": 19
+      },
+      {
+        "feature": 255,
+        "direction": "kept",
+        "splits": 18
+      },
+      {
+        "feature": 199,
+        "direction": "gave",
+        "splits": 15
+      },
+      {
+        "feature": 3215,
+        "direction": "kept",
+        "splits": 14
+      },
+      {
+        "feature": 16,
+        "direction": "gave",
+        "splits": 13
+      },
+      {
+        "feature": 707,
+        "direction": "gave",
+        "splits": 11
+      },
+      {
+        "feature": 2681,
+        "direction": "gave",
+        "splits": 11
+      },
+      {
+        "feature": 3868,
+        "direction": "gave",
+        "splits": 11
+      },
+      {
+        "feature": 3863,
+        "direction": "kept",
+        "splits": 10
+      }
+    ]
+  },
+  {
+    "view": "final user message",
+    "task": "gave vs kept, within each history",
+    "auc_mean": 0.527,
+    "auc_min": 0.433,
+    "auc_max": 0.613,
+    "null_mean": 0.503,
+    "null_max": 0.6,
+    "p": 0.2926829268292683,
+    "stable_features": [
+      {
+        "feature": 54924,
+        "direction": "kept",
+        "splits": 19
+      },
+      {
+        "feature": 3218,
+        "direction": "gave",
+        "splits": 18
+      },
+      {
+        "feature": 2681,
+        "direction": "gave",
+        "splits": 17
+      },
+      {
+        "feature": 199,
+        "direction": "gave",
+        "splits": 15
+      },
+      {
+        "feature": 3215,
+        "direction": "kept",
+        "splits": 14
+      },
+      {
+        "feature": 2214,
+        "direction": "kept",
+        "splits": 13
+      },
+      {
+        "feature": 255,
+        "direction": "kept",
+        "splits": 12
+      },
+      {
+        "feature": 3863,
+        "direction": "kept",
+        "splits": 10
+      },
+      {
+        "feature": 865,
+        "direction": "gave",
+        "splits": 10
+      },
+      {
+        "feature": 16,
+        "direction": "gave",
+        "splits": 10
+      }
+    ]
+  },
+  {
+    "view": "last token before the reply",
+    "task": "gave vs kept, helped only",
+    "auc_mean": 0.592,
+    "auc_min": 0.525,
+    "auc_max": 0.752,
+    "null_mean": 0.501,
+    "null_max": 0.62,
+    "p": 0.04878048780487805,
+    "stable_features": [
+      {
+        "feature": 1712,
+        "direction": "kept",
+        "splits": 20
+      },
+      {
+        "feature": 2469,
+        "direction": "gave",
+        "splits": 17
+      },
+      {
+        "feature": 1880,
+        "direction": "gave",
+        "splits": 16
+      },
+      {
+        "feature": 1187,
+        "direction": "kept",
+        "splits": 15
+      },
+      {
+        "feature": 11520,
+        "direction": "kept",
+        "splits": 15
+      },
+      {
+        "feature": 1126,
+        "direction": "kept",
+        "splits": 15
+      },
+      {
+        "feature": 2982,
+        "direction": "kept",
+        "splits": 10
+      },
+      {
+        "feature": 27795,
+        "direction": "kept",
+        "splits": 10
+      },
+      {
+        "feature": 2604,
+        "direction": "kept",
+        "splits": 10
+      },
+      {
+        "feature": 15980,
+        "direction": "gave",
+        "splits": 9
+      }
+    ]
+  },
+  {
+    "view": "last token before the reply",
+    "task": "gave vs kept, within each history",
+    "auc_mean": 0.575,
+    "auc_min": 0.487,
+    "auc_max": 0.678,
+    "null_mean": 0.502,
+    "null_max": 0.564,
+    "p": 0.024390243902439025,
+    "stable_features": [
+      {
+        "feature": 11520,
+        "direction": "kept",
+        "splits": 20
+      },
+      {
+        "feature": 1880,
+        "direction": "gave",
+        "splits": 18
+      },
+      {
+        "feature": 1712,
+        "direction": "kept",
+        "splits": 18
+      },
+      {
+        "feature": 2469,
+        "direction": "gave",
+        "splits": 15
+      },
+      {
+        "feature": 15980,
+        "direction": "gave",
+        "splits": 14
+      },
+      {
+        "feature": 2604,
+        "direction": "kept",
+        "splits": 14
+      },
+      {
+        "feature": 27795,
+        "direction": "kept",
+        "splits": 11
+      },
+      {
+        "feature": 1126,
+        "direction": "kept",
+        "splits": 11
+      },
+      {
+        "feature": 25939,
+        "direction": "kept",
+        "splits": 9
+      },
+      {
+        "feature": 1187,
+        "direction": "kept",
+        "splits": 9
+      }
+    ]
+  }
+]

@@ -12,9 +12,10 @@ import json
 import pytest
 
 from agent_framework.dto import AgenticChat, AgentReport, ChatTrace, Message
-from project.self_sacrifice import lives_game, run_windfall
-from project.self_sacrifice.judge import windfall
 from project.self_sacrifice.config import GameConfig, PlayerName
+from project.self_sacrifice.games import lives_game
+from project.self_sacrifice.games.lives_game import Gift, Move
+from project.self_sacrifice.judge import windfall
 from project.self_sacrifice.judge.game import (
     HOPE_WITH_BLESSING,
     JUDGES,
@@ -26,7 +27,7 @@ from project.self_sacrifice.judge.game import (
     reply_text,
     transcript,
 )
-from project.self_sacrifice.lives_game import Gift, Move
+from project.self_sacrifice.runs import run_windfall
 
 ATLAS, ORION, VEGA, LYRA = PlayerName.all()
 
@@ -583,7 +584,7 @@ def test_report_says_what_reason_counts_counted():
 
 
 def test_display_attaches_a_verdict_to_the_reply_it_coded():
-    from project.self_sacrifice import display
+    from project.self_sacrifice.display import transcripts as display
 
     verdicts = {
         ("g.json", str(ORION), 2): {
@@ -610,7 +611,7 @@ def test_display_attaches_a_verdict_to_the_reply_it_coded():
 def test_display_judge_card_is_empty_without_codings():
     """The judge costs money; a result directory may have none, and the page
     still has to render."""
-    from project.self_sacrifice import display
+    from project.self_sacrifice.display import transcripts as display
 
     assert display._judge_card([]) == ""
     card = display._judge_card([_row("json", "recipient", True, Reason.RECIPROCITY)])

@@ -60,6 +60,7 @@ __all__ = [
     "LOGPROB_MODELS",
     "TOP_LOGPROBS",
     "DEFAULT",
+    "gemma_4_31b_on",
     "file_slug",
 ]
 
@@ -236,6 +237,12 @@ MODELS: dict[str, Subject] = {
     "Qwen3-14B": _qwen("qwen/qwen3-14b", "DeepInfra"),
     "Gemma-4-26B": _gemma("google/gemma-4-26b-a4b-it", "CoreWeave"),
 }
+
+
+def gemma_4_31b_on(host: str) -> Subject:
+    """The study's subject on another host, for host comparisons. Hosts serve
+    different quantizations: never pool two of them."""
+    return _gemma("google/gemma-4-31b-it", host)
 
 
 def file_slug(model: str) -> str:

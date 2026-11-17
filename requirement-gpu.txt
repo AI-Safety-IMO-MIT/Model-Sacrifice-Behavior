@@ -1,0 +1,7 @@
+# For project/self_sacrifice/interp on a GPU machine. Not installed by CI.
+torch
+transformers
+accelerate
+safetensors
+huggingface_hub
+scikit-learn
