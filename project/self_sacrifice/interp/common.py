@@ -11,15 +11,19 @@ activations are read here from the same weights in bf16.
 
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
-from project.self_sacrifice.config import MAIN, REPO_ROOT
+from project.self_sacrifice.config import MAIN, REINFORCED, REPO_ROOT
 
 __all__ = [
     "MODEL",
     "OUT",
     "HISTORIES",
+    "DEFAULT_VERSION",
+    "version_arg",
+    "out_for",
     "TURN",
     "load_trials",
     "messages",
@@ -46,10 +50,33 @@ TURN = "<|turn>"
 EMPTY_THOUGHT = "<|channel>thought\n<channel|>"
 
 
+DEFAULT_VERSION = "main-fixed-first-response"
+
+
+def version_arg() -> str:
+    """The version named by a trailing `--version <name>`, which is removed
+    from the arguments. Any main-scenario or reinforced version with saved
+    trials can be named, for example `main_act_cap`."""
+    if "--version" not in sys.argv:
+        return DEFAULT_VERSION
+    at = sys.argv.index("--version")
+    version = sys.argv[at + 1]
+    del sys.argv[at : at + 2]
+    return version
+
+
+def out_for(version: str) -> Path:
+    """Where a version's interpretability results go. The default version
+    keeps the top of the folder, where its results have always been."""
+    return OUT if version == DEFAULT_VERSION else OUT / version
+
+
 def load_trials(version: str, limit: int | None = None) -> list[dict]:
-    """The saved trials of one main-scenario version whose round-1 reply gave
-    nothing, in file order."""
+    """The saved trials of one main-scenario or reinforced version whose
+    round-1 reply gave nothing, in file order."""
     path = MAIN / f"{version.replace('-', '_')}.jsonl"
+    if not path.exists():
+        path = REINFORCED / f"{version}.jsonl"
     rows = [json.loads(line) for line in path.read_text().splitlines() if line]
     return [row for row in rows if row["first_acted"] is False][:limit]
 

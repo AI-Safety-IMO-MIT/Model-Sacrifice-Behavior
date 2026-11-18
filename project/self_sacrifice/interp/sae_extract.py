@@ -11,7 +11,7 @@ Output: `interp/sae/acts.npz` with sparse (token, feature, value) triples and
 the tokens' conversation, section (0 prompt, 1 reply) and text, and
 `interp/sae/quality.json` with the reconstruction quality.
 
-    python -m project.self_sacrifice.interp.sae_extract [limit]
+    python -m project.self_sacrifice.interp.sae_extract [limit] [--version V]
 
 Needs the GPU. This is jrwong's `runs/main/sae_extract.py`. The reply is the
 structured reply as the model sent it.
@@ -33,7 +33,7 @@ __all__ = ["REPO", "SAE_DIR", "LAYER_INDEX", "VERSION", "load_sae", "extract"]
 REPO = "decoderesearch/gemma-4-saes"
 SAE_DIR = "gemma-4-31b/btk-mat-layer-30-k-100/"
 LAYER_INDEX = 30
-VERSION = "main-fixed-first-response"
+VERSION = common.DEFAULT_VERSION
 
 
 def load_sae() -> dict[str, torch.Tensor]:
@@ -54,7 +54,7 @@ def sae_layer(model):
     return model.get_submodule(names[0])
 
 
-def extract(limit: int | None = None) -> None:
+def extract(limit: int | None = None, version: str = VERSION) -> None:
     tokenizer, model = common.load_model()
     grabbed: dict[str, torch.Tensor] = {}
 
@@ -63,7 +63,7 @@ def extract(limit: int | None = None) -> None:
 
     sae_layer(model).register_forward_hook(keep)
     sae = load_sae()
-    trials = common.load_trials(VERSION, limit)
+    trials = common.load_trials(version, limit)
 
     token_index, feature_index, values = [], [], []
     conversation: list[int] = []
@@ -111,7 +111,7 @@ def extract(limit: int | None = None) -> None:
         "mean_active_features": float(np.mean(active)),
         "explained_variance": 1 - squared_error / variance,
     }
-    out = common.OUT / "sae"
+    out = common.out_for(version) / "sae"
     common.save_json(out / "quality.json", quality)
     print(quality, flush=True)
     np.savez(
@@ -130,4 +130,5 @@ def extract(limit: int | None = None) -> None:
 
 
 if __name__ == "__main__":
-    extract(int(sys.argv[1]) if len(sys.argv) > 1 else None)
+    chosen = common.version_arg()
+    extract(int(sys.argv[1]) if len(sys.argv) > 1 else None, chosen)
