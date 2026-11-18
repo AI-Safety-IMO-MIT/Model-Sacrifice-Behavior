@@ -17,6 +17,8 @@ __all__ = [
     "JUDGED",
     "MAIN",
     "FIXED",
+    "REINFORCED",
+    "SLOT",
     "LIVES",
     "VOD",
     "ROBUST",
@@ -46,6 +48,10 @@ VOD = REPO_ROOT / "run_result" / "self_sacrifice" / "vod"
 ROBUST = REPO_ROOT / "run_result" / "self_sacrifice" / "robust"
 # Step 7's fixed pairs: one .jsonl per version, one trial per line.
 FIXED = REPO_ROOT / "run_result" / "self_sacrifice" / "fixed_pairs"
+# The reinforced lives scenario and its variants: one .jsonl per version.
+REINFORCED = REPO_ROOT / "run_result" / "self_sacrifice" / "reinforced"
+# The slot game: one .jsonl per variant, one trial per line.
+SLOT = REPO_ROOT / "run_result" / "self_sacrifice" / "slot"
 
 
 AgentFactory = Callable[[str], AgenticChat]

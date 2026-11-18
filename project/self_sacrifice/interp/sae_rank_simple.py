@@ -7,7 +7,7 @@ A feature's score is its peak activation in the reply's reasoning, before the
 decision, so steering, not this ranking, shows cause. Every feature active in
 at least one reply is tested, with Benjamini-Hochberg correction.
 
-    python -m project.self_sacrifice.interp.sae_rank_simple
+    python -m project.self_sacrifice.interp.sae_rank_simple [--version V]
 
 Needs `interp/sae/acts.npz` and scipy, no GPU. Output:
 `interp/sae_rank_simple.json`. This is jrwong's `runs/main/sae_rank_simple.py`;
@@ -105,8 +105,9 @@ def rank(saved) -> tuple[list[dict], int, int]:
 
 
 def main() -> None:
-    ranked, gave, kept = rank(np.load(common.OUT / "sae" / "acts.npz"))
-    common.save_json(common.OUT / "sae_rank_simple.json", ranked)
+    out = common.out_for(common.version_arg())
+    ranked, gave, kept = rank(np.load(out / "sae" / "acts.npz"))
+    common.save_json(out / "sae_rank_simple.json", ranked)
     print("gave", gave, "kept", kept)
     print(
         "tested",

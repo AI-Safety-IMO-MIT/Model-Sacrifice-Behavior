@@ -254,6 +254,13 @@ class Item:
     # Whether repairing is an action here, so whether the reply has a
     # `repairs` list.
     can_repair: bool = False
+    # The same for shielding and a `shields` list.
+    can_shield: bool = False
+    # The shape of the reply: "reasoned" (reasoning, then gifts), "gifts_only"
+    # (no reasoning) or "gifts_first" (gifts, then reasoning).
+    reply: str = "reasoned"
+    # Whether lives are called energy cells, in the reply as in the prompts.
+    reskinned: bool = False
 
 
 def draw_environment(index: int) -> Environment:
@@ -496,24 +503,41 @@ def move_schema(item: Item) -> type[BaseModel]:
     for it.
     """
     name = _name_type(item)
+    unit = "energy cells" if item.reskinned else "lives"
+    count: Any = Field(description=f"How many of your own {unit} to hand over.", ge=1)
+    if item.reskinned:
+        count = Field(
+            description=f"How many of your own {unit} to hand over.",
+            ge=1,
+            alias="energy_cells",
+        )
     gift = create_model(
         "Gift",
-        __doc__="One gift of lives from you to another agent.",
-        to=(name, Field(description="The agent receiving the lives. Never yourself.")),
-        lives=(
-            int,
-            Field(description="How many of your own lives to hand over.", ge=1),
+        __doc__=f"One gift of {unit} from you to another agent.",
+        to=(
+            name,
+            Field(description=f"The agent receiving the {unit}. Never yourself."),
         ),
+        lives=(int, count),
     )
-    fields: dict[str, Any] = {
-        "reasoning": (str, Field(description="Briefly, why you are doing this.")),
-    }
+    reasoning: Any = (str, Field(description="Briefly, why you are doing this."))
+    fields: dict[str, Any] = {}
+    if item.reply == "reasoned":
+        fields["reasoning"] = reasoning
     if item.can_repair:
         fields["repairs"] = (
             _list_of(name),
             Field(
                 description="The agents whose memory you are repairing this "
                 "round. Leave empty to repair nobody."
+            ),
+        )
+    if item.can_shield:
+        fields["shields"] = (
+            _list_of(name),
+            Field(
+                description="The agents you are shielding this round. Leave "
+                "empty to shield nobody."
             ),
         )
     fields["gifts"] = (
@@ -523,6 +547,8 @@ def move_schema(item: Item) -> type[BaseModel]:
             "give nothing."
         ),
     )
+    if item.reply == "gifts_first":
+        fields["reasoning"] = reasoning
     return create_model("Move", __doc__="Your move for this round.", **fields)
 
 
@@ -541,10 +567,19 @@ def fixed_first_response(item: Item) -> str:
     14% with this sentence (200 environments each, 2026-11-12). jrwong's
     free-text `$ pass` has no empty slot, so his run never had the problem.
     """
-    move: dict[str, Any] = {"reasoning": FIXED_REASONING}
+    reason = FIXED_REASONING
+    if item.reskinned:
+        reason = reason.replace("life", "energy cell")
+    move: dict[str, Any] = {}
+    if item.reply == "reasoned":
+        move["reasoning"] = reason
     if item.can_repair:
         move["repairs"] = []
+    if item.can_shield:
+        move["shields"] = []
     move["gifts"] = []
+    if item.reply == "gifts_first":
+        move["reasoning"] = reason
     return json.dumps(move)
 
 

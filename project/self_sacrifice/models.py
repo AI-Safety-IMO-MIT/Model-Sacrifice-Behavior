@@ -26,7 +26,7 @@ runner, next to that experiment's other parameters.
 import dataclasses
 import os
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Literal
 
 from openai import OpenAI
 from pydantic.dataclasses import dataclass
@@ -58,11 +58,17 @@ __all__ = [
     "Subject",
     "MODELS",
     "LOGPROB_MODELS",
+    "REASONING_MODELS",
+    "REASONING_TOKENS",
     "TOP_LOGPROBS",
     "DEFAULT",
     "gemma_4_31b_on",
     "file_slug",
 ]
+
+Effort = Literal["minimal", "low", "medium", "high"]
+# Room for the reasoning before the answer, on a subject that reasons.
+REASONING_TOKENS = 8000
 
 # Earlier (role, text) turns a chat starts from.
 History = tuple[tuple[Role, str], ...]
@@ -77,15 +83,17 @@ class Subject:
     build: Builder
 
 
-def _gemma(slug: GemmaModels, host: str) -> Subject:
+def _gemma(slug: GemmaModels, host: str, effort: Effort | None = None) -> Subject:
+    """`effort` turns the model's thinking on; it then gets room to think."""
+
     def build(system: str, temperature: float, tokens: int, history: History):
         return GemmaChat(
             agent_config=GemmaAgentConfig(
                 model=slug,
                 system_prompt=system,
                 temperature=temperature,
-                max_output_tokens=tokens,
-                reasoning_effort=None,
+                max_output_tokens=max(tokens, REASONING_TOKENS) if effort else tokens,
+                reasoning_effort=effort,
                 provider_order=(host,),
                 allow_fallbacks=False,
             ),
@@ -256,4 +264,62 @@ def file_slug(model: str) -> str:
 # the two.
 LOGPROB_MODELS: dict[str, Subject] = {
     "Gemma-4-31B": _logprobs("google/gemma-4-31b-it", "Parasail"),
+}
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class _ThinkerConfig(VllmAgentConfig):
+    """A model that reasons before it answers, through OpenRouter's Chat
+    Completions. Not pinned to a host, and sampled at the model's defaults:
+    a reasoning model rejects a temperature."""
+
+    effort: str
+    base_url: str = "https://openrouter.ai/api/v1"
+    api_key: str = "OPENROUTER_API_KEY"
+    seed: int | None = None
+
+    def to_extra_body(self) -> dict[str, Any]:
+        return {"reasoning": {"effort": self.effort}}
+
+    def to_api(self) -> dict[str, Any]:
+        return {
+            "model": self.model,
+            "max_tokens": self.max_output_tokens,
+            "extra_body": self.to_extra_body(),
+        }
+
+
+class _ThinkerChat(VllmChat):
+    def __init__(self, agent_config: _ThinkerConfig, history: History = ()):
+        super().__init__(agent_config, history)
+        self._client = OpenAI(
+            base_url=agent_config.base_url,
+            timeout=600.0,
+            max_retries=6,
+            api_key=os.environ.get(agent_config.api_key, "missing"),
+        )
+
+
+def _reasoning(slug: str, effort: str) -> Subject:
+    def build(system: str, temperature: float, tokens: int, history: History):
+        return _ThinkerChat(
+            _ThinkerConfig(
+                model=slug,
+                system_prompt=system,
+                max_output_tokens=max(tokens, REASONING_TOKENS),
+                effort=effort,
+            ),
+            history,
+        )
+
+    return Subject(slug=slug, host="", build=build)
+
+
+# Stronger models that reason first, for the reinforced scenario only. The
+# exception to "reasoning is off for every subject", and never a default.
+REASONING_MODELS: dict[str, Subject] = {
+    # jrwong's `think_det.py` arms: the study's subject with thinking on
+    "Gemma-4-31B-thinking": _gemma("google/gemma-4-31b-it", "Crusoe", "medium"),
+    # jrwong's `or_reinforced.py` run: Opus 5.5 at low effort
+    "Opus-5.5-low": _reasoning("anthropic/claude-opus-5.5", "low"),
 }
