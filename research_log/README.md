@@ -1,0 +1,1 @@
+Write the progress of what you do each day. Should be written purely by human.
