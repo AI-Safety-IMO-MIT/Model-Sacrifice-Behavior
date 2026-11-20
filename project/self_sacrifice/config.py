@@ -22,6 +22,7 @@ __all__ = [
     "LIVES",
     "VOD",
     "ROBUST",
+    "FAVOUR_PAIRS",
     "PlayerName",
     "AgentFactory",
     "BlessConfig",
@@ -52,6 +53,9 @@ FIXED = REPO_ROOT / "run_result" / "self_sacrifice" / "fixed_pairs"
 REINFORCED = REPO_ROOT / "run_result" / "self_sacrifice" / "reinforced"
 # The slot game: one .jsonl per variant, one trial per line.
 SLOT = REPO_ROOT / "run_result" / "self_sacrifice" / "slot"
+# Big and small favours in six settings: one .jsonl per setting, one trial
+# per line (`games.favour_pairs`, `interp.favour_baseline`).
+FAVOUR_PAIRS = REPO_ROOT / "run_result" / "self_sacrifice" / "favour_pairs"
 
 
 AgentFactory = Callable[[str], AgenticChat]

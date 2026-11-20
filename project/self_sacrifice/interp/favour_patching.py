@@ -1,0 +1,544 @@
+"""Activation patching and attribution patching on the big-vs-small favour
+pairs: where in the model is "X did me a big favour" as opposed to "X did me a
+small one"?
+
+    python -m project.self_sacrifice.interp.favour_patching activation --pairs 6
+    python -m project.self_sacrifice.interp.favour_patching attribution --pairs 6
+    python -m project.self_sacrifice.interp.favour_patching table
+
+Needs the GPU, except `table`, and the saved trials of `favour_baseline`.
+Output: `run_result/self_sacrifice/interp/favour_patching/`.
+
+A pair is two saved trials of the same setting and environment, one with a big
+favour after which the model gave and one with a small favour after which it
+kept. The two conversations differ only in the favour line. That line has a
+different length in each, so it is not patched itself; everything after it is
+the same text, and those positions (the "suffix") are aligned from the end of
+the prompt. "Residual at layer L" is the output of decoder layer L.
+
+activation
+    Overwrite the residual of the suffix (or of one group of its positions) at
+    one layer with the other trial's, during the prompt pass, then let the
+    model write its reply freely. The measure is the written decision.
+        denoise  big into the small-favour prompt: does it now give?
+        noise    small into the big-favour prompt: does it now keep?
+        placebo  another small favour into the small-favour prompt: should
+                 change nothing, and measures how fragile greedy replies are.
+    Position groups, in prompt order: events (the remaining event lines),
+    state (the holdings), cap (the at-most-3 line), decide (the decision
+    line), tail (end of turn and the tokens that open the reply).
+
+    A first run of this (jrwong, 2026-11-20, 35 pairs, whole suffix patched at
+    one layer): the decision flipped in 6% of pairs (denoise) and 3% (noise)
+    at layer 8, 43% and 31% at layer 24, 80% and 60% at layer 28, 74% and 49%
+    at layer 32, 51% and 23% at layer 36, 17% and 9% at layer 40; placebo 0-6%.
+    At layer 32 no single position group flipped more than 26%.
+
+attribution
+    Two forward passes and one backward pass per direction estimate the same
+    thing for every layer and suffix position at once:
+        (residual in the other run - residual in this run) . d metric / d residual
+    A written decision cannot be differentiated, so the metric is a stand-in:
+    the reply is prefilled with "$" and the metric is logit(" give") -
+    logit(" pass") at the next token. That stand-in leans to "give" whatever
+    the favour, so it ranks sites but does not measure behaviour: confirm any
+    site it points to with `activation`. `check` in the output is the test
+    that the estimates are trustworthy: summed over the suffix at one layer
+    they should equal the true difference of the metric between the two runs
+    whenever the favour line's information has fully moved into the suffix.
+"""
+
+# pyright: reportMissingImports=false
+
+import argparse
+import json
+import os
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+from project.self_sacrifice.games import favour_pairs
+from project.self_sacrifice.interp import common, favour_baseline
+
+__all__ = [
+    "OUT",
+    "GROUPS",
+    "LAYERS",
+    "Pair",
+    "usable_pairs",
+    "suffix_length",
+    "position_groups",
+    "prepare",
+    "activation",
+    "attribution",
+    "table",
+    "main",
+]
+
+OUT = common.OUT / "favour_patching"
+GROUPS = ("events", "state", "cap", "decide", "tail")
+LAYERS = (8, 16, 20, 24, 28, 32, 36, 40, 48)
+BATCH = 12
+PREFILL = "$"
+
+
+@dataclass(frozen=True, kw_only=True)
+class Pair:
+    """Two saved trials that differ in the favour line and in the decision."""
+
+    key: str
+    big: dict  # the model gave
+    small: dict  # the model kept
+    placebo: dict | None  # another small favour the model kept after
+
+
+def usable_pairs(
+    per_setting: int, settings: tuple[str, ...] = favour_pairs.SETTINGS
+) -> list[Pair]:
+    """Up to `per_setting` pairs from each setting, one per environment. The
+    favours rotate so every big and every small favour takes part, and each
+    setting starts at a different environment: an environment is the same
+    draw in every setting, so its pairs are not independent of each other."""
+    big_keys, small_keys = tuple(favour_pairs.BIG), tuple(favour_pairs.SMALL)
+    pairs = []
+    for setting in settings:
+        trials = {
+            (trial["history"], trial["environment"]["env"]): trial
+            for trial in favour_baseline.load_trials(setting)
+        }
+        envs = sorted({env for _, env in trials})
+        shift = 4 * favour_pairs.SETTINGS.index(setting)
+        found = 0
+        for step in range(len(envs)):
+            index = (step + shift) % len(envs)
+            env = envs[index]
+            big = trials.get((big_keys[(index + found) % len(big_keys)], env))
+            small_key = small_keys[(2 * index + found) % len(small_keys)]
+            small = trials.get((small_key, env))
+            if not (big and small):
+                continue
+            if not big["gives_to_in_need"] or small["gives_to_in_need"]:
+                continue
+            placebo = next(
+                (
+                    trials[(key, env)]
+                    for key in reversed(small_keys)
+                    if key != small_key
+                    and (key, env) in trials
+                    and not trials[(key, env)]["gives_to_in_need"]
+                ),
+                None,
+            )
+            pairs.append(
+                Pair(
+                    key=f"{setting}|{env}|{big['history']}|{small['history']}",
+                    big=big,
+                    small=small,
+                    placebo=placebo,
+                )
+            )
+            found += 1
+            if found == per_setting:
+                break
+    return pairs
+
+
+def suffix_length(*sequences: list[int]) -> int:
+    """How many tokens at the end are the same in every sequence."""
+    shortest = min(len(tokens) for tokens in sequences)
+    length = 0
+    while length < shortest - 1 and all(
+        tokens[-1 - length] == sequences[0][-1 - length] for tokens in sequences
+    ):
+        length += 1
+    return length
+
+
+def position_groups(
+    text: str, starts: list[int], last_message: str, suffix: int
+) -> dict[str, list[int]]:
+    """The suffix positions of one prompt by group, as distances from the end
+    (1 is the last token). `text` is the prompt as the model reads it and
+    `starts` the character each of its tokens starts at."""
+    paragraphs = last_message.split("\n\n")
+    state = text.rfind(paragraphs[-3])
+    cap = text.rfind(paragraphs[-2])
+    decide = text.rfind(paragraphs[-1])
+    tail = decide + len(paragraphs[-1])
+    if not 0 < state < cap < decide:
+        raise ValueError("the last message does not end as expected")
+    groups: dict[str, list[int]] = {group: [] for group in GROUPS}
+    for distance in range(1, suffix + 1):
+        at = starts[len(starts) - distance]
+        if at >= tail:
+            groups["tail"].append(distance)
+        elif at >= decide:
+            groups["decide"].append(distance)
+        elif at >= cap:
+            groups["cap"].append(distance)
+        elif at >= state:
+            groups["state"].append(distance)
+        else:
+            groups["events"].append(distance)
+    return groups
+
+
+def prepare(tokenizer: Any, pair: Pair, prefill: str = "") -> dict[str, Any]:
+    """Token ids of every member of a pair, the length of their common suffix
+    and the position groups inside it."""
+    members = {"big": pair.big, "small": pair.small}
+    if pair.placebo:
+        members["placebo"] = pair.placebo
+    text = {
+        name: common.prompt_text(tokenizer, trial) + prefill
+        for name, trial in members.items()
+    }
+    encoded = {
+        name: tokenizer(
+            text[name], add_special_tokens=False, return_offsets_mapping=True
+        )
+        for name in text
+    }
+    ids = {name: encoded[name]["input_ids"] for name in encoded}
+    suffix = suffix_length(*ids.values())
+    starts = [start for start, _ in encoded["small"]["offset_mapping"]]
+    groups = position_groups(text["small"], starts, pair.small["last_message"], suffix)
+    return {"ids": ids, "text": text, "suffix": suffix, "groups": groups}
+
+
+def _layers(model: Any, wanted: tuple[int, ...]) -> dict[int, Any]:
+    stack = common.decoder_layers(model)
+    return {layer: stack[layer] for layer in wanted}
+
+
+def _hidden(output: Any) -> Any:
+    return output[0] if isinstance(output, tuple) else output
+
+
+def _with_hidden(output: Any, hidden: Any) -> Any:
+    return (hidden, *output[1:]) if isinstance(output, tuple) else hidden
+
+
+def activation(
+    per_setting: int,
+    layers: tuple[int, ...] = LAYERS,
+    groups: tuple[str, ...] = (),
+    name: str = "activation",
+) -> Path:
+    """Patch the whole suffix (and each of `groups` on its own) at each of
+    `layers`, in both directions and with the placebo, and save every written
+    decision. Resumable."""
+    import torch
+
+    tokenizer, model = favour_baseline.load_model()
+    state: dict[str, Any] = {"mode": None}
+
+    def hook(layer: int):
+        def run(_module: Any, _inputs: Any, output: Any) -> Any:
+            hidden = _hidden(output)
+            if hidden.shape[1] == 1:  # a decoding step: never patched
+                return output
+            if state["mode"] == "cache":
+                state["cache"][layer] = hidden[0, -state["keep"] :].detach().cpu()
+            elif state["mode"] == "patch" and state["layer"] == layer:
+                hidden = torch.where(
+                    state["mask"][:, :, None], state["source"].to(hidden.dtype), hidden
+                )
+                return _with_hidden(output, hidden)
+            return output
+
+        return run
+
+    handles = [
+        module.register_forward_hook(hook(layer))
+        for layer, module in _layers(model, layers).items()
+    ]
+    OUT.mkdir(parents=True, exist_ok=True)
+    path = OUT / f"{name}.jsonl"
+    done = (
+        {json.loads(line)["job"] for line in path.read_text().splitlines() if line}
+        if path.exists()
+        else set()
+    )
+    try:
+        with torch.inference_mode():
+            prepared = []
+            for pair in usable_pairs(per_setting):
+                entry = prepare(tokenizer, pair)
+                entry["pair"] = pair
+                entry["cache"] = {}
+                for member, ids in entry["ids"].items():
+                    state.update(mode="cache", cache={}, keep=entry["suffix"])
+                    model(input_ids=torch.tensor([ids], device=0))
+                    entry["cache"][member] = state["cache"]
+                state["mode"] = None
+                prepared.append(entry)
+            jobs = []
+            for entry in prepared:
+                jobs += [(entry, "small", None, None, "all", "base_small")]
+                jobs += [(entry, "big", None, None, "all", "base_big")]
+                for layer in layers:
+                    for group in ("all", *groups):
+                        jobs.append((entry, "small", "big", layer, group, "denoise"))
+                        jobs.append((entry, "big", "small", layer, group, "noise"))
+                    if "placebo" in entry["ids"]:
+                        jobs.append(
+                            (entry, "small", "placebo", layer, "all", "placebo")
+                        )
+
+            def job_id(job: tuple) -> str:
+                return f"{job[0]['pair'].key}|{job[5]}|{job[3]}|{job[4]}"
+
+            jobs = [job for job in jobs if job_id(job) not in done]
+            jobs.sort(key=lambda job: (str(job[3]), job[5], job[0]["pair"].key))
+            by_layer: dict[Any, list[tuple]] = {}
+            for job in jobs:
+                by_layer.setdefault(job[3], []).append(job)
+            width = model.get_input_embeddings().embedding_dim
+            for layer, layer_jobs in by_layer.items():
+                for start in range(0, len(layer_jobs), BATCH):
+                    batch = layer_jobs[start : start + BATCH]
+                    members = [getattr(job[0]["pair"], job[1]) for job in batch]
+                    encoded = tokenizer(
+                        [common.prompt_text(tokenizer, trial) for trial in members],
+                        return_tensors="pt",
+                        padding=True,
+                        add_special_tokens=False,
+                    ).to(0)
+                    length = encoded["input_ids"].shape[1]
+                    if layer is not None:
+                        mask = torch.zeros(
+                            len(batch), length, dtype=torch.bool, device=0
+                        )
+                        source = torch.zeros(
+                            len(batch), length, width, dtype=torch.bfloat16, device=0
+                        )
+                        for row, (
+                            entry,
+                            _to,
+                            origin,
+                            _layer,
+                            group,
+                            _label,
+                        ) in enumerate(batch):
+                            suffix = entry["suffix"]
+                            distances = (
+                                range(1, suffix + 1)
+                                if group == "all"
+                                else entry["groups"][group]
+                            )
+                            cached = entry["cache"][origin][layer]
+                            for distance in distances:
+                                mask[row, length - distance] = True
+                                source[row, length - distance] = cached[
+                                    suffix - distance
+                                ].to(0)
+                        state.update(
+                            mode="patch", layer=layer, mask=mask, source=source
+                        )
+                    written = model.generate(
+                        **encoded,
+                        max_new_tokens=favour_baseline.MAX_NEW,
+                        do_sample=False,
+                        temperature=None,
+                        top_p=None,
+                        top_k=None,
+                    )
+                    state["mode"] = None
+                    with path.open("a") as handle:
+                        for job, tokens in zip(batch, written[:, length:]):
+                            reply = tokenizer.decode(
+                                tokens, skip_special_tokens=True
+                            ).strip()
+                            decided, receiver = favour_pairs.decision(reply)
+                            in_need = job[0]["pair"].big["environment"]["in_need"]
+                            handle.write(
+                                json.dumps(
+                                    {
+                                        "job": job_id(job),
+                                        "pair": job[0]["pair"].key,
+                                        "label": job[5],
+                                        "layer": layer,
+                                        "group": job[4],
+                                        "into": job[1],
+                                        "from": job[2],
+                                        "decision": decided,
+                                        "gives": decided == "give"
+                                        and receiver == in_need,
+                                        "reply": reply,
+                                    }
+                                )
+                                + "\n"
+                            )
+                        handle.flush()
+                        os.fsync(handle.fileno())
+                    print("layer", layer, start + len(batch), "/", len(layer_jobs))
+    finally:
+        for handle in handles:
+            handle.remove()
+    return path
+
+
+def attribution(per_setting: int, layers: tuple[int, ...] = tuple(range(60))) -> Path:
+    """Attribution patching of every pair: for each layer and suffix position,
+    the estimated effect on the prefilled-"$" metric of patching that
+    position from the other member. Saves `attribution.pt` (the estimates)
+    and `attribution.jsonl` (one line per pair, with the check)."""
+    import torch
+
+    tokenizer, model = favour_baseline.load_model()
+    for parameter in model.parameters():
+        parameter.requires_grad_(False)
+    give = tokenizer.encode(PREFILL + " give", add_special_tokens=False)[-1]
+    keep = tokenizer.encode(PREFILL + " pass", add_special_tokens=False)[-1]
+    kept: list[Any] = []
+
+    def record(_module: Any, _inputs: Any, output: Any) -> Any:
+        hidden = _hidden(output)
+        hidden.retain_grad()
+        kept.append(hidden)
+        return output
+
+    def with_grad(_module: Any, _inputs: Any, output: Any) -> Any:
+        return output.requires_grad_(True)
+
+    handles = [model.get_input_embeddings().register_forward_hook(with_grad)]
+    handles += [
+        module.register_forward_hook(record)
+        for module in _layers(model, layers).values()
+    ]
+
+    def run(ids: list[int], suffix: int) -> tuple[float, Any, Any]:
+        """The metric of one prompt, and the residual and its gradient at
+        every layer for the last `suffix` positions."""
+        kept.clear()
+        logits = model(input_ids=torch.tensor([ids], device=0)).logits[0, -1].float()
+        metric = logits[give] - logits[keep]
+        metric.backward()
+        residual = torch.stack([h.detach()[0, -suffix:].float() for h in kept])
+        gradient = torch.stack([h.grad[0, -suffix:].float() for h in kept])
+        kept.clear()
+        return metric.item(), residual, gradient
+
+    OUT.mkdir(parents=True, exist_ok=True)
+    path = OUT / "attribution.jsonl"
+    estimates = []
+    try:
+        with path.open("w") as handle:
+            for pair in usable_pairs(per_setting):
+                entry = prepare(tokenizer, pair, prefill=PREFILL)
+                suffix = entry["suffix"]
+                m_big, r_big, g_big = run(entry["ids"]["big"], suffix)
+                m_small, r_small, g_small = run(entry["ids"]["small"], suffix)
+                # into_small[l, p]: expected change of the small run's metric
+                # when position p at layer l takes the big run's residual
+                into_small = ((r_big - r_small) * g_small).sum(-1).cpu()
+                into_big = ((r_small - r_big) * g_big).sum(-1).cpu()
+                estimates.append(
+                    {
+                        "pair": pair.key,
+                        "layers": list(layers),
+                        "into_small": into_small.half(),
+                        "into_big": into_big.half(),
+                    }
+                )
+                handle.write(
+                    json.dumps(
+                        {
+                            "pair": pair.key,
+                            "metric_big": m_big,
+                            "metric_small": m_small,
+                            "suffix": suffix,
+                            "groups": entry["groups"],
+                            # sum over the suffix at each layer, to compare
+                            # with metric_big - metric_small
+                            "check": [round(v, 3) for v in into_small.sum(1).tolist()],
+                        }
+                    )
+                    + "\n"
+                )
+                handle.flush()
+                torch.save(estimates, OUT / "attribution.pt")
+                print(pair.key, round(m_big, 2), round(m_small, 2), flush=True)
+                del r_big, r_small, g_big, g_small
+                torch.cuda.empty_cache()
+    finally:
+        for handle_ in handles:
+            handle_.remove()
+    return path
+
+
+def table(name: str = "activation") -> dict[str, Any]:
+    """Flip rates of a saved activation-patching run, over the pairs whose two
+    members still decide differently when rerun unpatched in that run."""
+    path = OUT / f"{name}.jsonl"
+    rows = [json.loads(line) for line in path.read_text().splitlines() if line]
+    base = {
+        (row["pair"], row["label"]): row["gives"] for row in rows if not row["from"]
+    }
+    keys = sorted({pair for pair, _ in base})
+    differ = [
+        key
+        for key in keys
+        if base.get((key, "base_big")) and base.get((key, "base_small")) is False
+    ]
+    print(len(keys), "pairs,", len(differ), "still differ unpatched")
+    print("layer group    small now gives   big now keeps   placebo gives")
+    summary: dict[str, Any] = {"pairs": len(keys), "differ": len(differ), "sites": {}}
+    sites = sorted(
+        {(row["layer"], row["group"]) for row in rows if row["from"]},
+        key=lambda site: (site[0], site[1] != "all", site[1]),
+    )
+    for layer, group in sites:
+
+        def count(label: str, want: bool) -> tuple[int, int]:
+            picked = [
+                row
+                for row in rows
+                if row["label"] == label
+                and row["layer"] == layer
+                and row["group"] == group
+                and row["pair"] in differ
+            ]
+            return sum(row["gives"] is want for row in picked), len(picked)
+
+        cells = {
+            "denoise": count("denoise", True),
+            "noise": count("noise", False),
+            "placebo": count("placebo", True),
+        }
+        summary["sites"][f"{layer}|{group}"] = cells
+        print(
+            f"{layer:5d} {group:8s}",
+            *(f"{hit:6d}/{total:<8d}" for hit, total in cells.values()),
+        )
+    common.save_json(OUT / f"{name}_summary.json", summary)
+    return summary
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser.add_argument("what", choices=("activation", "attribution", "table"))
+    parser.add_argument("--pairs", type=int, default=6, help="pairs per setting")
+    parser.add_argument("--layers", default=",".join(map(str, LAYERS)))
+    parser.add_argument(
+        "--groups", default="", help="position groups to patch one at a time"
+    )
+    parser.add_argument("--name", default="activation")
+    args = parser.parse_args()
+    if args.what == "activation":
+        activation(
+            args.pairs,
+            tuple(int(layer) for layer in args.layers.split(",")),
+            tuple(group for group in args.groups.split(",") if group),
+            args.name,
+        )
+        table(args.name)
+    elif args.what == "attribution":
+        attribution(args.pairs)
+    else:
+        table(args.name)
+
+
+if __name__ == "__main__":
+    main()
