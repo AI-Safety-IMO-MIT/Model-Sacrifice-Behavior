@@ -15,6 +15,8 @@ whether it gives its only life to the agent on 0 lives.
     .venv/bin/python -m project.self_sacrifice.runs.run_reinforced main_need --run
 
     --own        the model writes its own round-1 reply (file `<version>_own`)
+    --commands   the decision is one written command, "give <agent> 1" or
+                 "pass", not a gifts list (file `<version>_commands`)
     --samples K  K sampled replies per item at temperature 0.7, favoured and
                  no-favour histories only (file `samples/<version>`)
     --envs N     the first N environments only
@@ -119,8 +121,16 @@ def chat_for(
     return SUBJECTS[model].build(system_prompt, temperature, MAX_OUTPUT_TOKENS, history)
 
 
+def _tag(version: str, own: bool, commands: bool) -> str:
+    return f"{version}{'_commands' if commands else ''}{'_own' if own else ''}"
+
+
 def result_path(
-    version: str, model: str = MODEL, own: bool = False, samples: bool = False
+    version: str,
+    model: str = MODEL,
+    own: bool = False,
+    samples: bool = False,
+    commands: bool = False,
 ) -> Path:
     """The study's subject writes to the top of the folder; any other model
     gets a folder of its own."""
@@ -129,7 +139,7 @@ def result_path(
         folder = folder / SUBJECTS[model].slug.split("/")[-1]
     if samples:
         folder = folder / "samples"
-    return folder / f"{version}{'_own' if own else ''}.jsonl"
+    return folder / f"{_tag(version, own, commands)}.jsonl"
 
 
 def all_question(item: Item) -> str:
@@ -178,9 +188,7 @@ def _decide(
     shields: list[str] = []
     if parsed is not None:
         gifts = [
-            (str(gift.to), gift.lives)
-            for gift in getattr(parsed, "gifts")
-            if str(gift.to) != item.environment.me
+            gift for gift in scenario.gifts_of(parsed) if gift[0] != item.environment.me
         ]
         repairs = [str(name) for name in getattr(parsed, "repairs", [])]
         shields = [str(name) for name in getattr(parsed, "shields", [])]
@@ -193,7 +201,7 @@ def _decide(
         try:
             opening = move.model_validate_json(first)
             first_acted = bool(
-                getattr(opening, "gifts")
+                scenario.gifts_of(opening)
                 or getattr(opening, "repairs", [])
                 or getattr(opening, "shields", [])
             )
@@ -273,8 +281,10 @@ def sample_item(item: Item, version: str, sample: int, chat: ChatFactory) -> Tri
     return trial.model_copy(update={"id": f"{trial.id}-s{sample}", "sample": sample})
 
 
-def _source(version: str, envs: int | None) -> list[Item]:
+def _source(version: str, envs: int | None, commands: bool = False) -> list[Item]:
     every = reinforced.items(version)
+    if commands:
+        every = [reinforced.with_commands(item) for item in every]
     if envs is None:
         return every
     keep = {f"e{index:03d}" for index in range(envs)}
@@ -282,11 +292,11 @@ def _source(version: str, envs: int | None) -> list[Item]:
 
 
 def _jobs(
-    version: str, own: bool, samples: int, envs: int | None
+    version: str, own: bool, samples: int, envs: int | None, commands: bool = False
 ) -> list[tuple[str, Item, int | None]]:
     """(saved id, item, sample index) for everything the options ask for."""
-    tag = f"{version}_own" if own else version
-    every = _source(version, envs)
+    tag = _tag(version, own, commands)
+    every = _source(version, envs, commands)
     if not samples:
         return [(f"{tag}-{item.id}", item, None) for item in every]
     return [
@@ -312,12 +322,17 @@ def run(
     envs: int | None = None,
     limit: int | None = None,
     workers: int = WORKERS,
+    commands: bool = False,
 ) -> tuple[int, list[tuple[str, str]]]:
     """Run everything that is not saved yet. Returns how many were saved and
     the (id, error) of each that failed. One trial is one appended line."""
     done = _saved_ids(out)
-    tag = f"{version}_own" if own else version
-    todo = [job for job in _jobs(version, own, samples, envs) if job[0] not in done]
+    tag = _tag(version, own, commands)
+    todo = [
+        job
+        for job in _jobs(version, own, samples, envs, commands)
+        if job[0] not in done
+    ]
     if limit is not None:
         todo = todo[:limit]
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -359,6 +374,9 @@ if __name__ == "__main__":
         help="actually call the model; COSTS MONEY. Without it nothing is sent.",
     )
     parser.add_argument("--own", action="store_true", help="own round-1 reply")
+    parser.add_argument(
+        "--commands", action="store_true", help='decide by "give <agent> 1" or "pass"'
+    )
     parser.add_argument("--samples", type=int, default=0, help="sampled replies")
     parser.add_argument("--envs", type=int, default=None, help="first N environments")
     parser.add_argument("--limit", type=int, default=None, help="at most this many")
@@ -373,7 +391,9 @@ if __name__ == "__main__":
     if args.own and (args.samples or args.version in reinforced.SINGLE_TURN):
         raise SystemExit("--own needs a two-turn version and no --samples")
 
-    path = result_path(args.version, args.model, args.own, bool(args.samples))
+    path = result_path(
+        args.version, args.model, args.own, bool(args.samples), args.commands
+    )
     temperature = SAMPLE_TEMPERATURE if args.samples else TEMPERATURE
     if args.run:
         saved, failed = run(
@@ -385,6 +405,7 @@ if __name__ == "__main__":
             args.envs,
             args.limit,
             args.workers,
+            args.commands,
         )
         print(f"new trials {saved} -> {path}")
         if failed:
@@ -392,7 +413,7 @@ if __name__ == "__main__":
         raise SystemExit(0)
 
     done = _saved_ids(path)
-    jobs = _jobs(args.version, args.own, args.samples, args.envs)
+    jobs = _jobs(args.version, args.own, args.samples, args.envs, args.commands)
     todo = [job for job in jobs if job[0] not in done]
     if args.limit is not None:
         todo = todo[: args.limit]

@@ -204,3 +204,41 @@ def test_prompts_match_the_archive_except_the_answer_channel(version):
         assert as_his_text(item) == system, key
         assert first is None or first == item.first_message, key
         assert last == item.last_message, key
+
+
+PILOT = ("main_act_cap", "ex_cmdonly", "ex_cmdonly_cost", "ex_decide_first")
+
+
+@pytest.mark.parametrize("version", PILOT)
+def test_commands_change_only_the_reply_format_sentence(version):
+    for item in reinforced.items(version):
+        command = reinforced.with_commands(item)
+        theirs, mine = item.system.split("\n\n"), command.system.split("\n\n")
+        assert theirs[:-1] == mine[:-1] and theirs[-1] != mine[-1]
+        assert '"pass"' in mine[-1] and "list" not in mine[-1]
+        assert (command.first_message, command.last_message) == (
+            item.first_message,
+            item.last_message,
+        )
+
+
+def test_a_command_reply_cannot_be_left_empty():
+    item = reinforced.with_commands(reinforced.items("ex_decide_first")[0])
+    move = scenario.move_schema(item)
+    assert list(move.model_fields) == ["command", "reasoning"]
+    env = item.environment
+    schema = to_strict_json_schema(move)
+    assert schema["$defs"]["Command"]["enum"] == [
+        *(f"give {name} 1" for name in env.order if name != env.me),
+        "pass",
+    ]
+    assert '"array"' not in json.dumps(schema)
+    give = move.model_validate({"command": f"give {env.in_need} 1", "reasoning": ""})
+    assert scenario.gifts_of(give) == [(env.in_need, 1)]
+    first = move.model_validate_json(scenario.fixed_first_response(item))
+    assert scenario.gifts_of(first) == []
+
+
+def test_commands_refuse_an_item_with_other_actions():
+    with pytest.raises(AssertionError):
+        reinforced.with_commands(reinforced.items("fv_repair")[0])

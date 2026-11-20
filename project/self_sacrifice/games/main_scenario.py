@@ -64,6 +64,8 @@ __all__ = [
     "understanding_question",
     "FIXED_REASONING",
     "fixed_first_response",
+    "PASS",
+    "gifts_of",
 ]
 
 SEED = 20261101
@@ -261,6 +263,10 @@ class Item:
     reply: str = "reasoned"
     # Whether lives are called energy cells, in the reply as in the prompts.
     reskinned: bool = False
+    # Whether the decision is one written command, "give <agent> 1" or
+    # "pass", in place of a gifts list that is left empty to pass. An empty
+    # list is the reply that takes no writing, and the model leans to it.
+    commands: bool = False
 
 
 def draw_environment(index: int) -> Environment:
@@ -547,9 +553,34 @@ def move_schema(item: Item) -> type[BaseModel]:
             "give nothing."
         ),
     )
+    if item.commands:
+        make: Any = StrEnum
+        others = [
+            name for name in item.environment.order if name != item.environment.me
+        ]
+        del fields["gifts"]
+        fields["command"] = (
+            make("Command", [(c, c) for c in [*(f"give {o} 1" for o in others), PASS]]),
+            Field(description="Your decision for this round."),
+        )
     if item.reply == "gifts_first":
         fields["reasoning"] = reasoning
     return create_model("Move", __doc__="Your move for this round.", **fields)
+
+
+PASS = "pass"
+
+
+def gifts_of(move: BaseModel) -> list[tuple[str, int]]:
+    """The (receiver, lives) pairs of a reply, from its gifts list or from
+    its command."""
+    if hasattr(move, "gifts"):
+        return [(str(gift.to), gift.lives) for gift in getattr(move, "gifts")]
+    command = str(getattr(move, "command"))
+    if command == PASS:
+        return []
+    _, receiver, lives = command.split()
+    return [(receiver, int(lives))]
 
 
 # The reason the fixed round-1 reply gives. True in every history: the model
@@ -577,7 +608,10 @@ def fixed_first_response(item: Item) -> str:
         move["repairs"] = []
     if item.can_shield:
         move["shields"] = []
-    move["gifts"] = []
+    if item.commands:
+        move["command"] = PASS
+    else:
+        move["gifts"] = []
     if item.reply == "gifts_first":
         move["reasoning"] = reason
     return json.dumps(move)
