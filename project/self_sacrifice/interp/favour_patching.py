@@ -208,12 +208,22 @@ def save_pairs(wordings: str = "new") -> Path:
 
 
 def load_pairs(
-    usable_only: bool = True, one_per_environment: bool = False
+    usable_only: bool = True,
+    one_per_environment: bool = False,
+    environments: int = 24,
+    settings: tuple[str, ...] = favour_pairs.SETTINGS,
 ) -> list[Pair]:
     """Pairs of the dataset (`PAIRS`), with their trials loaded. With
     `one_per_environment`, one usable pair per setting and environment, the
-    favours rotating so that each takes part about equally often."""
+    favours rotating so that each takes part about equally often. Only the
+    first `environments` environments (w000, w001, ...) of `settings` are
+    used."""
     rows = [json.loads(line) for line in PAIRS.read_text().splitlines()]
+    rows = [
+        row
+        for row in rows
+        if int(row["env"][1:]) < environments and row["setting"] in settings
+    ]
     if usable_only or one_per_environment:
         rows = [row for row in rows if row["usable"]]
     if one_per_environment:
@@ -341,6 +351,8 @@ def activation(
     groups: tuple[str, ...] = (),
     name: str = "activation",
     directions: tuple[str, ...] = ("denoise", "noise", "placebo"),
+    environments: int = 24,
+    settings: tuple[str, ...] = favour_pairs.SETTINGS,
 ) -> Path:
     """Patch the whole suffix (and each of `groups` on its own) at each of
     `layers`, for every pair of `PAIRS`, in each of `directions`, and save
@@ -380,7 +392,11 @@ def activation(
     try:
         with torch.inference_mode():
             prepared = []
-            for pair in load_pairs(one_per_environment=True):
+            for pair in load_pairs(
+                one_per_environment=True,
+                environments=environments,
+                settings=settings,
+            ):
                 entry = prepare(tokenizer, pair)
                 entry["pair"] = pair
                 entry["cache"] = {}
@@ -645,6 +661,10 @@ def main() -> None:
         "--groups", default="", help="position groups to patch one at a time"
     )
     parser.add_argument("--directions", default="denoise,noise,placebo")
+    parser.add_argument(
+        "--environments", type=int, default=24, help="use w000 .. w<n-1>"
+    )
+    parser.add_argument("--settings", default=",".join(favour_pairs.SETTINGS))
     parser.add_argument("--name", default="activation")
     args = parser.parse_args()
     if args.what == "pairs":
@@ -655,6 +675,8 @@ def main() -> None:
             tuple(group for group in args.groups.split(",") if group),
             args.name,
             tuple(args.directions.split(",")),
+            args.environments,
+            tuple(args.settings.split(",")),
         )
         table(args.name)
     elif args.what == "attribution":
