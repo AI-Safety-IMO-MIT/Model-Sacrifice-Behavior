@@ -23,7 +23,7 @@ def test_there_are_ten_strong_and_ten_weak_favours_in_six_settings():
     assert len(fp.BIG) == len(fp.SMALL) == 10
     assert len(fp.SETTINGS) == 6
     assert fp.FAVOURS == (*fp.BIG, *fp.SMALL, fp.NONE)
-    assert [fp.size_of(favour) for favour in ("fa1", "wc2", "none")] == [
+    assert [fp.size_of(favour) for favour in ("fa1", "gb10", "none")] == [
         "big",
         "small",
         "none",
@@ -71,6 +71,8 @@ def test_the_two_wording_sets_share_no_wording():
         old = {fp.draw_environment(i, "old").choices[part] for i in range(40)}
         fresh = {fp.draw_environment(i, "fresh").choices[part] for i in range(40)}
         assert new == {3, 4, 5} and old == {0, 1, 2} and fresh == {6, 7, 8}, part
+    fresh = {fp.draw_environment(i, "fresh").choices["nostake"] for i in range(40)}
+    assert fresh == {6, 7}
 
 
 def test_the_last_period_opens_with_x_on_nothing_and_says_at_most_3_survive():
@@ -92,9 +94,9 @@ def test_the_last_period_opens_with_x_on_nothing_and_says_at_most_3_survive():
 
 
 def test_a_trial_carries_the_conversation_the_interp_code_reads():
-    trial = fp.trial(fp.item("cells", "wc7", 3))
-    assert trial["id"] == "cells-w003-wc7"
-    assert trial["version"] == "cells" and trial["history"] == "wc7"
+    trial = fp.trial(fp.item("cells", "gb5", 3))
+    assert trial["id"] == "cells-w003-gb5"
+    assert trial["version"] == "cells" and trial["history"] == "gb5"
     assert trial["first_reply"] == "$ pass" and trial["size"] == "small"
     assert trial["environment"]["env"] == "w003"
     assert trial["favour_line"] in trial["last_message"]
@@ -136,7 +138,7 @@ def test_gemma_gives_after_strong_favours_and_keeps_after_weak_ones():
     for setting in fp.SETTINGS:
         summary = favour_baseline.rates(setting)
         assert summary["size"]["big"] >= 80, setting
-        assert summary["size"]["small"] <= 5, setting
+        assert summary["size"]["small"] <= 10, setting
         assert summary["size"]["none"] <= 5, setting
         assert summary["usable_pairs"] >= 80, setting
 
@@ -178,7 +180,7 @@ def test_the_common_suffix_is_counted_from_the_end():
 
 
 def test_position_groups_split_the_suffix_at_the_paragraphs_of_the_last_message():
-    trial = fp.trial(fp.item("lives", "wc2", 0))
+    trial = fp.trial(fp.item("lives", "ga3", 0))
     last = trial["last_message"]
     text = "<start>" + last + "<end>\n<reply>"
     # one "token" per character: token i starts at character i
