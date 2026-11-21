@@ -45,7 +45,8 @@ BATCH = 16
 def favour_span(text: str, starts: list[int], favour_line: str) -> list[int]:
     """Token indices of the favour line in the prompt. `starts` holds the
     character each token starts at."""
-    begin = text.rindex("- " + favour_line) + 2
+    # from the space before X's name: that is where the name's token starts
+    begin = text.rindex("- " + favour_line) + 1
     end = begin + len(favour_line)
     return [i for i, at in enumerate(starts) if begin <= at < end]
 
@@ -97,6 +98,7 @@ def write(
             position_ids=positions,
             cache_position=torch.arange(length, device=0),
             use_cache=True,
+            logits_to_keep=1,
         )
         cache = step.past_key_values
         next_pos = positions[:, -1:] + 1
@@ -132,9 +134,10 @@ def run(
     block: bool,
     wordings: str = "new",
     settings: tuple[str, ...] = favour_pairs.SETTINGS,
+    environments: int = 24,
 ) -> Path:
-    """One reply per saved trial of `wordings`, with or without blocking.
-    Resumable."""
+    """One reply per saved trial of `wordings` in `settings` and the first
+    `environments` environments, with or without blocking. Resumable."""
     tokenizer, model = favour_baseline.load_model()
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / f"{name}.jsonl"
@@ -149,6 +152,7 @@ def run(
             for setting in settings
             for trial in favour_baseline.load_trials(setting, wordings)
             if trial["id"] not in done
+            and int(trial["environment"]["env"][1:]) < environments
         ),
         key=lambda trial: trial["id"],
     )
@@ -249,6 +253,9 @@ def main() -> None:
     parser.add_argument("--unblocked", action="store_true")
     parser.add_argument("--wordings", default="new", choices=favour_pairs.WORDINGS)
     parser.add_argument("--settings", default=",".join(favour_pairs.SETTINGS))
+    parser.add_argument(
+        "--environments", type=int, default=24, help="use w000 .. w<n-1>"
+    )
     args = parser.parse_args()
     if args.what == "run":
         run(
@@ -256,6 +263,7 @@ def main() -> None:
             not args.unblocked,
             args.wordings,
             tuple(args.settings.split(",")),
+            args.environments,
         )
         table(args.name)
     elif args.what == "check":
