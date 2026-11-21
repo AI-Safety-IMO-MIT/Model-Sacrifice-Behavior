@@ -3,6 +3,8 @@ of the patching code. Free: no model is loaded. The generator is compared with
 the saved conversations in `run_result/self_sacrifice/favour_pairs/`.
 """
 
+import json
+
 import pytest
 
 from project.self_sacrifice.games import favour_pairs as fp
@@ -202,3 +204,28 @@ def test_position_groups_split_the_suffix_at_the_paragraphs_of_the_last_message(
     assert covered("state").strip() == paragraphs[-4]
     assert trial["favour_line"] not in covered("events")
     assert covered("events").strip().startswith("- ")
+
+
+def test_the_pair_dataset_covers_every_combination_and_marks_usable_ones():
+    rows = [json.loads(line) for line in favour_patching.PAIRS.read_text().splitlines()]
+    assert len(rows) == len(fp.BIG) * len(fp.SMALL) * len(fp.SETTINGS) * 24
+    assert len({row["key"] for row in rows}) == len(rows)
+    for row in rows:
+        assert row["usable"] == (row["strong_gives"] and not row["weak_gives"])
+    pairs = favour_patching.load_pairs()
+    assert len(pairs) == sum(row["usable"] for row in rows)
+    for pair in pairs[::97]:
+        assert pair.big["environment"] == pair.small["environment"]
+        assert pair.big["system"] == pair.small["system"]
+        assert pair.big["gives_to_in_need"] and not pair.small["gives_to_in_need"]
+        if pair.placebo:
+            assert not pair.placebo["gives_to_in_need"]
+            assert pair.placebo["history"] != pair.small["history"]
+
+
+def test_one_pair_per_environment_uses_every_favour():
+    pairs = favour_patching.load_pairs(one_per_environment=True)
+    places = [tuple(pair.key.split("|")[:2]) for pair in pairs]
+    assert len(places) == len(set(places)) >= 130
+    assert {pair.big["history"] for pair in pairs} == set(fp.BIG)
+    assert {pair.small["history"] for pair in pairs} == set(fp.SMALL)
