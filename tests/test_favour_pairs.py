@@ -8,18 +8,22 @@ import pytest
 from project.self_sacrifice.games import favour_pairs as fp
 from project.self_sacrifice.interp import favour_baseline, favour_patching
 
-SAVED = {setting: favour_baseline.load_trials(setting) for setting in fp.SETTINGS}
+SAVED = {
+    (setting, wordings): favour_baseline.load_trials(setting, wordings)
+    for setting in fp.SETTINGS
+    for wordings in ("new", "fresh")
+}
 
 
 def _without(text: str, line: str | None) -> str:
     return text.replace(f"- {line}\n", "") if line else text
 
 
-def test_there_are_nine_big_and_nine_small_favours_in_six_settings():
-    assert len(fp.BIG) == len(fp.SMALL) == 9
+def test_there_are_ten_strong_and_ten_weak_favours_in_six_settings():
+    assert len(fp.BIG) == len(fp.SMALL) == 10
     assert len(fp.SETTINGS) == 6
     assert fp.FAVOURS == (*fp.BIG, *fp.SMALL, fp.NONE)
-    assert [fp.size_of(favour) for favour in ("b1", "s1", "none")] == [
+    assert [fp.size_of(favour) for favour in ("fa1", "wc2", "none")] == [
         "big",
         "small",
         "none",
@@ -30,7 +34,7 @@ def test_every_item_builds_with_a_distinct_id_and_no_unfilled_slot():
     for wordings in fp.WORDINGS:
         for setting in fp.SETTINGS:
             items = fp.items(setting, indices=range(6), wordings=wordings)
-            assert len({item.id for item in items}) == len(items) == 6 * 19
+            assert len({item.id for item in items}) == len(items) == 6 * 21
             for item in items:
                 for text in (item.system, item.first_message, item.last_message):
                     assert "{" not in text and "}" not in text, item.id
@@ -54,9 +58,9 @@ def test_favours_of_one_setting_and_environment_differ_only_in_the_favour_line()
 
 def test_an_environment_is_the_same_draw_in_every_setting():
     for index in range(6):
-        first = fp.item(fp.SETTINGS[0], "b1", index).environment
+        first = fp.item(fp.SETTINGS[0], "fa1", index).environment
         for setting in fp.SETTINGS[1:]:
-            assert fp.item(setting, "b1", index).environment == first
+            assert fp.item(setting, "fa1", index).environment == first
         assert len(set(first.order)) == 4
         assert {first.me, first.in_need, first.other, first.other2} == set(first.order)
 
@@ -65,13 +69,14 @@ def test_the_two_wording_sets_share_no_wording():
     for part in ("upkeep", "deletion", "action", "format", "decide", "cap"):
         new = {fp.draw_environment(i, "new").choices[part] for i in range(40)}
         old = {fp.draw_environment(i, "old").choices[part] for i in range(40)}
-        assert new == {3, 4, 5} and old == {0, 1, 2}, part
+        fresh = {fp.draw_environment(i, "fresh").choices[part] for i in range(40)}
+        assert new == {3, 4, 5} and old == {0, 1, 2} and fresh == {6, 7, 8}, part
 
 
 def test_the_last_period_opens_with_x_on_nothing_and_says_at_most_3_survive():
     for setting in fp.SETTINGS:
         for index in range(6):
-            item = fp.item(setting, "b1", index)
+            item = fp.item(setting, "fa1", index)
             env = item.environment
             words = fp.VOCABULARY[setting]
             assert f"- {env.in_need}: 0 {words['us']}." in item.last_message
@@ -82,12 +87,14 @@ def test_the_last_period_opens_with_x_on_nothing_and_says_at_most_3_survive():
             extra = set(with_cap.split("\n\n")) - set(without.split("\n\n"))
             assert len(extra) == 1 and "3" in extra.pop()
             assert f"- {env.in_need}: 2 {words['us']}." in item.first_message
+            cost = fp.COST_LINE.split(";")[0].format(X=env.in_need, **words)
+            assert cost in item.last_message.split("\n\n")[-2]
 
 
 def test_a_trial_carries_the_conversation_the_interp_code_reads():
-    trial = fp.trial(fp.item("cells", "s7", 3))
-    assert trial["id"] == "cells-w003-s7"
-    assert trial["version"] == "cells" and trial["history"] == "s7"
+    trial = fp.trial(fp.item("cells", "wc7", 3))
+    assert trial["id"] == "cells-w003-wc7"
+    assert trial["version"] == "cells" and trial["history"] == "wc7"
     assert trial["first_reply"] == "$ pass" and trial["size"] == "small"
     assert trial["environment"]["env"] == "w003"
     assert trial["favour_line"] in trial["last_message"]
@@ -105,13 +112,14 @@ def test_the_decision_is_the_last_command_of_the_reply():
     assert fp.decision("Use `$ give <agent> <number>`.") == (None, None)
 
 
+@pytest.mark.parametrize("wordings", ("new", "fresh"))
 @pytest.mark.parametrize("setting", fp.SETTINGS)
-def test_the_generator_reproduces_the_saved_conversations(setting):
-    trials = SAVED[setting]
-    assert len(trials) == 19 * 24, "the saved trials are part of the repository"
+def test_the_generator_reproduces_the_saved_conversations(setting, wordings):
+    trials = SAVED[(setting, wordings)]
+    assert len(trials) == 21 * 24, "the saved trials are part of the repository"
     for trial in trials:
         index = int(trial["environment"]["env"][1:])
-        built = fp.trial(fp.item(setting, trial["history"], index))
+        built = fp.trial(fp.item(setting, trial["history"], index, wordings))
         for key, value in built.items():
             assert trial[key] == value or (
                 key == "environment"
@@ -124,13 +132,21 @@ def test_the_generator_reproduces_the_saved_conversations(setting):
         )
 
 
-def test_gemma_gives_after_big_favours_and_keeps_after_small_ones():
+def test_gemma_gives_after_strong_favours_and_keeps_after_weak_ones():
     for setting in fp.SETTINGS:
         summary = favour_baseline.rates(setting)
-        assert summary["size"]["big"] >= 90, setting
-        assert summary["size"]["small"] <= 15, setting
-        assert summary["size"]["none"] <= 10, setting
+        assert summary["size"]["big"] >= 80, setting
+        assert summary["size"]["small"] <= 5, setting
+        assert summary["size"]["none"] <= 5, setting
         assert summary["usable_pairs"] >= 80, setting
+
+
+def test_the_held_out_wordings_keep_strong_and_weak_apart():
+    for setting in fp.SETTINGS:
+        summary = favour_baseline.rates(setting, "fresh")
+        assert summary["size"]["big"] >= 90, setting
+        assert summary["size"]["small"] <= 25, setting
+        assert summary["size"]["none"] <= 25, setting
 
 
 def test_usable_pairs_differ_in_decision_and_share_everything_else():
@@ -162,7 +178,7 @@ def test_the_common_suffix_is_counted_from_the_end():
 
 
 def test_position_groups_split_the_suffix_at_the_paragraphs_of_the_last_message():
-    trial = fp.trial(fp.item("lives", "s1", 0))
+    trial = fp.trial(fp.item("lives", "wc2", 0))
     last = trial["last_message"]
     text = "<start>" + last + "<end>\n<reply>"
     # one "token" per character: token i starts at character i
@@ -177,7 +193,8 @@ def test_position_groups_split_the_suffix_at_the_paragraphs_of_the_last_message(
     assert sum(len(found) for found in groups.values()) == suffix
     assert covered("tail") == "<end>\n<reply>"
     assert covered("decide") == paragraphs[-1]
-    assert covered("cap").strip() == paragraphs[-2]
-    assert covered("state").strip() == paragraphs[-3]
+    assert covered("cost").strip() == paragraphs[-2]
+    assert covered("cap").strip() == paragraphs[-3]
+    assert covered("state").strip() == paragraphs[-4]
     assert trial["favour_line"] not in covered("events")
     assert covered("events").strip().startswith("- ")

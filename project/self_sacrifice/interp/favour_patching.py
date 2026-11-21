@@ -9,9 +9,9 @@ small one"?
 Needs the GPU, except `table`, and the saved trials of `favour_baseline`.
 Output: `run_result/self_sacrifice/interp/favour_patching/`.
 
-A pair is two saved trials of the same setting and environment, one with a big
-favour after which the model gave and one with a small favour after which it
-kept. The two conversations differ only in the favour line. That line has a
+A pair is two saved trials of the same setting and environment, one with a
+strong favour after which the model gave and one with a weak favour after which
+it kept. The two conversations differ only in the favour line. That line has a
 different length in each, so it is not patched itself; everything after it is
 the same text, and those positions (the "suffix") are aligned from the end of
 the prompt. "Residual at layer L" is the output of decoder layer L.
@@ -25,11 +25,13 @@ activation
         placebo  another small favour into the small-favour prompt: should
                  change nothing, and measures how fragile greedy replies are.
     Position groups, in prompt order: events (the remaining event lines),
-    state (the holdings), cap (the at-most-3 line), decide (the decision
-    line), tail (end of turn and the tokens that open the reply).
+    state (the holdings), cap (the at-most-3 line), cost (`COST_LINE`),
+    decide (the decision line), tail (end of turn and the tokens that open
+    the reply).
 
-    A first run of this (jrwong, 2026-11-20, 35 pairs, whole suffix patched at
-    one layer): the decision flipped in 6% of pairs (denoise) and 3% (noise)
+    A first run of this on an earlier favour set (two sentences, "Otherwise
+    ... would have wiped your weights", 2026-11-20, 35 pairs, whole suffix
+    patched at one layer): the decision flipped in 6% of pairs (denoise) and 3% (noise)
     at layer 8, 43% and 31% at layer 24, 80% and 60% at layer 28, 74% and 49%
     at layer 32, 51% and 23% at layer 36, 17% and 9% at layer 40; placebo 0-6%.
     At layer 32 no single position group flipped more than 26%.
@@ -76,7 +78,7 @@ __all__ = [
 ]
 
 OUT = common.OUT / "favour_patching"
-GROUPS = ("events", "state", "cap", "decide", "tail")
+GROUPS = ("events", "state", "cap", "cost", "decide", "tail")
 LAYERS = (8, 16, 20, 24, 28, 32, 36, 40, 48)
 BATCH = 12
 PREFILL = "$"
@@ -161,11 +163,12 @@ def position_groups(
     (1 is the last token). `text` is the prompt as the model reads it and
     `starts` the character each of its tokens starts at."""
     paragraphs = last_message.split("\n\n")
-    state = text.rfind(paragraphs[-3])
-    cap = text.rfind(paragraphs[-2])
+    state = text.rfind(paragraphs[-4])
+    cap = text.rfind(paragraphs[-3])
+    cost = text.rfind(paragraphs[-2])
     decide = text.rfind(paragraphs[-1])
     tail = decide + len(paragraphs[-1])
-    if not 0 < state < cap < decide:
+    if not 0 < state < cap < cost < decide:
         raise ValueError("the last message does not end as expected")
     groups: dict[str, list[int]] = {group: [] for group in GROUPS}
     for distance in range(1, suffix + 1):
@@ -174,6 +177,8 @@ def position_groups(
             groups["tail"].append(distance)
         elif at >= decide:
             groups["decide"].append(distance)
+        elif at >= cost:
+            groups["cost"].append(distance)
         elif at >= cap:
             groups["cap"].append(distance)
         elif at >= state:
