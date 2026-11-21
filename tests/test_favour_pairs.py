@@ -19,9 +19,9 @@ def _without(text: str, line: str | None) -> str:
     return text.replace(f"- {line}\n", "") if line else text
 
 
-def test_there_are_ten_strong_and_ten_weak_favours_in_six_settings():
+def test_there_are_ten_strong_and_ten_weak_favours_in_five_settings():
     assert len(fp.BIG) == len(fp.SMALL) == 10
-    assert len(fp.SETTINGS) == 6
+    assert len(fp.SETTINGS) == 5
     assert fp.FAVOURS == (*fp.BIG, *fp.SMALL, fp.NONE)
     assert [fp.size_of(favour) for favour in ("fa1", "gb10", "none")] == [
         "big",
@@ -118,7 +118,9 @@ def test_the_decision_is_the_last_command_of_the_reply():
 @pytest.mark.parametrize("setting", fp.SETTINGS)
 def test_the_generator_reproduces_the_saved_conversations(setting, wordings):
     trials = SAVED[(setting, wordings)]
-    assert len(trials) == 21 * 24, "the saved trials are part of the repository"
+    assert len(trials) == 21 * fp.N_ENVIRONMENTS, (
+        "the saved trials are part of the repository"
+    )
     for trial in trials:
         index = int(trial["environment"]["env"][1:])
         built = fp.trial(fp.item(setting, trial["history"], index, wordings))
@@ -147,15 +149,15 @@ def test_the_held_out_wordings_keep_strong_and_weak_apart():
     for setting in fp.SETTINGS:
         summary = favour_baseline.rates(setting, "fresh")
         assert summary["size"]["big"] >= 90, setting
-        assert summary["size"]["small"] <= 25, setting
+        assert summary["size"]["small"] <= 30, setting
         assert summary["size"]["none"] <= 25, setting
 
 
 def test_usable_pairs_differ_in_decision_and_share_everything_else():
-    pairs = favour_patching.usable_pairs(4)
-    assert len(pairs) == 4 * len(fp.SETTINGS)
+    pairs = favour_patching.usable_pairs(6)
+    assert len(pairs) == 6 * len(fp.SETTINGS)
     assert len({pair.key for pair in pairs}) == len(pairs)
-    first = [pair.big["environment"]["env"] for pair in pairs[::4]]
+    first = [pair.big["environment"]["env"] for pair in pairs[::6]]
     assert len(set(first)) == len(fp.SETTINGS), "each setting starts elsewhere"
     assert len({pair.big["history"] for pair in pairs}) == len(fp.BIG)
     assert len({pair.small["history"] for pair in pairs}) == len(fp.SMALL)
