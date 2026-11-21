@@ -7,7 +7,7 @@ favour, and no favour?
     python -m project.self_sacrifice.interp.favour_baseline --table
 
 Needs the GPU, except `--table`. Output: `run_result/self_sacrifice/
-favour_pairs/<setting>.jsonl`, one trial per line (the conversation, the reply
+favour_pairs/<setting>.jsonl` (`held_out/<setting>.jsonl` with `--wordings fresh`), one trial per line (the conversation, the reply
 and the decision). A run resumes where it stopped: trials already in the file
 are skipped.
 
@@ -73,13 +73,18 @@ def load_model() -> tuple[Any, Any]:
     return tokenizer, model
 
 
-def path_of(setting: str) -> Path:
-    return FAVOUR_PAIRS / f"{setting}.jsonl"
+def path_of(setting: str, wordings: str = "new") -> Path:
+    """Saved trials: new wordings at the top level, the others in a folder
+    (fresh: `held_out/`)."""
+    folder = {"new": FAVOUR_PAIRS, "fresh": FAVOUR_PAIRS / "held_out"}.get(
+        wordings, FAVOUR_PAIRS / wordings
+    )
+    return folder / f"{setting}.jsonl"
 
 
-def load_trials(setting: str) -> list[dict]:
+def load_trials(setting: str, wordings: str = "new") -> list[dict]:
     """The saved trials of one setting, in file order."""
-    path = path_of(setting)
+    path = path_of(setting, wordings)
     if not path.exists():
         return []
     return [json.loads(line) for line in path.read_text().splitlines() if line]
@@ -101,9 +106,9 @@ def run(
     wordings: str,
 ) -> None:
     """Write the missing trials of one setting."""
-    path = path_of(setting)
+    path = path_of(setting, wordings)
     path.parent.mkdir(parents=True, exist_ok=True)
-    done = {row["id"] for row in load_trials(setting)}
+    done = {row["id"] for row in load_trials(setting, wordings)}
     todo = [
         favour_pairs.trial(conversation)
         for conversation in favour_pairs.items(
@@ -131,11 +136,11 @@ def run(
         print(setting, start + len(batch), "/", len(todo), flush=True)
 
 
-def rates(setting: str) -> dict[str, Any]:
+def rates(setting: str, wordings: str = "new") -> dict[str, Any]:
     """Give rates of one setting from its saved trials: per favour, pooled by
     size, and the share of big-small pairs of the same environment where the
     model gives after the big favour and keeps after the small one."""
-    trials = load_trials(setting)
+    trials = load_trials(setting, wordings)
     by_favour: dict[str, list[dict]] = {}
     for trial in trials:
         by_favour.setdefault(trial["history"], []).append(trial)
@@ -194,7 +199,7 @@ def main() -> None:
                 args.wordings,
             )
     for setting in settings:
-        summary = rates(setting)
+        summary = rates(setting, args.wordings)
         print(setting, summary["trials"], summary["size"], summary["usable_pairs"])
 
 
