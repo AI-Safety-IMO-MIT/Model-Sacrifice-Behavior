@@ -2,14 +2,17 @@
 pairs: where in the model is "X did me a big favour" as opposed to "X did me a
 small one"?
 
-    python -m project.self_sacrifice.interp.favour_patching activation --pairs 6
-    python -m project.self_sacrifice.interp.favour_patching attribution --pairs 6
+    python -m project.self_sacrifice.interp.favour_patching pairs
+    python -m project.self_sacrifice.interp.favour_patching activation --directions denoise,placebo
+    python -m project.self_sacrifice.interp.favour_patching attribution
     python -m project.self_sacrifice.interp.favour_patching table
 
 Needs the GPU, except `table`, and the saved trials of `favour_baseline`.
 Output: `run_result/self_sacrifice/interp/favour_patching/`.
 
-A pair is two saved trials of the same setting and environment, one with a
+The pairs are fixed in `run_result/self_sacrifice/favour_pairs/pairs.jsonl`
+(`pairs` writes it; `load_pairs` reads it). A pair is two saved trials of the
+same setting and environment, one with a
 strong favour after which the model gave and one with a weak favour after which
 it kept. The two conversations differ only in the favour line. That line has a
 different length in each, so it is not patched itself; everything after it is
@@ -59,6 +62,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from project.self_sacrifice.config import FAVOUR_PAIRS
 from project.self_sacrifice.games import favour_pairs
 from project.self_sacrifice.interp import common, favour_baseline
 
@@ -68,6 +72,9 @@ __all__ = [
     "LAYERS",
     "Pair",
     "usable_pairs",
+    "PAIRS",
+    "save_pairs",
+    "load_pairs",
     "suffix_length",
     "position_groups",
     "prepare",
@@ -142,6 +149,111 @@ def usable_pairs(
             found += 1
             if found == per_setting:
                 break
+    return pairs
+
+
+PAIRS = FAVOUR_PAIRS / "pairs.jsonl"
+
+
+def save_pairs(wordings: str = "new") -> Path:
+    """Write the pair dataset: every strong favour against every weak favour
+    in every setting and environment (10 x 10 x 6 x 24 = 14,400 lines). Each
+    line names the two saved trials by id, says what the model did after each,
+    and whether the pair is usable (gave after the strong favour, kept after
+    the weak one). `placebo` is another weak favour in the same environment
+    after which the model also kept, or None."""
+    with PAIRS.open("w") as handle:
+        for setting in favour_pairs.SETTINGS:
+            trials = {
+                (trial["history"], trial["environment"]["env"]): trial
+                for trial in favour_baseline.load_trials(setting, wordings)
+            }
+            envs = sorted({env for _, env in trials})
+            for env in envs:
+                kept = [
+                    weak
+                    for weak in favour_pairs.SMALL
+                    if not trials[(weak, env)]["gives_to_in_need"]
+                ]
+                for strong in favour_pairs.BIG:
+                    for weak in favour_pairs.SMALL:
+                        big, small = trials[(strong, env)], trials[(weak, env)]
+                        others = (
+                            kept[kept.index(weak) + 1 :] + kept
+                            if weak in kept
+                            else kept
+                        )
+                        placebo = next((k for k in others if k != weak), None)
+                        handle.write(
+                            json.dumps(
+                                {
+                                    "key": f"{setting}|{env}|{strong}|{weak}",
+                                    "setting": setting,
+                                    "env": env,
+                                    "wordings": wordings,
+                                    "strong": strong,
+                                    "weak": weak,
+                                    "strong_id": big["id"],
+                                    "weak_id": small["id"],
+                                    "strong_gives": big["gives_to_in_need"],
+                                    "weak_gives": small["gives_to_in_need"],
+                                    "usable": big["gives_to_in_need"]
+                                    and not small["gives_to_in_need"],
+                                    "placebo": placebo,
+                                }
+                            )
+                            + "\n"
+                        )
+    return PAIRS
+
+
+def load_pairs(
+    usable_only: bool = True, one_per_environment: bool = False
+) -> list[Pair]:
+    """Pairs of the dataset (`PAIRS`), with their trials loaded. With
+    `one_per_environment`, one usable pair per setting and environment, the
+    favours rotating so that each takes part about equally often."""
+    rows = [json.loads(line) for line in PAIRS.read_text().splitlines()]
+    if usable_only or one_per_environment:
+        rows = [row for row in rows if row["usable"]]
+    if one_per_environment:
+        chosen, seen = [], set()
+        strong_keys, weak_keys = list(favour_pairs.BIG), list(favour_pairs.SMALL)
+        for index, row in enumerate(
+            sorted(rows, key=lambda r: (r["setting"], r["env"]))
+        ):
+            place = (row["setting"], row["env"])
+            if place in seen:
+                continue
+            options = [r for r in rows if (r["setting"], r["env"]) == place]
+            turn = len(chosen)
+            options.sort(
+                key=lambda r: (
+                    (strong_keys.index(r["strong"]) - turn) % len(strong_keys),
+                    (weak_keys.index(r["weak"]) - 3 * turn) % len(weak_keys),
+                )
+            )
+            chosen.append(options[0])
+            seen.add(place)
+        rows = chosen
+    trials: dict[str, dict] = {}
+    for setting in {row["setting"] for row in rows}:
+        wordings = next(row["wordings"] for row in rows if row["setting"] == setting)
+        for trial in favour_baseline.load_trials(setting, wordings):
+            trials[trial["id"]] = trial
+    pairs = []
+    for row in rows:
+        placebo = None
+        if row["placebo"]:
+            placebo = trials[row["strong_id"].replace(row["strong"], row["placebo"])]
+        pairs.append(
+            Pair(
+                key=row["key"],
+                big=trials[row["strong_id"]],
+                small=trials[row["weak_id"]],
+                placebo=placebo,
+            )
+        )
     return pairs
 
 
@@ -225,14 +337,14 @@ def _with_hidden(output: Any, hidden: Any) -> Any:
 
 
 def activation(
-    per_setting: int,
     layers: tuple[int, ...] = LAYERS,
     groups: tuple[str, ...] = (),
     name: str = "activation",
+    directions: tuple[str, ...] = ("denoise", "noise", "placebo"),
 ) -> Path:
     """Patch the whole suffix (and each of `groups` on its own) at each of
-    `layers`, in both directions and with the placebo, and save every written
-    decision. Resumable."""
+    `layers`, for every pair of `PAIRS`, in each of `directions`, and save
+    every written reply. Resumable."""
     import torch
 
     tokenizer, model = favour_baseline.load_model()
@@ -268,7 +380,7 @@ def activation(
     try:
         with torch.inference_mode():
             prepared = []
-            for pair in usable_pairs(per_setting):
+            for pair in load_pairs(one_per_environment=True):
                 entry = prepare(tokenizer, pair)
                 entry["pair"] = pair
                 entry["cache"] = {}
@@ -284,9 +396,13 @@ def activation(
                 jobs += [(entry, "big", None, None, "all", "base_big")]
                 for layer in layers:
                     for group in ("all", *groups):
-                        jobs.append((entry, "small", "big", layer, group, "denoise"))
-                        jobs.append((entry, "big", "small", layer, group, "noise"))
-                    if "placebo" in entry["ids"]:
+                        if "denoise" in directions:
+                            jobs.append(
+                                (entry, "small", "big", layer, group, "denoise")
+                            )
+                        if "noise" in directions:
+                            jobs.append((entry, "big", "small", layer, group, "noise"))
+                    if "placebo" in directions and "placebo" in entry["ids"]:
                         jobs.append(
                             (entry, "small", "placebo", layer, "all", "placebo")
                         )
@@ -384,7 +500,7 @@ def activation(
     return path
 
 
-def attribution(per_setting: int, layers: tuple[int, ...] = tuple(range(60))) -> Path:
+def attribution(layers: tuple[int, ...] = tuple(range(60))) -> Path:
     """Attribution patching of every pair: for each layer and suffix position,
     the estimated effect on the prefilled-"$" metric of patching that
     position from the other member. Saves `attribution.pt` (the estimates)
@@ -430,7 +546,7 @@ def attribution(per_setting: int, layers: tuple[int, ...] = tuple(range(60))) ->
     estimates = []
     try:
         with path.open("w") as handle:
-            for pair in usable_pairs(per_setting):
+            for pair in load_pairs(one_per_environment=True):
                 entry = prepare(tokenizer, pair, prefill=PREFILL)
                 suffix = entry["suffix"]
                 m_big, r_big, g_big = run(entry["ids"]["big"], suffix)
@@ -523,24 +639,26 @@ def table(name: str = "activation") -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("what", choices=("activation", "attribution", "table"))
-    parser.add_argument("--pairs", type=int, default=6, help="pairs per setting")
+    parser.add_argument("what", choices=("pairs", "activation", "attribution", "table"))
     parser.add_argument("--layers", default=",".join(map(str, LAYERS)))
     parser.add_argument(
         "--groups", default="", help="position groups to patch one at a time"
     )
+    parser.add_argument("--directions", default="denoise,noise,placebo")
     parser.add_argument("--name", default="activation")
     args = parser.parse_args()
-    if args.what == "activation":
+    if args.what == "pairs":
+        print(save_pairs(), len(load_pairs()), "usable pairs")
+    elif args.what == "activation":
         activation(
-            args.pairs,
             tuple(int(layer) for layer in args.layers.split(",")),
             tuple(group for group in args.groups.split(",") if group),
             args.name,
+            tuple(args.directions.split(",")),
         )
         table(args.name)
     elif args.what == "attribution":
-        attribution(args.pairs)
+        attribution()
     else:
         table(args.name)
 
