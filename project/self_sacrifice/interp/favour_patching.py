@@ -354,10 +354,16 @@ def activation(
     directions: tuple[str, ...] = ("denoise", "noise", "placebo"),
     environments: int = 24,
     settings: tuple[str, ...] = favour_pairs.SETTINGS,
+    ranges: tuple[str, ...] = (),
 ) -> Path:
     """Patch the whole suffix (and each of `groups` on its own) at each of
     `layers`, for every pair of `PAIRS`, in each of `directions`, and save
-    every written reply. Resumable."""
+    every written reply. Each of `ranges` ("29-33") patches the whole suffix
+    at every layer of the range at once. Resumable."""
+    spans = {
+        r: list(range(int(r.split("-")[0]), int(r.split("-")[1]) + 1)) for r in ranges
+    }
+    hooked = tuple(sorted(set(layers) | {i for span in spans.values() for i in span}))
     import torch
 
     tokenizer, model = favour_baseline.load_model()
@@ -370,7 +376,11 @@ def activation(
                 return output
             if state["mode"] == "cache":
                 state["cache"][layer] = hidden[0, -state["keep"] :].detach().cpu()
-            elif state["mode"] == "patch" and state["layer"] == layer:
+            elif state["mode"] == "patch" and layer in state.get("multi", {}):
+                mask, source = state["multi"][layer]
+                hidden = torch.where(mask[:, :, None], source.to(hidden.dtype), hidden)
+                return _with_hidden(output, hidden)
+            elif state["mode"] == "patch" and state.get("layer") == layer:
                 hidden = torch.where(
                     state["mask"][:, :, None], state["source"].to(hidden.dtype), hidden
                 )
@@ -381,7 +391,7 @@ def activation(
 
     handles = [
         module.register_forward_hook(hook(layer))
-        for layer, module in _layers(model, layers).items()
+        for layer, module in _layers(model, hooked).items()
     ]
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / f"{name}.jsonl"
@@ -432,6 +442,15 @@ def activation(
                             model(input_ids=torch.tensor([ids], device=0))
                             entry["cache"]["renamed"] = state["cache"]
                             entry["renamed_to"] = other
+                            # positions after the favour line whose token is
+                            # the same in both (not one of X's names)
+                            k = entry["suffix"]
+                            entry["groups"]["unnamed"] = [
+                                d
+                                for d in range(1, k + 1)
+                                if ids[len(ids) - d]
+                                == entry["ids"]["big"][len(ids) - d]
+                            ]
                             break
                 if {"mean_big", "mean_small"} & set(directions):
                     # the average over all strong (weak) favours of the same
@@ -468,6 +487,14 @@ def activation(
             for entry in prepared:
                 jobs += [(entry, "small", None, None, "all", "base_small")]
                 jobs += [(entry, "big", None, None, "all", "base_big")]
+                for span in ranges:
+                    for label, to, origin in (
+                        ("denoise", "small", "big"),
+                        ("noise", "big", "small"),
+                        ("placebo", "small", "placebo"),
+                    ):
+                        if label in directions and origin in entry["ids"]:
+                            jobs.append((entry, to, origin, span, "all", label))
                 for layer in layers:
                     for group in ("all", *groups):
                         if "denoise" in directions:
@@ -479,6 +506,13 @@ def activation(
                     for name in ("mean_big", "mean_small", "renamed"):
                         if name in directions and name in entry["cache"]:
                             jobs.append((entry, "small", name, layer, "all", name))
+                    if "renamed" in directions and "renamed" in entry["cache"]:
+                        jobs.append(
+                            (entry, "small", "renamed", layer, "unnamed", "renamed")
+                        )
+                        jobs.append(
+                            (entry, "small", "big", layer, "unnamed", "denoise")
+                        )
                     if "placebo" in directions and "placebo" in entry["ids"]:
                         jobs.append(
                             (entry, "small", "placebo", layer, "all", "placebo")
@@ -491,7 +525,11 @@ def activation(
             # unpatched runs first, then the layers in the order given
             jobs.sort(
                 key=lambda job: (
-                    -1 if job[3] is None else layers.index(job[3]),
+                    -1
+                    if job[3] is None
+                    else layers.index(job[3])
+                    if job[3] in layers
+                    else len(layers) + ranges.index(job[3]),
                     job[5],
                     job[0]["pair"].key,
                 )
@@ -511,7 +549,30 @@ def activation(
                         add_special_tokens=False,
                     ).to(0)
                     length = encoded["input_ids"].shape[1]
-                    if layer is not None:
+                    if isinstance(layer, str):
+                        multi = {}
+                        for each in spans[layer]:
+                            mask = torch.zeros(
+                                len(batch), length, dtype=torch.bool, device=0
+                            )
+                            source = torch.zeros(
+                                len(batch),
+                                length,
+                                width,
+                                dtype=torch.bfloat16,
+                                device=0,
+                            )
+                            for row, (entry, _to, origin, *_rest) in enumerate(batch):
+                                suffix = entry["suffix"]
+                                cached = entry["cache"][origin][each]
+                                for distance in range(1, suffix + 1):
+                                    mask[row, length - distance] = True
+                                    source[row, length - distance] = cached[
+                                        suffix - distance
+                                    ].to(0)
+                            multi[each] = (mask, source)
+                        state.update(mode="patch", layer=None, multi=multi)
+                    elif layer is not None:
                         mask = torch.zeros(
                             len(batch), length, dtype=torch.bool, device=0
                         )
@@ -539,7 +600,11 @@ def activation(
                                     suffix - distance
                                 ].to(0)
                         state.update(
-                            mode="patch", layer=layer, mask=mask, source=source
+                            mode="patch",
+                            layer=layer,
+                            mask=mask,
+                            source=source,
+                            multi={},
                         )
                     written = model.generate(
                         **encoded,
@@ -550,6 +615,7 @@ def activation(
                         top_k=None,
                     )
                     state["mode"] = None
+                    state["multi"] = {}
                     with path.open("a") as handle:
                         for job, tokens in zip(batch, written[:, length:]):
                             reply = tokenizer.decode(
@@ -733,18 +799,22 @@ def main() -> None:
         "--environments", type=int, default=24, help="use w000 .. w<n-1>"
     )
     parser.add_argument("--settings", default=",".join(favour_pairs.SETTINGS))
+    parser.add_argument(
+        "--ranges", default="", help="layer ranges patched together, e.g. 29-33,20-40"
+    )
     parser.add_argument("--name", default="activation")
     args = parser.parse_args()
     if args.what == "pairs":
         print(save_pairs(), len(load_pairs()), "usable pairs")
     elif args.what == "activation":
         activation(
-            tuple(int(layer) for layer in args.layers.split(",")),
+            tuple(int(layer) for layer in args.layers.split(",") if layer),
             tuple(group for group in args.groups.split(",") if group),
             args.name,
             tuple(args.directions.split(",")),
             args.environments,
             tuple(args.settings.split(",")),
+            tuple(r for r in args.ranges.split(",") if r),
         )
         table(args.name)
     elif args.what == "attribution":
