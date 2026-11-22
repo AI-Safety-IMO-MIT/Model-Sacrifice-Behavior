@@ -20,6 +20,8 @@ weak direction of `favour_steering` (unit length u_j):
                  weak favours): the game's own direction
     steer a      add a d_j (the averaged direction, in units of its own size)
     steer_reply a  the same, also at every token of the reply
+    random a     add a r_j: a random direction with the norm of d_j (control)
+    minus_d a    on the STRONG prompt, subtract a d_j (does it now keep?)
 
 Base runs: the weak and the strong prompt unpatched.
 """
@@ -50,6 +52,8 @@ CONDITIONS = (
     + [("game", t) for t in (0.5, 1.0)]
     + [("steer", a) for a in (1.0, 4.0, 16.0)]
     + [("steer_reply", 4.0)]
+    + [("random", a) for a in (1.0, 4.0)]
+    + [("minus_d", a) for a in (1.0, 4.0)]
 )
 BATCH = 12
 
@@ -64,6 +68,11 @@ def run(part: int = 0, parts: int = 1) -> Path:
     d_all = torch.load(favour_steering.OUT / "directions.pt")["directions"]["suffix"]
     d = {j: d_all[j].to(0) for j in layers}
     unit = {j: d[j] / d[j].norm() for j in layers}
+    generator = torch.Generator().manual_seed(0)
+    rand = {}
+    for j in layers:
+        r_ = torch.randn(d[j].shape, generator=generator).to(0)
+        rand[j] = r_ / r_.norm() * d[j].norm()
     state: dict[str, Any] = {"mode": None}
     cache: dict[int, Any] = {}
 
@@ -136,7 +145,9 @@ def run(part: int = 0, parts: int = 1) -> Path:
                     for j in layers:
                         game[j] = game[j] + sign * r[j] / len(keys)
             jobs = [("base_weak", 0.0, "small"), ("base_strong", 0.0, "big")]
-            jobs += [(c, t, "small") for c, t in CONDITIONS]
+            jobs += [
+                (c, t, "big" if c == "minus_d" else "small") for c, t in CONDITIONS
+            ]
             jobs = [j for j in jobs if f"{pair.key}|{j[0]}|{j[1]}" not in done]
             for start in range(0, len(jobs), BATCH):
                 batch = jobs[start : start + BATCH]
@@ -165,6 +176,10 @@ def run(part: int = 0, parts: int = 1) -> Path:
                             add[row] = t * game[j].to(0)
                         elif cond.startswith("steer"):
                             add[row] = t * d[j]
+                        elif cond == "random":
+                            add[row] = t * rand[j]
+                        elif cond == "minus_d":
+                            add[row] = -t * d[j]
                     edit[j] = (replace, target, add)
                     radd = torch.zeros(len(batch), 1, width, device=0)
                     for row, (cond, t, _m) in enumerate(batch):
