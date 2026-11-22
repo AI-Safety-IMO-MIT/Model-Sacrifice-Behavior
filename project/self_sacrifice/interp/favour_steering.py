@@ -30,6 +30,11 @@ steer
     is saved, so one can read whether a steered reply now invents a rescue,
     or gives for another stated reason.
 
+free
+    Steer ordinary chat prompts (a JSON list): add alpha * direction at every
+    position, prompt and reply, and save the reply for each alpha, alpha = 0
+    included. For experiment 3: what does the direction do outside the game?
+
 lens
     Logit lens of the direction at one layer: the final norm's scale and the
     unembedding applied to the direction; the tokens it raises and lowers
@@ -47,7 +52,17 @@ from typing import Any
 from project.self_sacrifice.games import favour_pairs
 from project.self_sacrifice.interp import common, favour_baseline, favour_patching
 
-__all__ = ["OUT", "SETTINGS", "ALPHAS", "direction", "steer", "lens", "table", "main"]
+__all__ = [
+    "OUT",
+    "SETTINGS",
+    "ALPHAS",
+    "direction",
+    "steer",
+    "free",
+    "lens",
+    "table",
+    "main",
+]
 
 OUT = common.OUT / "favour_steering"
 SETTINGS = ("lives", "credits", "cells", "permits", "canisters")
@@ -305,6 +320,100 @@ def lens(layer: int, kind: str = "suffix", top: int = 40) -> dict[str, Any]:
     return result
 
 
+def free(
+    layer: int,
+    prompts_path: Path,
+    alphas: tuple[float, ...],
+    kind: str = "suffix",
+    name: str = "free",
+    max_new: int = 300,
+) -> Path:
+    """Steer ordinary chat prompts: add alpha * direction at `layer` to every
+    position, in the prompt and in each written token, and save the reply for
+    every alpha (0 = unsteered). `prompts_path` is a JSON list of
+    {"id", "group", "prompt"}; each prompt is one user turn, no system turn."""
+    import torch
+
+    tokenizer, model = favour_baseline.load_model()
+    d = torch.load(OUT / "directions.pt")["directions"][kind][layer].to(0)
+    module = favour_patching._layers(model, (layer,))[layer]
+    state: dict[str, Any] = {"add": None}
+
+    def hook(_module: Any, _inputs: Any, output: Any) -> Any:
+        if state["add"] is None:
+            return output
+        hidden = favour_patching._hidden(output)
+        hidden = (hidden.float() + state["add"]).to(hidden.dtype)
+        return favour_patching._with_hidden(output, hidden)
+
+    handle = module.register_forward_hook(hook)
+    prompts = json.loads(prompts_path.read_text())
+    path = OUT / f"{name}_L{layer}_{kind}.jsonl"
+    done = (
+        {json.loads(line)["job"] for line in path.read_text().splitlines() if line}
+        if path.exists()
+        else set()
+    )
+    jobs = [(p, a) for a in (0.0, *alphas) for p in prompts]
+    jobs = [j for j in jobs if f"{j[0]['id']}|{j[1]}" not in done]
+    try:
+        for start in range(0, len(jobs), BATCH):
+            batch = jobs[start : start + BATCH]
+            texts = [
+                tokenizer.apply_chat_template(
+                    [{"role": "user", "content": p["prompt"]}],
+                    tokenize=False,
+                    add_generation_prompt=True,
+                    enable_thinking=False,
+                )
+                for p, _ in batch
+            ]
+            encoded = tokenizer(
+                texts, return_tensors="pt", padding=True, add_special_tokens=False
+            ).to(0)
+            # the same shift at every position, scaled per row; the norm of the
+            # mean strong-minus-weak difference is the unit of alpha
+            scale = torch.tensor([a for _, a in batch], device=0)[:, None, None]
+            state["add"] = scale * d[None, None, :]
+            with torch.inference_mode():
+                written = model.generate(
+                    **encoded,
+                    max_new_tokens=max_new,
+                    do_sample=False,
+                    temperature=None,
+                    top_p=None,
+                    top_k=None,
+                )
+            state["add"] = None
+            length = encoded["input_ids"].shape[1]
+            with path.open("a") as out:
+                for (p, a), tokens in zip(batch, written[:, length:]):
+                    out.write(
+                        json.dumps(
+                            {
+                                "job": f"{p['id']}|{a}",
+                                "id": p["id"],
+                                "group": p["group"],
+                                "prompt": p["prompt"],
+                                "alpha": a,
+                                "layer": layer,
+                                "kind": kind,
+                                "norm": d.norm().item(),
+                                "reply": tokenizer.decode(
+                                    tokens, skip_special_tokens=True
+                                ).strip(),
+                            }
+                        )
+                        + "\n"
+                    )
+                out.flush()
+                os.fsync(out.fileno())
+            print(start + len(batch), "/", len(jobs), flush=True)
+    finally:
+        handle.remove()
+    return path
+
+
 def table(layer: int, kind: str = "suffix") -> dict[str, Any]:
     rows = [
         json.loads(line)
@@ -353,7 +462,9 @@ def table(layer: int, kind: str = "suffix") -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("what", choices=("direction", "steer", "lens", "table"))
+    parser.add_argument("what", choices=("direction", "steer", "lens", "table", "free"))
+    parser.add_argument("--prompts", default="", help="JSON prompt list for `free`")
+    parser.add_argument("--name", default="free")
     parser.add_argument("--layer", type=int, default=28)
     parser.add_argument("--kind", default="suffix", choices=("suffix", "last"))
     parser.add_argument("--alphas", default=",".join(map(str, ALPHAS)))
@@ -365,6 +476,14 @@ def main() -> None:
         table(args.layer, args.kind)
     elif args.what == "lens":
         lens(args.layer, args.kind)
+    elif args.what == "free":
+        free(
+            args.layer,
+            Path(args.prompts),
+            tuple(float(a) for a in args.alphas.split(",")),
+            args.kind,
+            args.name,
+        )
     else:
         table(args.layer, args.kind)
 
