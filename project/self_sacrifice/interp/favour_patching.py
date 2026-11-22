@@ -415,6 +415,31 @@ def activation(
                     state.update(mode="cache", cache={}, keep=entry["suffix"])
                     model(input_ids=torch.tensor([ids], device=0))
                     entry["cache"][member] = state["cache"]
+                if "other" in directions:
+                    # the strong favour done by another agent O (X is still
+                    # the one at 0): same favour sentence with O as the actor
+                    o_name = pair.big["environment"]["other"]
+                    x_name = pair.big["environment"]["in_need"]
+                    line = pair.big["favour_line"]
+                    o_line = o_name + line[len(x_name) :]
+                    other = dict(pair.big)
+                    other["favour_line"] = o_line
+                    other["last_message"] = pair.big["last_message"].replace(
+                        line, o_line
+                    )
+                    other["id"] = pair.big["id"] + "-by-other"
+                    entry["trials"] = {"other": other}
+                    ids = tokenizer(
+                        common.prompt_text(tokenizer, other), add_special_tokens=False
+                    )["input_ids"]
+                    if (
+                        ids[-entry["suffix"] :]
+                        == entry["ids"]["big"][-entry["suffix"] :]
+                    ):
+                        entry["ids"]["other"] = ids
+                        state.update(mode="cache", cache={}, keep=entry["suffix"])
+                        model(input_ids=torch.tensor([ids], device=0))
+                        entry["cache"]["other"] = state["cache"]
                 if "renamed" in directions:
                     # the strong prompt with X given another name (same token
                     # count, so every position after the favour line lines
@@ -487,11 +512,14 @@ def activation(
             for entry in prepared:
                 jobs += [(entry, "small", None, None, "all", "base_small")]
                 jobs += [(entry, "big", None, None, "all", "base_big")]
+                if "other" in entry["cache"]:
+                    jobs += [(entry, "other", None, None, "all", "base_other")]
                 for span in ranges:
                     for label, to, origin in (
                         ("denoise", "small", "big"),
                         ("noise", "big", "small"),
                         ("placebo", "small", "placebo"),
+                        ("other", "small", "other"),
                     ):
                         if label in directions and origin in entry["ids"]:
                             jobs.append((entry, to, origin, span, "all", label))
@@ -503,7 +531,7 @@ def activation(
                             )
                         if "noise" in directions:
                             jobs.append((entry, "big", "small", layer, group, "noise"))
-                    for name in ("mean_big", "mean_small", "renamed"):
+                    for name in ("mean_big", "mean_small", "renamed", "other"):
                         if name in directions and name in entry["cache"]:
                             jobs.append((entry, "small", name, layer, "all", name))
                     if "renamed" in directions and "renamed" in entry["cache"]:
@@ -541,7 +569,11 @@ def activation(
             for layer, layer_jobs in by_layer.items():
                 for start in range(0, len(layer_jobs), BATCH):
                     batch = layer_jobs[start : start + BATCH]
-                    members = [getattr(job[0]["pair"], job[1]) for job in batch]
+                    members = [
+                        job[0].get("trials", {}).get(job[1])
+                        or getattr(job[0]["pair"], job[1])
+                        for job in batch
+                    ]
                     encoded = tokenizer(
                         [common.prompt_text(tokenizer, trial) for trial in members],
                         return_tensors="pt",
