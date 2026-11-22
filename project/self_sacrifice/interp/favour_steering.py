@@ -467,6 +467,49 @@ def mlp_steer(
     return path
 
 
+def cross_layer(reference: int = 29) -> dict[str, Any]:
+    """Separation on held-out games when every layer's residual (averaged
+    over the suffix) is projected on ONE layer's direction (`reference`),
+    next to each layer's own direction. Saves `cross_L<reference>.json`."""
+    import torch
+
+    tokenizer, model = favour_baseline.load_model()
+    dirs = torch.load(OUT / "directions.pt")["directions"]["suffix"]
+    ref = dirs[reference] / dirs[reference].norm()
+    own = dirs / dirs.norm(dim=-1, keepdim=True)
+    big, small = [], []
+    for pair in _pairs(False):
+        entry = favour_patching.prepare(tokenizer, pair)
+        k = entry["suffix"]
+        big.append(_all_layers(tokenizer, model, pair.big, k).mean(1))
+        small.append(_all_layers(tokenizer, model, pair.small, k).mean(1))
+    big_, small_ = torch.stack(big), torch.stack(small)  # [pairs, layers, width]
+
+    def auroc(b: Any, s: Any) -> float:
+        return (b[:, None] > s[None, :]).float().mean().item()
+
+    rows = []
+    for layer in range(big_.shape[1]):
+        rows.append(
+            {
+                "layer": layer,
+                "auroc_reference": auroc(big_[:, layer] @ ref, small_[:, layer] @ ref),
+                "auroc_own": auroc(
+                    big_[:, layer] @ own[layer], small_[:, layer] @ own[layer]
+                ),
+                "cos_with_reference": (own[layer] @ ref).item(),
+            }
+        )
+    result = {"reference": reference, "layers": rows}
+    common.save_json(OUT / f"cross_L{reference}.json", result)
+    for r in rows[::2]:
+        print(
+            f"L{r['layer']:2d} own {r['auroc_own']:.2f}  L{reference} d {r['auroc_reference']:.2f}"
+            f"  cos {r['cos_with_reference']:.2f}"
+        )
+    return result
+
+
 def lens(layer: int, kind: str = "suffix", top: int = 40) -> dict[str, Any]:
     import torch
 
@@ -638,7 +681,17 @@ def table(layer: int, kind: str = "suffix") -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument(
-        "what", choices=("direction", "groups", "steer", "mlp", "lens", "table", "free")
+        "what",
+        choices=(
+            "direction",
+            "groups",
+            "steer",
+            "mlp",
+            "cross",
+            "lens",
+            "table",
+            "free",
+        ),
     )
     parser.add_argument("--prompts", default="", help="JSON prompt list for `free`")
     parser.add_argument("--name", default="free")
@@ -654,6 +707,8 @@ def main() -> None:
         group_directions(args.layer)
     elif args.what == "mlp":
         mlp_steer()
+    elif args.what == "cross":
+        cross_layer(args.layer)
     elif args.what == "steer":
         steer(args.layer, args.kind, tuple(float(a) for a in args.alphas.split(",")))
         table(args.layer, args.kind)
