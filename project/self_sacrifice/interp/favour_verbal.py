@@ -52,7 +52,15 @@ from project.self_sacrifice.interp import (
     favour_steering,
 )
 
-__all__ = ["OUT", "first_sentence", "run", "table", "main"]
+__all__ = [
+    "OUT",
+    "first_sentence",
+    "written_openings",
+    "run",
+    "run_written",
+    "table",
+    "main",
+]
 
 OUT = common.OUT / "favour_verbal"
 BATCH = 12
@@ -205,6 +213,125 @@ def run(layer: int) -> Path:
     return path
 
 
+def written_openings(pair: Any) -> tuple[str, str]:
+    """The weak favour put into words by us: (stated, stated as big)."""
+    import re
+
+    x = pair.small["environment"]["in_need"]
+    act = pair.small["favour_line"].split(", or ")[0][len(x) + 1 :]
+    act = re.sub(r"\byour\b", "my", act)
+    act = re.sub(r"\byou\b", "me", act)
+    return (
+        f"Last round, {x} {act}.",
+        f"Last round, {x} did me a huge favour: {x} {act}.",
+    )
+
+
+def run_written(layer: int) -> Path:
+    """Same pairs and patch as `run`, with openings written by us:
+    plain_stated, plain_big (not patched) and patch_stated (patched)."""
+    import torch
+
+    rows = [
+        json.loads(line)
+        for line in (favour_patching.OUT / f"location_L{layer}.jsonl")
+        .read_text()
+        .splitlines()
+    ]
+    base: dict[str, dict[str, Any]] = {}
+    for r in rows:
+        if r["from"] is None:
+            base.setdefault(r["pair"], {})[r["label"]] = r["gives"]
+    keys = {
+        p for p, v in base.items() if v.get("base_big") and v.get("base_small") is False
+    }
+    tokenizer, model = favour_baseline.load_model()
+    module = favour_patching._layers(model, (layer,))[layer]
+    state: dict[str, Any] = {"source": None}
+
+    def hook(_module: Any, _inputs: Any, output: Any) -> Any:
+        hidden = favour_patching._hidden(output)
+        if state["source"] is None or hidden.shape[1] == 1:
+            return output
+        k, src, end = state["k"], state["source"], state["end"]
+        hidden = hidden.clone()
+        hidden[0, end - k : end] = src.to(hidden.dtype)
+        return favour_patching._with_hidden(output, hidden)
+
+    def cache(ids: list[int], k: int) -> Any:
+        got = {}
+
+        def grab(_m: Any, _i: Any, output: Any) -> None:
+            got["h"] = favour_patching._hidden(output)[0, -k:].detach().clone()
+
+        h = module.register_forward_hook(grab)
+        with torch.inference_mode():
+            model(input_ids=torch.tensor([ids], device=0), logits_to_keep=1)
+        h.remove()
+        return got["h"]
+
+    handle = module.register_forward_hook(hook)
+    OUT.mkdir(parents=True, exist_ok=True)
+    path = OUT / f"L{layer}_written.jsonl"
+    pairs = {
+        p.key: p
+        for p in favour_patching.load_pairs(
+            one_per_environment=True,
+            environments=favour_steering.ENVIRONMENTS,
+            settings=favour_steering.SETTINGS,
+        )
+    }
+    try:
+        with path.open("w") as out:
+            for key in sorted(keys):
+                pair = pairs[key]
+                entry = favour_patching.prepare(tokenizer, pair)
+                k = entry["suffix"]
+                ids = entry["ids"]["small"]
+                source = cache(entry["ids"]["big"], k)
+                stated, big = written_openings(pair)
+                result: dict[str, Any] = {"pair": key, "stated": stated, "big": big}
+                in_need = pair.big["environment"]["in_need"]
+                for label, patched, opening in (
+                    ("plain_stated", False, stated),
+                    ("plain_big", False, big),
+                    ("patch_stated", True, stated),
+                ):
+                    prefix = tokenizer(opening, add_special_tokens=False)["input_ids"]
+                    full = ids + prefix
+                    state.update(source=source if patched else None, k=k, end=len(ids))
+                    with torch.inference_mode():
+                        written = model.generate(
+                            input_ids=torch.tensor([full], device=0),
+                            max_new_tokens=favour_baseline.MAX_NEW,
+                            do_sample=False,
+                            temperature=None,
+                            top_p=None,
+                            top_k=None,
+                        )
+                    state["source"] = None
+                    reply = opening + tokenizer.decode(
+                        written[0, len(full) :], skip_special_tokens=True
+                    )
+                    decided, receiver = favour_pairs.decision(reply)
+                    result[label] = {
+                        "gives": decided == "give" and receiver == in_need,
+                        "decision": decided,
+                        "reply": reply.strip(),
+                    }
+                out.write(json.dumps(result) + "\n")
+                out.flush()
+                os.fsync(out.fileno())
+                print(key, flush=True)
+    finally:
+        handle.remove()
+    rows_out = [json.loads(x) for x in path.read_text().splitlines() if x]
+    for label in ("plain_stated", "plain_big", "patch_stated"):
+        n = sum(r[label]["gives"] for r in rows_out)
+        print(f"{label:13s} {n}/{len(rows_out)}  {100 * n / len(rows_out):.1f}%")
+    return path
+
+
 def table(layer: int) -> dict[str, Any]:
     rows = [
         json.loads(line)
@@ -242,9 +369,12 @@ def table(layer: int) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("what", choices=("run", "table"))
+    parser.add_argument("what", choices=("run", "written", "table"))
     parser.add_argument("--layer", type=int, default=29)
     args = parser.parse_args()
+    if args.what == "written":
+        run_written(args.layer)
+        return
     if args.what == "run":
         run(args.layer)
     table(args.layer)
