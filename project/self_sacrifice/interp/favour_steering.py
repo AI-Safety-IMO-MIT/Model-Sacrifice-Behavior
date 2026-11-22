@@ -19,6 +19,11 @@ direction
     projection on the direction separates strong from weak, and where the
     no-favour prompts fall (`separation.json`).
 
+groups
+    The same difference at one layer, but separately for each part of the
+    suffix (event lines, holdings, ...): `groups_L<layer>.pt`. `steer --kind
+    groups` adds each part's own vector at that part's positions.
+
 steer
     At one layer, during the prompt pass only, add alpha * direction to every
     suffix position, then let the model write its reply. Held-out pairs only.
@@ -195,14 +200,53 @@ def direction() -> Path:
     return OUT / "directions.pt"
 
 
+def group_directions(layer: int) -> Path:
+    """Position-specific version of the direction at one layer: for each part
+    of the suffix (`favour_patching.GROUPS`), the strong-minus-weak residual
+    averaged over that part's positions and over the training pairs. Saves
+    `groups_L<layer>.pt` {group: vector}."""
+    import torch
+
+    tokenizer, model = favour_baseline.load_model()
+    sums: dict[str, Any] = {}
+    count = 0
+    for pair in _pairs(True):
+        entry = favour_patching.prepare(tokenizer, pair)
+        k = entry["suffix"]
+        big = _all_layers(tokenizer, model, pair.big, k)[layer]
+        small = _all_layers(tokenizer, model, pair.small, k)[layer]
+        diff = big - small  # [k, width]; row k - distance
+        for group in favour_patching.GROUPS:
+            rows = [k - distance for distance in entry["groups"][group]]
+            if rows:
+                sums[group] = sums.get(group, 0) + diff[rows].mean(0)
+        count += 1
+    vectors = {group: total / count for group, total in sums.items()}
+    path = OUT / f"groups_L{layer}.pt"
+    torch.save(vectors, path)
+    for group, v in vectors.items():
+        print(group, round(v.norm().item(), 2))
+    return path
+
+
 def steer(layer: int, kind: str = "suffix", alphas: tuple[float, ...] = ALPHAS) -> Path:
     import torch
 
     tokenizer, model = favour_baseline.load_model()
-    d = torch.load(OUT / "directions.pt")["directions"][kind][layer].to(0)
     generator = torch.Generator().manual_seed(0)
-    r = torch.randn(d.shape, generator=generator).to(0)
-    r = r / r.norm() * d.norm()
+    if kind == "groups":
+        vectors = {
+            g: v.to(0) for g, v in torch.load(OUT / f"groups_L{layer}.pt").items()
+        }
+        randoms = {}
+        for g, v in vectors.items():
+            r = torch.randn(v.shape, generator=generator).to(0)
+            randoms[g] = r / r.norm() * v.norm()
+        d = next(iter(vectors.values()))
+    else:
+        d = torch.load(OUT / "directions.pt")["directions"][kind][layer].to(0)
+        r = torch.randn(d.shape, generator=generator).to(0)
+        r = r / r.norm() * d.norm()
     module = favour_patching._layers(model, (layer,))[layer]
     state: dict[str, Any] = {"add": None}
 
@@ -247,8 +291,14 @@ def steer(layer: int, kind: str = "suffix", alphas: tuple[float, ...] = ALPHAS) 
             length = encoded["input_ids"].shape[1]
             add = torch.zeros(len(batch), length, d.shape[0], device=0)
             for row, (_pair, entry, _member, alpha, label) in enumerate(batch):
-                vec = r if label == "weak_plus_random" else d
-                add[row, length - entry["suffix"] :] = alpha * vec
+                if kind == "groups":
+                    table_ = randoms if label == "weak_plus_random" else vectors
+                    for group, vec in table_.items():
+                        for distance in entry["groups"][group]:
+                            add[row, length - distance] = alpha * vec
+                else:
+                    vec = r if label == "weak_plus_random" else d
+                    add[row, length - entry["suffix"] :] = alpha * vec
             state["add"] = add
             with torch.inference_mode():
                 written = model.generate(
@@ -466,11 +516,15 @@ def main() -> None:
     parser.add_argument("--prompts", default="", help="JSON prompt list for `free`")
     parser.add_argument("--name", default="free")
     parser.add_argument("--layer", type=int, default=28)
-    parser.add_argument("--kind", default="suffix", choices=("suffix", "last"))
+    parser.add_argument(
+        "--kind", default="suffix", choices=("suffix", "last", "groups")
+    )
     parser.add_argument("--alphas", default=",".join(map(str, ALPHAS)))
     args = parser.parse_args()
     if args.what == "direction":
         direction()
+    elif args.what == "groups":
+        group_directions(args.layer)
     elif args.what == "steer":
         steer(args.layer, args.kind, tuple(float(a) for a in args.alphas.split(",")))
         table(args.layer, args.kind)
