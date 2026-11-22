@@ -28,7 +28,8 @@ metric bb  log p(R_give) - log p(R_keep), where R_give is the strong prompt's
            reply that gives and R_keep the weak prompt's reply that keeps,
            both written with the reply blocked from the favour line
            (`favour_attention`, check A) so that they speak of the favour
-           only in general terms, and scored with the same block. The prompt
+           only in general terms, and scored with the same block. Replies
+           are cut at MAX_REPLY tokens (memory). The prompt
            pass is unchanged by the block, so the components are the same as
            in the normal model.
 metric b   log P(give) - log P(keep) for the prompt, where P(give) sums over
@@ -67,6 +68,8 @@ SAMPLES = 16
 MIN_EACH = 3
 BATCH = 16
 SEED = 20261122
+# longest reply scored with gradients: longer ones are cut (memory on one 80 GB GPU)
+MAX_REPLY = 400
 
 
 def _pairs() -> list[favour_patching.Pair]:
@@ -348,7 +351,7 @@ def attribute(layer: int, window: tuple[int, int]) -> Path:
                     for r in group:
                         reply_ids = tokenizer(r["reply"], add_special_tokens=False)[
                             "input_ids"
-                        ][: favour_baseline.MAX_NEW]
+                        ][:MAX_REPLY]
                         g = component_grad(entry["ids"][member], k, reply_ids)
                         for name, value in g.items():
                             total[name] = total.get(name, 0) + value / len(group)
@@ -377,10 +380,10 @@ def attribute(layer: int, window: tuple[int, int]) -> Path:
             if give_row and keep_row and give_row["gives"] and not keep_row["gives"]:
                 ids_give = tokenizer(give_row["reply"], add_special_tokens=False)[
                     "input_ids"
-                ][: favour_baseline.MAX_NEW]
+                ][:MAX_REPLY]
                 ids_keep = tokenizer(keep_row["reply"], add_special_tokens=False)[
                     "input_ids"
-                ][: favour_baseline.MAX_NEW]
+                ][:MAX_REPLY]
                 ends_bb = []
                 for member, trial in (("small", pair.small), ("big", pair.big)):
                     span = favour_positions(trial)
