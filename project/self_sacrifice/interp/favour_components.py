@@ -32,6 +32,11 @@ metric bb  log p(R_give) - log p(R_keep), where R_give is the strong prompt's
            are cut at MAX_REPLY tokens. The prompt
            pass is unchanged by the block, so the components are the same as
            in the normal model.
+metric bp  log p(R_give) - log p(R_keep) on the weak prompt, where both are
+           the weak prompt's own replies: R_keep unpatched, R_give with the
+           strong prompt's residual patched in at `--layer` (experiment 1).
+           Both describe the weak favour, so they differ mainly in the
+           decision. Run with `attribute --only bp` after the others.
 metric b   log P(give) - log P(keep) for the prompt, where P(give) sums over
            every reply the model could write. Its gradient is estimated from
            the model's own replies (`sample`: 16 per prompt at temperature
@@ -151,7 +156,7 @@ def sample(
     return path
 
 
-def attribute(layer: int, window: tuple[int, int]) -> Path:
+def attribute(layer: int, window: tuple[int, int], only: str | None = None) -> Path:
     """Scores of every head and MLP in layers window[0] .. window[1] - 1 for
     metrics d and b, for every pair. Saves `scores.pt` (one entry per pair)."""
     import torch
@@ -307,9 +312,24 @@ def attribute(layer: int, window: tuple[int, int]) -> Path:
     path = OUT / f"scores_L{layer}_{lo}-{hi}.pt"
     results = torch.load(path) if path.exists() else []
     done = {r["pair"] for r in results}
+    by_key = {r["pair"]: r for r in results}
+    # metric bp: the weak prompt's own replies, unpatched (keeps) and with the
+    # strong prompt's residual patched in at `layer` (gives) - the location run
+    location: dict[str, dict[str, Any]] = {}
+    loc_path = favour_patching.OUT / f"location_L{layer}.jsonl"
+    if loc_path.exists():
+        for line in loc_path.read_text().splitlines():
+            r = json.loads(line)
+            if r["from"] is None:
+                location.setdefault(r["pair"], {})[r["label"]] = r
+            elif r["label"] == "denoise" and r["group"] == "all":
+                location.setdefault(r["pair"], {})["patched"] = r
     try:
         for pair in _pairs():
-            if pair.key in done:
+            if only == "bp":
+                if pair.key not in by_key or "bp" in by_key[pair.key]:
+                    continue
+            elif pair.key in done:
                 continue
             entry = favour_patching.prepare(tokenizer, pair)
             k = entry["suffix"]
@@ -324,6 +344,29 @@ def attribute(layer: int, window: tuple[int, int]) -> Path:
             delta = {
                 name: cache["big"][name] - cache["small"][name] for name in cache["big"]
             }
+            if only == "bp":
+                row = by_key[pair.key]
+                loc = location.get(pair.key, {})
+                row["bp"] = None
+                if (
+                    loc.get("patched", {}).get("gives")
+                    and loc.get("base_small", {}).get("gives") is False
+                ):
+                    ids_give = tokenizer(
+                        loc["patched"]["reply"], add_special_tokens=False
+                    )["input_ids"][:MAX_REPLY]
+                    ids_keep = tokenizer(
+                        loc["base_small"]["reply"], add_special_tokens=False
+                    )["input_ids"][:MAX_REPLY]
+                    g_give = component_grad(entry["ids"]["small"], k, ids_give)
+                    g_keep = component_grad(entry["ids"]["small"], k, ids_keep)
+                    row["bp"] = scores(
+                        delta, {n: g_give[n] - g_keep[n] for n in g_give}
+                    )
+                torch.save(results, path)
+                print(pair.key, "bp", row["bp"] is not None, flush=True)
+                torch.cuda.empty_cache()
+                continue
             row: dict[str, Any] = {"pair": pair.key, "suffix": k}
             # metric d at both ends
             ends = []
@@ -566,7 +609,7 @@ def table(layer: int, window: tuple[int, int], top: int = 20) -> dict[str, Any]:
     lo, hi = window
     results = torch.load(OUT / f"scores_L{layer}_{lo}-{hi}.pt")
     summary: dict[str, Any] = {"pairs": len(results)}
-    for metric in ("d", "b", "bb"):
+    for metric in ("d", "b", "bb", "bp"):
         rows = [r.get(metric) for r in results if r.get(metric) is not None]
         if not rows:
             continue
@@ -596,6 +639,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("what", choices=("sample", "attribute", "validate", "table"))
     parser.add_argument("--metric", default="bb")
+    parser.add_argument(
+        "--only", default=None, help="attribute: add only this metric (bp)"
+    )
     parser.add_argument("--layer", type=int, default=30)
     parser.add_argument("--window", default="10-30")
     parser.add_argument("--pairs", type=int, default=None, help="`sample`: first n")
@@ -607,7 +653,7 @@ def main() -> None:
     elif args.what == "validate":
         validate(args.layer, window, args.metric)
     elif args.what == "attribute":
-        attribute(args.layer, window)
+        attribute(args.layer, window, args.only)
         table(args.layer, window)
     else:
         table(args.layer, window)
