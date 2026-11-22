@@ -342,6 +342,131 @@ def steer(layer: int, kind: str = "suffix", alphas: tuple[float, ...] = ALPHAS) 
     return path
 
 
+def mlp_steer(
+    layers: tuple[int, ...] = (22, 23, 28, 29),
+    alphas: tuple[float, ...] = (1.0, 2.0, 4.0),
+) -> Path:
+    """Steer through the MLPs that experiment 4 ranked highest: the mean
+    strong-minus-weak MLP output (averaged over the suffix and the training
+    pairs) of each layer in `layers`, added at those MLP outputs on the
+    suffix positions of held-out prompts (prompt pass only)."""
+    import torch
+
+    tokenizer, model = favour_baseline.load_model()
+    stack = common.decoder_layers(model)
+    state: dict[str, Any] = {"mode": None}
+    got: dict[int, Any] = {}
+
+    def hook(i: int):
+        def run(_module: Any, _inputs: Any, output: Any) -> Any:
+            if output.shape[1] == 1:
+                return output
+            if state["mode"] == "cache":
+                got[i] = output[0, -state["k"] :].float().mean(0).cpu()
+            elif state["mode"] == "add":
+                output = output + state["add"][i].to(output.dtype)
+            return output
+
+        return run
+
+    handles = [stack[i].mlp.register_forward_hook(hook(i)) for i in layers]
+    try:
+        means: dict[int, Any] = {i: 0 for i in layers}
+        train = _pairs(True)
+        with torch.inference_mode():
+            for pair in train:
+                entry = favour_patching.prepare(tokenizer, pair)
+                for member, sign in (("big", 1), ("small", -1)):
+                    state.update(mode="cache", k=entry["suffix"])
+                    model(
+                        input_ids=torch.tensor([entry["ids"][member]], device=0),
+                        logits_to_keep=1,
+                    )
+                    for i in layers:
+                        means[i] = means[i] + sign * got[i] / len(train)
+        state["mode"] = None
+        torch.save(means, OUT / "mlp_directions.pt")
+        generator = torch.Generator().manual_seed(0)
+        randoms = {}
+        for i, v in means.items():
+            r = torch.randn(v.shape, generator=generator)
+            randoms[i] = r / r.norm() * v.norm()
+        path = OUT / "mlp_steer.jsonl"
+        jobs = []
+        for pair in _pairs(False):
+            entry = favour_patching.prepare(tokenizer, pair)
+            jobs += [
+                (pair, entry, "small", 0.0, "base_weak"),
+                (pair, entry, "big", 0.0, "base_strong"),
+            ]
+            for alpha in alphas:
+                jobs += [
+                    (pair, entry, "small", alpha, "weak_plus_d"),
+                    (pair, entry, "big", -alpha, "strong_minus_d"),
+                    (pair, entry, "small", alpha, "weak_plus_random"),
+                ]
+        with path.open("w") as out:
+            for pair, entry, member, alpha, label in jobs:
+                ids = entry["ids"][member]
+                n, k = len(ids), entry["suffix"]
+                add = {}
+                for i in layers:
+                    vec = (randoms if label == "weak_plus_random" else means)[i].to(0)
+                    a = torch.zeros(1, n, vec.shape[0], device=0)
+                    a[0, n - k :] = alpha * vec
+                    add[i] = a
+                state.update(mode="add", add=add)
+                with torch.inference_mode():
+                    written = model.generate(
+                        input_ids=torch.tensor([ids], device=0),
+                        max_new_tokens=favour_baseline.MAX_NEW,
+                        do_sample=False,
+                        temperature=None,
+                        top_p=None,
+                        top_k=None,
+                    )
+                state["mode"] = None
+                reply = tokenizer.decode(
+                    written[0, n:], skip_special_tokens=True
+                ).strip()
+                decided, receiver = favour_pairs.decision(reply)
+                out.write(
+                    json.dumps(
+                        {
+                            "pair": pair.key,
+                            "label": label,
+                            "alpha": alpha,
+                            "layers": list(layers),
+                            "gives": decided == "give"
+                            and receiver == pair.big["environment"]["in_need"],
+                            "decision": decided,
+                            "reply": reply,
+                        }
+                    )
+                    + "\n"
+                )
+                out.flush()
+    finally:
+        for handle in handles:
+            handle.remove()
+    rows = [json.loads(line) for line in path.read_text().splitlines()]
+    for alpha in alphas:
+        cells = []
+        for label, want in (
+            ("weak_plus_d", True),
+            ("strong_minus_d", False),
+            ("weak_plus_random", True),
+        ):
+            picked = [
+                r for r in rows if r["label"] == label and abs(r["alpha"]) == alpha
+            ]
+            cells.append(
+                f"{label} {sum(r['gives'] is want for r in picked)}/{len(picked)}"
+            )
+        print(alpha, " ".join(cells))
+    return path
+
+
 def lens(layer: int, kind: str = "suffix", top: int = 40) -> dict[str, Any]:
     import torch
 
@@ -513,7 +638,7 @@ def table(layer: int, kind: str = "suffix") -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument(
-        "what", choices=("direction", "groups", "steer", "lens", "table", "free")
+        "what", choices=("direction", "groups", "steer", "mlp", "lens", "table", "free")
     )
     parser.add_argument("--prompts", default="", help="JSON prompt list for `free`")
     parser.add_argument("--name", default="free")
@@ -527,6 +652,8 @@ def main() -> None:
         direction()
     elif args.what == "groups":
         group_directions(args.layer)
+    elif args.what == "mlp":
+        mlp_steer()
     elif args.what == "steer":
         steer(args.layer, args.kind, tuple(float(a) for a in args.alphas.split(",")))
         table(args.layer, args.kind)

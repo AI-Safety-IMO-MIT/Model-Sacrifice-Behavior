@@ -67,7 +67,9 @@ def load_model() -> tuple[Any, Any]:
     tokenizer = AutoTokenizer.from_pretrained(source)
     tokenizer.padding_side = "left"
     model = AutoModelForCausalLM.from_pretrained(
-        source, dtype=torch.bfloat16, device_map={"": 0}
+        source,
+        dtype=torch.bfloat16,
+        device_map=os.environ.get("FAVOUR_DEVICE_MAP") or {"": 0},
     ).eval()
     model.set_attn_implementation("sdpa")
     return tokenizer, model

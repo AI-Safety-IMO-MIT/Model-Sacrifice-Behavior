@@ -29,7 +29,7 @@ metric bb  log p(R_give) - log p(R_keep), where R_give is the strong prompt's
            both written with the reply blocked from the favour line
            (`favour_attention`, check A) so that they speak of the favour
            only in general terms, and scored with the same block. Replies
-           are cut at MAX_REPLY tokens (memory). The prompt
+           are cut at MAX_REPLY tokens. The prompt
            pass is unchanged by the block, so the components are the same as
            in the normal model.
 metric b   log P(give) - log P(keep) for the prompt, where P(give) sums over
@@ -68,8 +68,8 @@ SAMPLES = 16
 MIN_EACH = 3
 BATCH = 16
 SEED = 20261122
-# longest reply scored with gradients: longer ones are cut (memory on one 80 GB GPU)
-MAX_REPLY = 400
+# longest reply scored with gradients (memory: run on two GPUs with FAVOUR_DEVICE_MAP=auto)
+MAX_REPLY = 1000
 
 
 def _pairs() -> list[favour_patching.Pair]:
@@ -280,7 +280,7 @@ def attribute(layer: int, window: tuple[int, int]) -> Path:
         else:
             model(input_ids=torch.tensor([ids], device=0), logits_to_keep=1)
             resid = got["resid"][0, len(ids) - k : len(ids)].float()
-            metric = (resid.mean(0) * unit).sum()
+            metric = (resid.mean(0) * unit.to(resid.device)).sum()
         metric.backward()
         state["mode"] = None
         end = len(ids)
