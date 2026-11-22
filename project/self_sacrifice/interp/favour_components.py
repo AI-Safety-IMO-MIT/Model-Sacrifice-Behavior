@@ -66,7 +66,16 @@ from project.self_sacrifice.interp import (
     favour_steering,
 )
 
-__all__ = ["OUT", "SAMPLES", "sample", "attribute", "validate", "table", "main"]
+__all__ = [
+    "OUT",
+    "SAMPLES",
+    "sample",
+    "attribute",
+    "validate",
+    "heads_where",
+    "table",
+    "main",
+]
 
 OUT = common.OUT / "favour_components"
 SAMPLES = 16
@@ -156,7 +165,12 @@ def sample(
     return path
 
 
-def attribute(layer: int, window: tuple[int, int], only: str | None = None) -> Path:
+def attribute(
+    layer: int,
+    window: tuple[int, int],
+    only: str | None = None,
+    positions: bool = False,
+) -> Path:
     """Scores of every head and MLP in layers window[0] .. window[1] - 1 for
     metrics d and b, for every pair. Saves `scores.pt` (one entry per pair)."""
     import torch
@@ -306,10 +320,22 @@ def attribute(layer: int, window: tuple[int, int], only: str | None = None) -> P
             per = (dz * gz).sum(0)  # [heads * head_dim]
             heads[i - lo] = per.view(32, -1).sum(-1).cpu()
             mlps[i - lo] = (delta[f"mlp{i}"] * grad[f"mlp{i}"]).sum().cpu()
-        return {"heads": heads, "mlp": mlps}
+        out = {"heads": heads, "mlp": mlps}
+        if positions:
+            # the same, per position after the favour line (index k - 1 is
+            # the last prompt token), as float16
+            k = next(iter(delta.values())).shape[0]
+            hp = torch.zeros(hi - lo, 32, k)
+            mp = torch.zeros(hi - lo, k)
+            for i in wanted:
+                dz, gz = delta[f"attn{i}"], grad[f"attn{i}"]
+                hp[i - lo] = (dz * gz).view(k, 32, -1).sum(-1).T.cpu()
+                mp[i - lo] = (delta[f"mlp{i}"] * grad[f"mlp{i}"]).sum(-1).cpu()
+            out["heads_pos"], out["mlp_pos"] = hp.half(), mp.half()
+        return out
 
     OUT.mkdir(parents=True, exist_ok=True)
-    path = OUT / f"scores_L{layer}_{lo}-{hi}.pt"
+    path = OUT / f"scores_L{layer}_{lo}-{hi}{'_pos' if positions else ''}.pt"
     results = torch.load(path) if path.exists() else []
     done = {r["pair"] for r in results}
     by_key = {r["pair"]: r for r in results}
@@ -379,7 +405,7 @@ def attribute(layer: int, window: tuple[int, int], only: str | None = None) -> P
             }
             # metric b at each end with enough of both decisions
             ends_b, counts = [], {}
-            for member in ("small", "big"):
+            for member in ("small", "big") if not positions else ():
                 rows = samples.get((pair.key, member), [])
                 gives = [r for r in rows if r["gives"]]
                 keeps = [
@@ -439,6 +465,26 @@ def attribute(layer: int, window: tuple[int, int], only: str | None = None) -> P
                     part: (ends_bb[0][part] + ends_bb[1][part]) / 2
                     for part in ("heads", "mlp")
                 }
+            if positions:
+                loc = location.get(pair.key, {})
+                row["bp"] = None
+                if (
+                    loc.get("patched", {}).get("gives")
+                    and loc.get("base_small", {}).get("gives") is False
+                ):
+                    ids_give = tokenizer(
+                        loc["patched"]["reply"], add_special_tokens=False
+                    )["input_ids"][:MAX_REPLY]
+                    ids_keep = tokenizer(
+                        loc["base_small"]["reply"], add_special_tokens=False
+                    )["input_ids"][:MAX_REPLY]
+                    g_give = component_grad(entry["ids"]["small"], k, ids_give)
+                    g_keep = component_grad(entry["ids"]["small"], k, ids_keep)
+                    row["bp"] = scores(
+                        delta, {n: g_give[n] - g_keep[n] for n in g_give}
+                    )
+                row["groups"] = entry["groups"]
+                row["text"] = entry["text"]["small"]
             results.append(row)
             torch.save(results, path)
             print(pair.key, counts, flush=True)
@@ -603,6 +649,124 @@ def validate(
     return path
 
 
+def heads_where(
+    layer: int,
+    window: tuple[int, int],
+    metric: str = "bb",
+    top: int = 12,
+    pairs: int = 40,
+) -> Path:
+    """Where do the top heads (by |metric|) read from and write to? For each
+    head, in the strong and in the weak prompt: for each part after the
+    favour line (destination), the share of its attention that goes to each
+    part of the prompt (source): the rules (system turn), round 1, round 2
+    up to the favour line, the favour line itself, X's name elsewhere, and
+    the parts after the favour line. Averaged over `pairs` pairs. Saves
+    `heads_where_L<layer>_<metric>.json`."""
+    import re
+
+    import torch
+
+    lo, hi = window
+    results = torch.load(OUT / f"scores_L{layer}_{lo}-{hi}.pt")
+    rows = [r[metric] for r in results if r.get(metric) is not None]
+    heads = torch.stack([r["heads"] for r in rows]).mean(0)
+    flat = sorted(
+        ((heads[i, h].item(), lo + i, h) for i in range(hi - lo) for h in range(32)),
+        key=lambda x: -abs(x[0]),
+    )[:top]
+    os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+    tokenizer, model = favour_baseline.load_model()
+    model.set_attn_implementation("eager")
+    sources = [
+        "rules",
+        "round 1",
+        "round 2 before",
+        "favour line",
+        "X's name",
+        *favour_patching.GROUPS,
+    ]
+    total: dict[str, Any] = {}
+    count = 0
+    for pair in _pairs()[::2][:pairs]:
+        entry = favour_patching.prepare(tokenizer, pair)
+        k = entry["suffix"]
+        for member, trial in (("big", pair.big), ("small", pair.small)):
+            text = entry["text"][member]
+            enc = tokenizer(text, add_special_tokens=False, return_offsets_mapping=True)
+            starts = [a for a, _ in enc["offset_mapping"]]
+            n = len(starts)
+            label = ["rules"] * n
+            first_user = text.index("<|turn>user")
+            second_user = text.index("<|turn>user", first_user + 1)
+            fav = set(
+                favour_attention.favour_span(
+                    text,
+                    [a if b > a else -1 for a, b in enc["offset_mapping"]],
+                    trial["favour_line"],
+                )
+            )
+            x = trial["environment"]["in_need"]
+            names = [m.span() for m in re.finditer(rf"\b{x}\b", text)]
+            for i, a in enumerate(starts):
+                if a >= second_user:
+                    label[i] = "round 2 before"
+                elif a >= first_user:
+                    label[i] = "round 1"
+                if i in fav:
+                    label[i] = "favour line"
+                elif any(s0 <= a < s1 for s0, s1 in names):
+                    label[i] = "X's name"
+            for group, distances in entry["groups"].items():
+                if group == "last":
+                    continue
+                for d in distances:
+                    if label[n - d] != "X's name":
+                        label[n - d] = group
+            with torch.inference_mode():
+                out = model(
+                    input_ids=torch.tensor([enc["input_ids"]], device=0),
+                    output_attentions=True,
+                    logits_to_keep=1,
+                )
+            for _value, li, h in flat:
+                att = out.attentions[li][0, h].float()  # [n, n]
+                key = f"L{li}.H{h}"
+                for dest in favour_patching.GROUPS:
+                    rows_ = [n - d for d in entry["groups"][dest]]
+                    if not rows_:
+                        continue
+                    a = att[rows_].mean(0)  # attention from this part, per source
+                    for src in sources:
+                        cols = [i for i in range(n) if label[i] == src]
+                        mass = a[cols].sum().item() if cols else 0.0
+                        cell = (
+                            total.setdefault(key, {})
+                            .setdefault(dest, {})
+                            .setdefault(src, [0.0, 0.0])
+                        )
+                        cell[0 if member == "big" else 1] += mass
+            del out
+        count += 1
+        print(pair.key, flush=True)
+    for key in total:
+        for dest in total[key]:
+            for src in total[key][dest]:
+                total[key][dest][src] = [
+                    round(v / count, 4) for v in total[key][dest][src]
+                ]
+    result = {
+        "pairs": count,
+        "metric": metric,
+        "heads": [{"head": f"L{li}.H{h}", "score": v} for v, li, h in flat],
+        "sources": sources,
+        "attention": total,
+    }
+    path = OUT / f"heads_where_L{layer}_{metric}.json"
+    common.save_json(path, result)
+    return path
+
+
 def table(layer: int, window: tuple[int, int], top: int = 20) -> dict[str, Any]:
     import torch
 
@@ -637,8 +801,13 @@ def table(layer: int, window: tuple[int, int], top: int = 20) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("what", choices=("sample", "attribute", "validate", "table"))
+    parser.add_argument(
+        "what", choices=("sample", "attribute", "validate", "where", "table")
+    )
     parser.add_argument("--metric", default="bb")
+    parser.add_argument(
+        "--positions", action="store_true", help="attribute: keep per-position scores"
+    )
     parser.add_argument(
         "--only", default=None, help="attribute: add only this metric (bp)"
     )
@@ -652,8 +821,10 @@ def main() -> None:
         sample(limit=args.pairs, name=args.name)
     elif args.what == "validate":
         validate(args.layer, window, args.metric)
+    elif args.what == "where":
+        heads_where(args.layer, window, args.metric)
     elif args.what == "attribute":
-        attribute(args.layer, window, args.only)
+        attribute(args.layer, window, args.only, args.positions)
         table(args.layer, window)
     else:
         table(args.layer, window)
