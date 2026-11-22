@@ -790,7 +790,7 @@ def table(name: str = "activation") -> dict[str, Any]:
     summary: dict[str, Any] = {"pairs": len(keys), "differ": len(differ), "sites": {}}
     sites = sorted(
         {(row["layer"], row["group"]) for row in rows if row["from"]},
-        key=lambda site: (site[0], site[1] != "all", site[1]),
+        key=lambda site: (str(site[0]).zfill(5), site[1] != "all", site[1]),
     )
     for layer, group in sites:
 
@@ -812,7 +812,7 @@ def table(name: str = "activation") -> dict[str, Any]:
         }
         summary["sites"][f"{layer}|{group}"] = cells
         print(
-            f"{layer:5d} {group:8s}",
+            f"{str(layer):>5s} {group:8s}",
             *(f"{hit:6d}/{total:<8d}" for hit, total in cells.values()),
         )
     common.save_json(OUT / f"{name}_summary.json", summary)
