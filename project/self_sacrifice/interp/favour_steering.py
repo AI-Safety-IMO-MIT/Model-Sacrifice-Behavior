@@ -512,7 +512,9 @@ def table(layer: int, kind: str = "suffix") -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("what", choices=("direction", "steer", "lens", "table", "free"))
+    parser.add_argument(
+        "what", choices=("direction", "groups", "steer", "lens", "table", "free")
+    )
     parser.add_argument("--prompts", default="", help="JSON prompt list for `free`")
     parser.add_argument("--name", default="free")
     parser.add_argument("--layer", type=int, default=28)
