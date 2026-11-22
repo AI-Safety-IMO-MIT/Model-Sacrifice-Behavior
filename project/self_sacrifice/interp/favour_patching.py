@@ -405,6 +405,34 @@ def activation(
                     state.update(mode="cache", cache={}, keep=entry["suffix"])
                     model(input_ids=torch.tensor([ids], device=0))
                     entry["cache"][member] = state["cache"]
+                if "renamed" in directions:
+                    # the strong prompt with X given another name (same token
+                    # count, so every position after the favour line lines
+                    # up): does what is carried there stay tied to X's name?
+                    import re
+
+                    from project.self_sacrifice.games import main_scenario
+
+                    x_name = pair.big["environment"]["in_need"]
+                    taken = set(pair.big["environment"]["order"])
+                    for other in main_scenario.NAMES:
+                        if other in taken:
+                            continue
+                        renamed = dict(pair.big)
+                        for field in ("system", "first_message", "last_message"):
+                            renamed[field] = re.sub(
+                                rf"\b{x_name}\b", other, pair.big[field]
+                            )
+                        ids = tokenizer(
+                            common.prompt_text(tokenizer, renamed),
+                            add_special_tokens=False,
+                        )["input_ids"]
+                        if len(ids) == len(entry["ids"]["big"]):
+                            state.update(mode="cache", cache={}, keep=entry["suffix"])
+                            model(input_ids=torch.tensor([ids], device=0))
+                            entry["cache"]["renamed"] = state["cache"]
+                            entry["renamed_to"] = other
+                            break
                 if {"mean_big", "mean_small"} & set(directions):
                     # the average over all strong (weak) favours of the same
                     # game: the text after the favour line is the same for
@@ -448,8 +476,8 @@ def activation(
                             )
                         if "noise" in directions:
                             jobs.append((entry, "big", "small", layer, group, "noise"))
-                    for name in ("mean_big", "mean_small"):
-                        if name in directions:
+                    for name in ("mean_big", "mean_small", "renamed"):
+                        if name in directions and name in entry["cache"]:
                             jobs.append((entry, "small", name, layer, "all", name))
                     if "placebo" in directions and "placebo" in entry["ids"]:
                         jobs.append(
