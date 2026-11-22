@@ -104,6 +104,7 @@ def layers(names: list[str]) -> dict:
         "mean_big": True,
         "mean_small": True,
         "renamed": True,
+        "other": True,
     }
     print("layer  " + "  ".join(f"{label:>16s}" for label in labels))
     for layer in sorted({row["layer"] for row in rows if row["layer"] is not None}):
