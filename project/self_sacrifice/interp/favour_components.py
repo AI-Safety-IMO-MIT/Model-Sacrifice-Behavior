@@ -60,7 +60,7 @@ from project.self_sacrifice.interp import (
     favour_steering,
 )
 
-__all__ = ["OUT", "SAMPLES", "sample", "attribute", "table", "main"]
+__all__ = ["OUT", "SAMPLES", "sample", "attribute", "validate", "table", "main"]
 
 OUT = common.OUT / "favour_components"
 SAMPLES = 16
@@ -256,9 +256,16 @@ def attribute(layer: int, window: tuple[int, int]) -> Path:
                 past_key_values=first.past_key_values,
                 use_cache=True,
             )
-            logits = torch.cat([first.logits[0, -1:], rest.logits[0]]).float()
-            target = torch.tensor(reply_ids, device=0)[:, None]
-            metric = torch.log_softmax(logits, -1).gather(1, target).sum()
+            logits = torch.cat([first.logits[0, -1:], rest.logits[0]])
+            del first, rest
+            target = torch.tensor(reply_ids, device=0)
+            # cross-entropy in chunks keeps the float32 copy of the logits small
+            metric = sum(
+                -torch.nn.functional.cross_entropy(
+                    logits[i : i + 128].float(), target[i : i + 128], reduction="sum"
+                )
+                for i in range(0, len(reply_ids), 128)
+            )
         elif reply_ids:
             out = model(
                 input_ids=torch.tensor([ids + reply_ids], device=0),
@@ -364,14 +371,14 @@ def attribute(layer: int, window: tuple[int, int]) -> Path:
             # and the weak prompt's reply that keeps, both written with the
             # reply blocked from the favour line (check A), scored with the
             # same block
-            give = blocked.get(pair.big["id"])
-            keep = blocked.get(pair.small["id"])
+            give_row = blocked.get(pair.big["id"])
+            keep_row = blocked.get(pair.small["id"])
             row["bb"] = None
-            if give and keep and give["gives"] and not keep["gives"]:
-                ids_give = tokenizer(give["reply"], add_special_tokens=False)[
+            if give_row and keep_row and give_row["gives"] and not keep_row["gives"]:
+                ids_give = tokenizer(give_row["reply"], add_special_tokens=False)[
                     "input_ids"
                 ][: favour_baseline.MAX_NEW]
-                ids_keep = tokenizer(keep["reply"], add_special_tokens=False)[
+                ids_keep = tokenizer(keep_row["reply"], add_special_tokens=False)[
                     "input_ids"
                 ][: favour_baseline.MAX_NEW]
                 ends_bb = []
@@ -393,6 +400,160 @@ def attribute(layer: int, window: tuple[int, int]) -> Path:
     finally:
         for handle in handles:
             handle.remove()
+    return path
+
+
+def validate(
+    layer: int,
+    window: tuple[int, int],
+    metric: str = "bb",
+    sizes: tuple[int, ...] = (5, 20, 40),
+    name: str = "validate",
+    pairs: int = 40,
+) -> Path:
+    """Real patching of the top-ranked components (by `metric`, averaged
+    over pairs): copy their outputs from the strong run into the weak run at
+    the suffix positions, during the prompt pass, write the reply greedily,
+    and record whether the model now gives. Top-k sets for each k in `sizes`,
+    and the same number of components picked at random (control)."""
+    import random
+
+    import torch
+
+    lo, hi = window
+    results = torch.load(OUT / f"scores_L{layer}_{lo}-{hi}.pt")
+    rows = [r[metric] for r in results if r.get(metric) is not None]
+    heads = torch.stack([r["heads"] for r in rows]).mean(0)
+    mlp = torch.stack([r["mlp"] for r in rows]).mean(0)
+    ranked = [
+        (heads[i, h].item(), ("attn", lo + i, h))
+        for i in range(hi - lo)
+        for h in range(32)
+    ]
+    ranked += [(mlp[i].item(), ("mlp", lo + i, None)) for i in range(hi - lo)]
+    ranked.sort(key=lambda x: -x[0])
+    order = [c for _, c in ranked]
+    rng = random.Random(0)
+    sets = {}
+    for k in sizes:
+        sets[f"top{k}"] = order[:k]
+        sets[f"random{k}"] = rng.sample(order, k)
+
+    tokenizer, model = favour_baseline.load_model()
+    stack = common.decoder_layers(model)
+    state: dict[str, Any] = {"mode": None}
+    store: dict[str, Any] = {}
+
+    def attn_pre(i: int):
+        def run(_module: Any, inputs: Any) -> Any:
+            x = inputs[0]
+            if x.shape[1] == 1:
+                return None
+            if state["mode"] == "cache":
+                store[f"attn{i}"] = x[0, -state["k"] :].detach().clone()
+                return None
+            if state["mode"] == "patch" and f"attn{i}" in state["src"]:
+                x = x.clone()
+                k_, src, cols = state["k"], state["src"][f"attn{i}"], state["cols"][i]
+                x[0, -k_:, cols] = src[:, cols].to(x.dtype)
+                return (x,) + tuple(inputs[1:])
+            return None
+
+        return run
+
+    def mlp_post(i: int):
+        def run(_module: Any, _inputs: Any, output: Any) -> Any:
+            if output.shape[1] == 1:
+                return output
+            if state["mode"] == "cache":
+                store[f"mlp{i}"] = output[0, -state["k"] :].detach().clone()
+                return output
+            if state["mode"] == "patch" and f"mlp{i}" in state["src"]:
+                output = output.clone()
+                output[0, -state["k"] :] = state["src"][f"mlp{i}"].to(output.dtype)
+            return output
+
+        return run
+
+    handles = []
+    for i in range(lo, hi):
+        handles.append(stack[i].self_attn.o_proj.register_forward_pre_hook(attn_pre(i)))
+        handles.append(stack[i].mlp.register_forward_hook(mlp_post(i)))
+    path = OUT / f"{name}_L{layer}_{lo}-{hi}_{metric}.jsonl"
+    done = (
+        {json.loads(line)["job"] for line in path.read_text().splitlines() if line}
+        if path.exists()
+        else set()
+    )
+    width = {i: stack[i].self_attn.o_proj.in_features for i in range(lo, hi)}
+    try:
+        with path.open("a") as out:
+            for pair in _pairs()[::2][:pairs]:  # every other pair: all settings
+                entry = favour_patching.prepare(tokenizer, pair)
+                k = entry["suffix"]
+                with torch.no_grad():
+                    store.clear()
+                    state.update(mode="cache", k=k)
+                    model(
+                        input_ids=torch.tensor([entry["ids"]["big"]], device=0),
+                        logits_to_keep=1,
+                    )
+                    strong = dict(store)
+                state["mode"] = None
+                for label in ["none", *sets]:
+                    job = f"{pair.key}|{label}"
+                    if job in done:
+                        continue
+                    chosen = sets.get(label, [])
+                    src, cols = {}, {}
+                    for kind, i, h in chosen:
+                        key = f"{kind}{i}"
+                        src[key] = strong[key]
+                        if kind == "attn":
+                            per = width[i] // 32
+                            cols.setdefault(i, []).extend(range(h * per, (h + 1) * per))
+                    state.update(mode="patch", src=src, cols=cols, k=k)
+                    with torch.inference_mode():
+                        written = model.generate(
+                            input_ids=torch.tensor([entry["ids"]["small"]], device=0),
+                            max_new_tokens=favour_baseline.MAX_NEW,
+                            do_sample=False,
+                            temperature=None,
+                            top_p=None,
+                            top_k=None,
+                        )
+                    state["mode"] = None
+                    reply = tokenizer.decode(
+                        written[0, len(entry["ids"]["small"]) :],
+                        skip_special_tokens=True,
+                    ).strip()
+                    decided, receiver = favour_pairs.decision(reply)
+                    out.write(
+                        json.dumps(
+                            {
+                                "job": job,
+                                "pair": pair.key,
+                                "set": label,
+                                "components": [list(c) for c in chosen],
+                                "gives": decided == "give"
+                                and receiver == pair.big["environment"]["in_need"],
+                                "decision": decided,
+                                "reply": reply,
+                            }
+                        )
+                        + "\n"
+                    )
+                    out.flush()
+                print(pair.key, flush=True)
+    finally:
+        for handle in handles:
+            handle.remove()
+    rows_out = [json.loads(line) for line in path.read_text().splitlines() if line]
+    for label in ["none", *sets]:
+        picked = [r for r in rows_out if r["set"] == label]
+        if picked:
+            rate = 100 * sum(r["gives"] for r in picked) / len(picked)
+            print(f"{label:9s} {rate:5.1f}% of {len(picked)}")
     return path
 
 
@@ -430,7 +591,8 @@ def table(layer: int, window: tuple[int, int], top: int = 20) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("what", choices=("sample", "attribute", "table"))
+    parser.add_argument("what", choices=("sample", "attribute", "validate", "table"))
+    parser.add_argument("--metric", default="bb")
     parser.add_argument("--layer", type=int, default=30)
     parser.add_argument("--window", default="10-30")
     parser.add_argument("--pairs", type=int, default=None, help="`sample`: first n")
@@ -439,6 +601,8 @@ def main() -> None:
     window = tuple(int(x) for x in args.window.split("-"))
     if args.what == "sample":
         sample(limit=args.pairs, name=args.name)
+    elif args.what == "validate":
+        validate(args.layer, window, args.metric)
     elif args.what == "attribute":
         attribute(args.layer, window)
         table(args.layer, window)
