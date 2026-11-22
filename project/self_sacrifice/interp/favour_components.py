@@ -690,7 +690,6 @@ def heads_where(
     count = 0
     for pair in _pairs()[::2][:pairs]:
         entry = favour_patching.prepare(tokenizer, pair)
-        k = entry["suffix"]
         for member, trial in (("big", pair.big), ("small", pair.small)):
             text = entry["text"][member]
             enc = tokenizer(text, add_special_tokens=False, return_offsets_mapping=True)
