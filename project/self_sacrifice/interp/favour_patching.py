@@ -405,6 +405,35 @@ def activation(
                     state.update(mode="cache", cache={}, keep=entry["suffix"])
                     model(input_ids=torch.tensor([ids], device=0))
                     entry["cache"][member] = state["cache"]
+                if {"mean_big", "mean_small"} & set(directions):
+                    # the average over all strong (weak) favours of the same
+                    # game: the text after the favour line is the same for
+                    # all of them, position by position
+                    same = {
+                        t["history"]: t
+                        for t in favour_baseline.load_trials(pair.big["version"])
+                        if t["environment"]["env"] == pair.big["environment"]["env"]
+                    }
+                    for name, keys in (
+                        ("mean_big", favour_pairs.BIG),
+                        ("mean_small", favour_pairs.SMALL),
+                    ):
+                        total: dict[int, Any] = {}
+                        for key in keys:
+                            ids = tokenizer(
+                                common.prompt_text(tokenizer, same[key]),
+                                add_special_tokens=False,
+                            )["input_ids"]
+                            state.update(mode="cache", cache={}, keep=entry["suffix"])
+                            model(input_ids=torch.tensor([ids], device=0))
+                            for layer_, value in state["cache"].items():
+                                total[layer_] = total.get(
+                                    layer_, 0
+                                ) + value.float() / len(keys)
+                        entry["cache"][name] = {
+                            layer_: value.to(torch.bfloat16)
+                            for layer_, value in total.items()
+                        }
                 state["mode"] = None
                 prepared.append(entry)
             jobs = []
@@ -419,6 +448,9 @@ def activation(
                             )
                         if "noise" in directions:
                             jobs.append((entry, "big", "small", layer, group, "noise"))
+                    for name in ("mean_big", "mean_small"):
+                        if name in directions:
+                            jobs.append((entry, "small", name, layer, "all", name))
                     if "placebo" in directions and "placebo" in entry["ids"]:
                         jobs.append(
                             (entry, "small", "placebo", layer, "all", "placebo")

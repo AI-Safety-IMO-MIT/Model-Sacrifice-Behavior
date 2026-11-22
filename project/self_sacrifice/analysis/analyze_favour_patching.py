@@ -97,7 +97,13 @@ def layers(names: list[str]) -> dict:
     print(f"{len(pairs)} pairs, {len(differ)} still decide differently unpatched")
     summary: dict = {"pairs": len(pairs), "differ": len(differ), "layers": {}}
     labels = sorted({row["label"] for row in rows if row["from"] is not None})
-    want = {"denoise": True, "placebo": True, "noise": False}
+    want = {
+        "denoise": True,
+        "placebo": True,
+        "noise": False,
+        "mean_big": True,
+        "mean_small": True,
+    }
     print("layer  " + "  ".join(f"{label:>16s}" for label in labels))
     for layer in sorted({row["layer"] for row in rows if row["layer"] is not None}):
         cells = {}
