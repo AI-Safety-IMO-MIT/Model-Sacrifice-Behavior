@@ -400,9 +400,7 @@ def attribute(
                 ends.append(
                     scores(delta, component_grad(entry["ids"][member], k, None))
                 )
-            row["d"] = {
-                part: (ends[0][part] + ends[1][part]) / 2 for part in ("heads", "mlp")
-            }
+            row["d"] = {part: (ends[0][part] + ends[1][part]) / 2 for part in ends[0]}
             # metric b at each end with enough of both decisions
             ends_b, counts = [], {}
             for member in ("small", "big") if not positions else ():
@@ -463,7 +461,7 @@ def attribute(
                     )
                 row["bb"] = {
                     part: (ends_bb[0][part] + ends_bb[1][part]) / 2
-                    for part in ("heads", "mlp")
+                    for part in ends_bb[0]
                 }
             if positions:
                 loc = location.get(pair.key, {})
