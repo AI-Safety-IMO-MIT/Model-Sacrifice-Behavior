@@ -428,7 +428,14 @@ def activation(
                 return f"{job[0]['pair'].key}|{job[5]}|{job[3]}|{job[4]}"
 
             jobs = [job for job in jobs if job_id(job) not in done]
-            jobs.sort(key=lambda job: (str(job[3]), job[5], job[0]["pair"].key))
+            # unpatched runs first, then the layers in the order given
+            jobs.sort(
+                key=lambda job: (
+                    -1 if job[3] is None else layers.index(job[3]),
+                    job[5],
+                    job[0]["pair"].key,
+                )
+            )
             by_layer: dict[Any, list[tuple]] = {}
             for job in jobs:
                 by_layer.setdefault(job[3], []).append(job)
