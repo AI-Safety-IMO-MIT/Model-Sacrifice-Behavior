@@ -24,6 +24,13 @@ metric d   the projection, averaged over the suffix, of the residual after
            layer `--layer` onto the strong-minus-weak direction of
            `favour_steering` (unit length). Only layers below `--layer` can
            change it. No replies are involved.
+metric bb  log p(R_give) - log p(R_keep), where R_give is the strong prompt's
+           reply that gives and R_keep the weak prompt's reply that keeps,
+           both written with the reply blocked from the favour line
+           (`favour_attention`, check A) so that they speak of the favour
+           only in general terms, and scored with the same block. The prompt
+           pass is unchanged by the block, so the components are the same as
+           in the normal model.
 metric b   log P(give) - log P(keep) for the prompt, where P(give) sums over
            every reply the model could write. Its gradient is estimated from
            the model's own replies (`sample`: 16 per prompt at temperature
@@ -47,6 +54,7 @@ from typing import Any
 from project.self_sacrifice.games import favour_pairs
 from project.self_sacrifice.interp import (
     common,
+    favour_attention,
     favour_baseline,
     favour_patching,
     favour_steering,
@@ -69,14 +77,19 @@ def _pairs() -> list[favour_patching.Pair]:
     )
 
 
-def sample(samples: int = SAMPLES, max_new: int = favour_baseline.MAX_NEW) -> Path:
+def sample(
+    samples: int = SAMPLES,
+    max_new: int = favour_baseline.MAX_NEW,
+    limit: int | None = None,
+    name: str = "samples",
+) -> Path:
     """`samples` replies at temperature 1 for the strong and the weak prompt
     of every pair. Resumable at batch boundaries."""
     import torch
 
     tokenizer, model = favour_baseline.load_model()
     OUT.mkdir(parents=True, exist_ok=True)
-    path = OUT / "samples.jsonl"
+    path = OUT / f"{name}.jsonl"
     done = (
         {json.loads(line)["batch"] for line in path.read_text().splitlines() if line}
         if path.exists()
@@ -84,7 +97,7 @@ def sample(samples: int = SAMPLES, max_new: int = favour_baseline.MAX_NEW) -> Pa
     )
     jobs = [
         (pair, member, k)
-        for pair in _pairs()
+        for pair in _pairs()[:limit]
         for member in ("big", "small")
         for k in range(samples)
     ]
@@ -188,28 +201,74 @@ def attribute(layer: int, window: tuple[int, int]) -> Path:
     handles.append(stack[layer].register_forward_hook(resid_hook))
 
     samples: dict[tuple[str, str], list[dict]] = {}
-    for line in (OUT / "samples.jsonl").read_text().splitlines():
-        row = json.loads(line)
-        samples.setdefault((row["pair"], row["member"]), []).append(row)
+    if (OUT / "samples.jsonl").exists():
+        for line in (OUT / "samples.jsonl").read_text().splitlines():
+            row = json.loads(line)
+            samples.setdefault((row["pair"], row["member"]), []).append(row)
+    blocked = {
+        row["id"]: row
+        for row in (
+            json.loads(line)
+            for line in (favour_attention.OUT / "blocked.jsonl")
+            .read_text()
+            .splitlines()
+        )
+    }
+
+    def favour_positions(trial: dict) -> list[int]:
+        text = common.prompt_text(tokenizer, trial)
+        encoded = tokenizer(text, add_special_tokens=False, return_offsets_mapping=True)
+        starts = [a if b > a else -1 for a, b in encoded["offset_mapping"]]
+        return favour_attention.favour_span(text, starts, trial["favour_line"])
 
     def run_prompt(ids: list[int]) -> None:
         model(input_ids=torch.tensor([ids], device=0), logits_to_keep=1)
 
-    def component_grad(ids: list[int], k: int, reply_ids: list[int] | None) -> dict:
+    def component_grad(
+        ids: list[int],
+        k: int,
+        reply_ids: list[int] | None,
+        block: list[int] | None = None,
+    ) -> dict:
         """Gradient at the suffix positions of the prompt of either the
-        projection (reply_ids None) or log p(reply | prompt)."""
+        projection (reply_ids None) or log p(reply | prompt). With `block`
+        (prompt positions), the prompt is read normally and the reply tokens
+        may not attend to those positions."""
         got.clear()
         state["mode"] = "grad"
-        full = ids + (reply_ids or [])
-        out = model(
-            input_ids=torch.tensor([full], device=0),
-            logits_to_keep=(len(reply_ids) + 1) if reply_ids else 1,
-        )
-        if reply_ids:
+        if reply_ids and block is not None:
+            n = len(ids)
+            first = model(
+                input_ids=torch.tensor([ids], device=0),
+                position_ids=torch.arange(n, device=0)[None],
+                cache_position=torch.arange(n, device=0),
+                use_cache=True,
+                logits_to_keep=1,
+            )
+            state["mode"] = "reply"  # components are only taken from the prompt
+            mask = torch.ones(1, n + len(reply_ids) - 1, device=0, dtype=torch.long)
+            mask[0, block] = 0
+            rest = model(
+                input_ids=torch.tensor([reply_ids[:-1]], device=0),
+                attention_mask=mask,
+                position_ids=torch.arange(n, n + len(reply_ids) - 1, device=0)[None],
+                cache_position=torch.arange(n, n + len(reply_ids) - 1, device=0),
+                past_key_values=first.past_key_values,
+                use_cache=True,
+            )
+            logits = torch.cat([first.logits[0, -1:], rest.logits[0]]).float()
+            target = torch.tensor(reply_ids, device=0)[:, None]
+            metric = torch.log_softmax(logits, -1).gather(1, target).sum()
+        elif reply_ids:
+            out = model(
+                input_ids=torch.tensor([ids + reply_ids], device=0),
+                logits_to_keep=len(reply_ids) + 1,
+            )
             logits = out.logits[0, : len(reply_ids)].float()
             target = torch.tensor(reply_ids, device=0)[:, None]
             metric = torch.log_softmax(logits, -1).gather(1, target).sum()
         else:
+            model(input_ids=torch.tensor([ids], device=0), logits_to_keep=1)
             resid = got["resid"][0, len(ids) - k : len(ids)].float()
             metric = (resid.mean(0) * unit).sum()
         metric.backward()
@@ -301,6 +360,32 @@ def attribute(layer: int, window: tuple[int, int]) -> Path:
                 if ends_b
                 else None
             )
+            # metric b, blocked replies: the strong prompt's reply that gives
+            # and the weak prompt's reply that keeps, both written with the
+            # reply blocked from the favour line (check A), scored with the
+            # same block
+            give = blocked.get(pair.big["id"])
+            keep = blocked.get(pair.small["id"])
+            row["bb"] = None
+            if give and keep and give["gives"] and not keep["gives"]:
+                ids_give = tokenizer(give["reply"], add_special_tokens=False)[
+                    "input_ids"
+                ][: favour_baseline.MAX_NEW]
+                ids_keep = tokenizer(keep["reply"], add_special_tokens=False)[
+                    "input_ids"
+                ][: favour_baseline.MAX_NEW]
+                ends_bb = []
+                for member, trial in (("small", pair.small), ("big", pair.big)):
+                    span = favour_positions(trial)
+                    g_give = component_grad(entry["ids"][member], k, ids_give, span)
+                    g_keep = component_grad(entry["ids"][member], k, ids_keep, span)
+                    ends_bb.append(
+                        scores(delta, {n: g_give[n] - g_keep[n] for n in g_give})
+                    )
+                row["bb"] = {
+                    part: (ends_bb[0][part] + ends_bb[1][part]) / 2
+                    for part in ("heads", "mlp")
+                }
             results.append(row)
             torch.save(results, path)
             print(pair.key, counts, flush=True)
@@ -317,8 +402,8 @@ def table(layer: int, window: tuple[int, int], top: int = 20) -> dict[str, Any]:
     lo, hi = window
     results = torch.load(OUT / f"scores_L{layer}_{lo}-{hi}.pt")
     summary: dict[str, Any] = {"pairs": len(results)}
-    for metric in ("d", "b"):
-        rows = [r[metric] for r in results if r[metric] is not None]
+    for metric in ("d", "b", "bb"):
+        rows = [r.get(metric) for r in results if r.get(metric) is not None]
         if not rows:
             continue
         heads = torch.stack([r["heads"] for r in rows]).mean(0)
@@ -348,10 +433,12 @@ def main() -> None:
     parser.add_argument("what", choices=("sample", "attribute", "table"))
     parser.add_argument("--layer", type=int, default=30)
     parser.add_argument("--window", default="10-30")
+    parser.add_argument("--pairs", type=int, default=None, help="`sample`: first n")
+    parser.add_argument("--name", default="samples")
     args = parser.parse_args()
     window = tuple(int(x) for x in args.window.split("-"))
     if args.what == "sample":
-        sample()
+        sample(limit=args.pairs, name=args.name)
     elif args.what == "attribute":
         attribute(args.layer, window)
         table(args.layer, window)
