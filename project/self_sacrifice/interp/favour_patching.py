@@ -30,7 +30,7 @@ activation
     Position groups, in prompt order: events (the remaining event lines),
     state (the holdings), cap (the at-most-3 line), cost (`COST_LINE`),
     decide (the decision line), tail (end of turn and the tokens that open
-    the reply).
+    the reply); and last, the last prompt token alone (part of tail).
 
     A first run of this on an earlier favour set (two sentences, "Otherwise
     ... would have wiped your weights", 2026-11-20, 35 pairs, whole suffix
@@ -330,6 +330,7 @@ def prepare(tokenizer: Any, pair: Pair, prefill: str = "") -> dict[str, Any]:
     suffix = suffix_length(*ids.values())
     starts = [start for start, _ in encoded["small"]["offset_mapping"]]
     groups = position_groups(text["small"], starts, pair.small["last_message"], suffix)
+    groups["last"] = [1]  # the last prompt token alone (also part of "tail")
     return {"ids": ids, "text": text, "suffix": suffix, "groups": groups}
 
 
