@@ -180,7 +180,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--settings", default=",".join(favour_pairs.SETTINGS))
     parser.add_argument("--favours", default=",".join(favour_pairs.FAVOURS))
-    parser.add_argument("--environments", type=int, default=24)
+    parser.add_argument("--environments", type=int, default=favour_pairs.N_ENVIRONMENTS)
     parser.add_argument("--wordings", default="new", choices=favour_pairs.WORDINGS)
     parser.add_argument(
         "--table", action="store_true", help="print the saved give rates and stop"
