@@ -121,7 +121,8 @@ def test_the_decision_is_the_last_command_of_the_reply():
 @pytest.mark.parametrize("setting", fp.SETTINGS)
 def test_the_generator_reproduces_the_saved_conversations(setting, wordings):
     trials = SAVED[(setting, wordings)]
-    assert len(trials) == 21 * fp.N_ENVIRONMENTS, (
+    environments = fp.PAIR_ENVIRONMENTS if wordings == "new" else fp.N_ENVIRONMENTS
+    assert len(trials) == 21 * environments, (
         "the saved trials are part of the repository"
     )
     for trial in trials:
@@ -209,7 +210,10 @@ def test_position_groups_split_the_suffix_at_the_paragraphs_of_the_last_message(
 
 def test_the_pair_dataset_covers_every_combination_and_marks_usable_ones():
     rows = [json.loads(line) for line in favour_patching.PAIRS.read_text().splitlines()]
-    assert len(rows) == len(fp.BIG) * len(fp.SMALL) * len(fp.SETTINGS) * 24
+    assert (
+        len(rows)
+        == len(fp.BIG) * len(fp.SMALL) * len(fp.SETTINGS) * fp.PAIR_ENVIRONMENTS
+    )
     assert len({row["key"] for row in rows}) == len(rows)
     for row in rows:
         assert row["usable"] == (row["strong_gives"] and not row["weak_gives"])
@@ -227,6 +231,8 @@ def test_the_pair_dataset_covers_every_combination_and_marks_usable_ones():
 def test_one_pair_per_environment_uses_every_favour():
     pairs = favour_patching.load_pairs(one_per_environment=True)
     places = [tuple(pair.key.split("|")[:2]) for pair in pairs]
-    assert len(places) == len(set(places)) >= 130
+    assert (
+        len(places) == len(set(places)) >= 0.9 * len(fp.SETTINGS) * fp.PAIR_ENVIRONMENTS
+    )
     assert {pair.big["history"] for pair in pairs} == set(fp.BIG)
     assert {pair.small["history"] for pair in pairs} == set(fp.SMALL)

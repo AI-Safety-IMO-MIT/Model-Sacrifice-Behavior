@@ -93,7 +93,7 @@ PAIRS = FAVOUR_PAIRS / "pairs.jsonl"
 
 def save_pairs(wordings: str = "new") -> Path:
     """Write the pair dataset: every strong favour against every weak favour
-    in every setting and environment (10 x 10 x 6 x 24 = 14,400 lines). Each
+    in every setting and environment (10 x 10 x 5 x 24 = 12,000 lines). Each
     line names the two saved trials by id, says what the model did after each,
     and whether the pair is usable (gave after the strong favour, kept after
     the weak one). `placebo` is another weak favour in the same environment
@@ -146,7 +146,7 @@ def save_pairs(wordings: str = "new") -> Path:
 def load_pairs(
     usable_only: bool = True,
     one_per_environment: bool = False,
-    environments: int = 24,
+    environments: int = favour_pairs.PAIR_ENVIRONMENTS,
     settings: tuple[str, ...] = favour_pairs.SETTINGS,
 ) -> list[Pair]:
     """Pairs of the dataset (`PAIRS`), with their trials loaded. With
