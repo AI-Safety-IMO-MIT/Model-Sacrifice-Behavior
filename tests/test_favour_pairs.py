@@ -8,7 +8,8 @@ import json
 import pytest
 
 from project.self_sacrifice.games import favour_pairs as fp
-from project.self_sacrifice.interp import favour_baseline, favour_patching
+from project.self_sacrifice.lib import favour_baseline
+from project.self_sacrifice.lib import pairs as favour_patching
 
 SAVED = {
     (setting, wordings): favour_baseline.load_trials(setting, wordings)

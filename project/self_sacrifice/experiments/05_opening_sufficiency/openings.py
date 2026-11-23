@@ -1,8 +1,8 @@
 """Does patching raise the favour's weight directly, or does it work by making
 the model talk about the favour, which then leads it to give?
 
-    python -m project.self_sacrifice.interp.favour_verbal run --layer 29
-    python -m project.self_sacrifice.interp.favour_verbal table --layer 29
+    python -m project.self_sacrifice.experiments.05_opening_sufficiency.openings run --layer 29
+    python -m project.self_sacrifice.experiments.05_opening_sufficiency.openings table --layer 29
 
 Needs the GPU, except `table`, and the replies of the location experiment at
 the same layer (`favour_patching activation --name location_L<layer>`).
@@ -45,12 +45,9 @@ from pathlib import Path
 from typing import Any
 
 from project.self_sacrifice.games import favour_pairs
-from project.self_sacrifice.interp import (
-    common,
-    favour_baseline,
-    favour_patching,
-    favour_steering,
-)
+from project.self_sacrifice.interp import common
+from project.self_sacrifice.lib import favour_baseline
+from project.self_sacrifice.lib import pairs as favour_patching
 
 __all__ = [
     "OUT",
@@ -124,8 +121,8 @@ def run(layer: int) -> Path:
         p.key: p
         for p in favour_patching.load_pairs(
             one_per_environment=True,
-            environments=favour_steering.ENVIRONMENTS,
-            settings=favour_steering.SETTINGS,
+            environments=favour_patching.ENVIRONMENTS,
+            settings=favour_patching.SETTINGS,
         )
     }
     try:
@@ -277,8 +274,8 @@ def run_written(layer: int) -> Path:
         p.key: p
         for p in favour_patching.load_pairs(
             one_per_environment=True,
-            environments=favour_steering.ENVIRONMENTS,
-            settings=favour_steering.SETTINGS,
+            environments=favour_patching.ENVIRONMENTS,
+            settings=favour_patching.SETTINGS,
         )
     }
     try:

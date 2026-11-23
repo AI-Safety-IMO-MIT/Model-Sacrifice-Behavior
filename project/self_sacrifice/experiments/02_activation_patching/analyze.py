@@ -1,8 +1,8 @@
 """Tables for the favour-pair interpretability experiments.
 
-    python -m project.self_sacrifice.analysis.analyze_favour_patching attention
-    python -m project.self_sacrifice.analysis.analyze_favour_patching layers all60_a,all60_b
-    python -m project.self_sacrifice.analysis.analyze_favour_patching layers all60_noise_a,all60_noise_b
+    python -m project.self_sacrifice.experiments.02_activation_patching.analyze attention
+    python -m project.self_sacrifice.experiments.02_activation_patching.analyze layers all60_a,all60_b
+    python -m project.self_sacrifice.experiments.02_activation_patching.analyze layers all60_noise_a,all60_noise_b
 
 attention   experiment 1: give rate after strong, weak and no favour, with
             the reply blocked from the favour line and without, on the same

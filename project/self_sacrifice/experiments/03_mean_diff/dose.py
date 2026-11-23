@@ -2,8 +2,8 @@
 positions after the favour line, during the prompt pass, on the weak prompt
 of each pair; the reply is then written freely and greedily.
 
-    python -m project.self_sacrifice.interp.favour_dose run --part 0 --parts 2
-    python -m project.self_sacrifice.interp.favour_dose table
+    python -m project.self_sacrifice.experiments.03_mean_diff.dose run --part 0 --parts 2
+    python -m project.self_sacrifice.experiments.03_mean_diff.dose table
 
 Needs the GPU, except `table`, and `favour_steering direction` (directions.pt).
 Output: `run_result/self_sacrifice/interp/favour_dose/dose.jsonl`.
@@ -35,12 +35,9 @@ from pathlib import Path
 from typing import Any
 
 from project.self_sacrifice.games import favour_pairs
-from project.self_sacrifice.interp import (
-    common,
-    favour_baseline,
-    favour_patching,
-    favour_steering,
-)
+from project.self_sacrifice.interp import common
+from project.self_sacrifice.lib import favour_baseline
+from project.self_sacrifice.lib import pairs as favour_patching
 
 __all__ = ["OUT", "CONDITIONS", "run", "table", "main"]
 
@@ -65,7 +62,9 @@ def run(part: int = 0, parts: int = 1) -> Path:
     lo, hi = WINDOW
     layers = list(range(lo, hi + 1))
     stack = common.decoder_layers(model)
-    d_all = torch.load(favour_steering.OUT / "directions.pt")["directions"]["suffix"]
+    d_all = torch.load(favour_patching.STEERING_OUT / "directions.pt")["directions"][
+        "suffix"
+    ]
     d = {j: d_all[j].to(0) for j in layers}
     unit = {j: d[j] / d[j].norm() for j in layers}
     generator = torch.Generator().manual_seed(0)
@@ -106,8 +105,8 @@ def run(part: int = 0, parts: int = 1) -> Path:
     handles = [stack[j].register_forward_hook(hook(j)) for j in layers]
     pairs = favour_patching.load_pairs(
         one_per_environment=True,
-        environments=favour_steering.ENVIRONMENTS,
-        settings=favour_steering.SETTINGS,
+        environments=favour_patching.ENVIRONMENTS,
+        settings=favour_patching.SETTINGS,
     )[part::parts]
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / f"dose_{part}.jsonl"

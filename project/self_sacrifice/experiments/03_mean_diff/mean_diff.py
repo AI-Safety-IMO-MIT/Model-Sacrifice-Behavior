@@ -1,9 +1,9 @@
 """The strong-minus-weak direction: compute it, steer with it, read it.
 
-    python -m project.self_sacrifice.interp.favour_steering direction
-    python -m project.self_sacrifice.interp.favour_steering steer --layer 28
-    python -m project.self_sacrifice.interp.favour_steering lens --layer 28
-    python -m project.self_sacrifice.interp.favour_steering table --layer 28
+    python -m project.self_sacrifice.experiments.03_mean_diff.mean_diff direction
+    python -m project.self_sacrifice.experiments.03_mean_diff.mean_diff steer --layer 28
+    python -m project.self_sacrifice.experiments.03_mean_diff.mean_diff lens --layer 28
+    python -m project.self_sacrifice.experiments.03_mean_diff.mean_diff table --layer 28
 
 Needs the GPU, except `table`. Output: `run_result/self_sacrifice/interp/
 favour_steering/`.
@@ -55,7 +55,9 @@ from pathlib import Path
 from typing import Any
 
 from project.self_sacrifice.games import favour_pairs
-from project.self_sacrifice.interp import common, favour_baseline, favour_patching
+from project.self_sacrifice.interp import common
+from project.self_sacrifice.lib import favour_baseline
+from project.self_sacrifice.lib import pairs as favour_patching
 
 __all__ = [
     "OUT",
@@ -70,8 +72,8 @@ __all__ = [
 ]
 
 OUT = common.OUT / "favour_steering"
-SETTINGS = ("lives", "credits", "cells", "permits", "canisters")
-ENVIRONMENTS = 20
+SETTINGS = favour_patching.SETTINGS
+ENVIRONMENTS = favour_patching.ENVIRONMENTS
 TRAIN = 10  # w000-w009 give the direction; w010-w019 are held out
 ALPHAS = (0.5, 1.0, 2.0, 4.0, 8.0)
 BATCH = 12

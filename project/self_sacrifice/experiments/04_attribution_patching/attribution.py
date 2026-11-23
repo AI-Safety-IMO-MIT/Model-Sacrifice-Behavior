@@ -1,9 +1,9 @@
 """Which attention heads and MLPs carry the strong-versus-weak favour?
 Attribution patching on the favour pairs (experiment 4).
 
-    python -m project.self_sacrifice.interp.favour_components sample
-    python -m project.self_sacrifice.interp.favour_components attribute --layer 30 --window 10-30
-    python -m project.self_sacrifice.interp.favour_components table
+    python -m project.self_sacrifice.experiments.04_attribution_patching.attribution sample
+    python -m project.self_sacrifice.experiments.04_attribution_patching.attribution attribute --layer 30 --window 10-30
+    python -m project.self_sacrifice.experiments.04_attribution_patching.attribution table
 
 Needs the GPU, except `table`. Output: `run_result/self_sacrifice/interp/
 favour_components/`. Pairs: `favour_patching.load_pairs(one_per_environment=
@@ -58,13 +58,9 @@ from pathlib import Path
 from typing import Any
 
 from project.self_sacrifice.games import favour_pairs
-from project.self_sacrifice.interp import (
-    common,
-    favour_attention,
-    favour_baseline,
-    favour_patching,
-    favour_steering,
-)
+from project.self_sacrifice.interp import common
+from project.self_sacrifice.lib import favour_baseline
+from project.self_sacrifice.lib import pairs as favour_patching
 
 __all__ = [
     "OUT",
@@ -89,8 +85,8 @@ MAX_REPLY = 1000
 def _pairs() -> list[favour_patching.Pair]:
     return favour_patching.load_pairs(
         one_per_environment=True,
-        environments=favour_steering.ENVIRONMENTS,
-        settings=favour_steering.SETTINGS,
+        environments=favour_patching.ENVIRONMENTS,
+        settings=favour_patching.SETTINGS,
     )
 
 
@@ -181,9 +177,9 @@ def attribute(
     stack = common.decoder_layers(model)
     lo, hi = window
     wanted = range(lo, hi)
-    unit = torch.load(favour_steering.OUT / "directions.pt")["directions"]["suffix"][
-        layer
-    ].to(0)
+    unit = torch.load(favour_patching.STEERING_OUT / "directions.pt")["directions"][
+        "suffix"
+    ][layer].to(0)
     unit = unit / unit.norm()
     state: dict[str, Any] = {"mode": None}
     got: dict[str, Any] = {}
@@ -231,7 +227,7 @@ def attribute(
         row["id"]: row
         for row in (
             json.loads(line)
-            for line in (favour_attention.OUT / "blocked.jsonl")
+            for line in (favour_patching.ATTENTION_OUT / "blocked.jsonl")
             .read_text()
             .splitlines()
         )
@@ -241,7 +237,7 @@ def attribute(
         text = common.prompt_text(tokenizer, trial)
         encoded = tokenizer(text, add_special_tokens=False, return_offsets_mapping=True)
         starts = [a if b > a else -1 for a, b in encoded["offset_mapping"]]
-        return favour_attention.favour_span(text, starts, trial["favour_line"])
+        return favour_patching.favour_span(text, starts, trial["favour_line"])
 
     def run_prompt(ids: list[int]) -> None:
         model(input_ids=torch.tensor([ids], device=0), logits_to_keep=1)
@@ -697,7 +693,7 @@ def heads_where(
             first_user = text.index("<|turn>user")
             second_user = text.index("<|turn>user", first_user + 1)
             fav = set(
-                favour_attention.favour_span(
+                favour_patching.favour_span(
                     text,
                     [a if b > a else -1 for a, b in enc["offset_mapping"]],
                     trial["favour_line"],

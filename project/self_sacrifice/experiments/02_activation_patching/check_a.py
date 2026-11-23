@@ -1,8 +1,8 @@
 """How much does the written reply read the favour line directly?
 
-    python -m project.self_sacrifice.interp.favour_attention run --name blocked
-    python -m project.self_sacrifice.interp.favour_attention run --name normal --unblocked
-    python -m project.self_sacrifice.interp.favour_attention table --name blocked
+    python -m project.self_sacrifice.experiments.02_activation_patching.check_a run --name blocked
+    python -m project.self_sacrifice.experiments.02_activation_patching.check_a run --name normal --unblocked
+    python -m project.self_sacrifice.experiments.02_activation_patching.check_a table --name blocked
 
 Needs the GPU, except `table`. Output: `run_result/self_sacrifice/interp/
 favour_attention/<name>.jsonl`, one reply per line.
@@ -34,21 +34,14 @@ from pathlib import Path
 from typing import Any
 
 from project.self_sacrifice.games import favour_pairs
-from project.self_sacrifice.interp import common, favour_baseline
+from project.self_sacrifice.interp import common
+from project.self_sacrifice.lib import favour_baseline
+from project.self_sacrifice.lib import pairs as favour_patching
 
-__all__ = ["OUT", "favour_span", "write", "run", "check", "table", "main"]
+__all__ = ["OUT", "write", "run", "check", "table", "main"]
 
 OUT = common.OUT / "favour_attention"
 BATCH = 16
-
-
-def favour_span(text: str, starts: list[int], favour_line: str) -> list[int]:
-    """Token indices of the favour line in the prompt. `starts` holds the
-    character each token starts at."""
-    # from the space before X's name: that is where the name's token starts
-    begin = text.rindex("- " + favour_line) + 1
-    end = begin + len(favour_line)
-    return [i for i, at in enumerate(starts) if begin <= at < end]
 
 
 def write(
@@ -82,7 +75,9 @@ def write(
                 start if end > start else -1
                 for start, end in encoded["offset_mapping"][row].tolist()
             ]
-            for i in favour_span(texts[row], starts, trial["favour_line"]):
+            for i in favour_patching.favour_span(
+                texts[row], starts, trial["favour_line"]
+            ):
                 blocked[row, i] = 0
     positions = (mask.cumsum(-1) - 1).clamp(min=0)
     eos = set(
@@ -206,7 +201,7 @@ def check(count: int = 32) -> None:
     print(f"loop vs saved replies: {saved}/{len(trials)} identical")
     text = common.prompt_text(tokenizer, trials[0])
     encoded = tokenizer(text, add_special_tokens=False, return_offsets_mapping=True)
-    span = favour_span(
+    span = favour_patching.favour_span(
         text, [s for s, _ in encoded["offset_mapping"]], trials[0]["favour_line"]
     )
     print(
