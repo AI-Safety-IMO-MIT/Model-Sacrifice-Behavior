@@ -51,6 +51,7 @@ CONDITIONS = (
     + [("steer_reply", 4.0)]
     + [("random", a) for a in (1.0, 4.0)]
     + [("minus_d", a) for a in (1.0, 4.0)]
+    + [(c, a) for c in ("steer", "minus_d") for a in (0.5, 2.0, 8.0)]
 )
 BATCH = 12
 
