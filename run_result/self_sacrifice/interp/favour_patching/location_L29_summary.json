@@ -1,0 +1,118 @@
+{
+  "pairs": 100,
+  "differ": 95,
+  "sites": {
+    "29|all": {
+      "denoise": [
+        66,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        5,
+        95
+      ]
+    },
+    "29|cap": {
+      "denoise": [
+        1,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        0,
+        0
+      ]
+    },
+    "29|cost": {
+      "denoise": [
+        3,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        0,
+        0
+      ]
+    },
+    "29|decide": {
+      "denoise": [
+        2,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        0,
+        0
+      ]
+    },
+    "29|events": {
+      "denoise": [
+        33,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        0,
+        0
+      ]
+    },
+    "29|last": {
+      "denoise": [
+        1,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        0,
+        0
+      ]
+    },
+    "29|state": {
+      "denoise": [
+        9,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        0,
+        0
+      ]
+    },
+    "29|tail": {
+      "denoise": [
+        3,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        0,
+        0
+      ]
+    }
+  }
+}

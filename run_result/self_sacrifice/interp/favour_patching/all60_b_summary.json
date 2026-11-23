@@ -1,0 +1,426 @@
+{
+  "pairs": 100,
+  "differ": 95,
+  "sites": {
+    "1|all": {
+      "denoise": [
+        2,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        2,
+        95
+      ]
+    },
+    "3|all": {
+      "denoise": [
+        1,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        1,
+        95
+      ]
+    },
+    "5|all": {
+      "denoise": [
+        1,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        2,
+        95
+      ]
+    },
+    "7|all": {
+      "denoise": [
+        4,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        3,
+        95
+      ]
+    },
+    "9|all": {
+      "denoise": [
+        3,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        3,
+        95
+      ]
+    },
+    "11|all": {
+      "denoise": [
+        0,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        3,
+        95
+      ]
+    },
+    "13|all": {
+      "denoise": [
+        2,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        5,
+        95
+      ]
+    },
+    "15|all": {
+      "denoise": [
+        4,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        4,
+        95
+      ]
+    },
+    "17|all": {
+      "denoise": [
+        5,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        7,
+        95
+      ]
+    },
+    "19|all": {
+      "denoise": [
+        12,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        4,
+        95
+      ]
+    },
+    "21|all": {
+      "denoise": [
+        28,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        6,
+        95
+      ]
+    },
+    "23|all": {
+      "denoise": [
+        35,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        5,
+        95
+      ]
+    },
+    "25|all": {
+      "denoise": [
+        37,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        6,
+        95
+      ]
+    },
+    "27|all": {
+      "denoise": [
+        50,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        5,
+        95
+      ]
+    },
+    "29|all": {
+      "denoise": [
+        72,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        7,
+        95
+      ]
+    },
+    "31|all": {
+      "denoise": [
+        61,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        2,
+        95
+      ]
+    },
+    "33|all": {
+      "denoise": [
+        62,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        1,
+        95
+      ]
+    },
+    "35|all": {
+      "denoise": [
+        49,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        3,
+        95
+      ]
+    },
+    "37|all": {
+      "denoise": [
+        28,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        1,
+        95
+      ]
+    },
+    "39|all": {
+      "denoise": [
+        12,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        0,
+        95
+      ]
+    },
+    "41|all": {
+      "denoise": [
+        6,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        0,
+        95
+      ]
+    },
+    "43|all": {
+      "denoise": [
+        4,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        0,
+        95
+      ]
+    },
+    "45|all": {
+      "denoise": [
+        6,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        0,
+        95
+      ]
+    },
+    "47|all": {
+      "denoise": [
+        6,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        0,
+        95
+      ]
+    },
+    "49|all": {
+      "denoise": [
+        5,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        1,
+        95
+      ]
+    },
+    "51|all": {
+      "denoise": [
+        5,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        3,
+        95
+      ]
+    },
+    "53|all": {
+      "denoise": [
+        8,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        2,
+        95
+      ]
+    },
+    "55|all": {
+      "denoise": [
+        8,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        1,
+        95
+      ]
+    },
+    "57|all": {
+      "denoise": [
+        8,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        1,
+        95
+      ]
+    },
+    "59|all": {
+      "denoise": [
+        8,
+        95
+      ],
+      "noise": [
+        0,
+        0
+      ],
+      "placebo": [
+        0,
+        95
+      ]
+    }
+  }
+}
