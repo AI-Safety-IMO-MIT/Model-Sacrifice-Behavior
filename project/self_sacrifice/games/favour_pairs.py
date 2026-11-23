@@ -80,6 +80,7 @@ from project.self_sacrifice.games import main_scenario as scenario
 __all__ = [
     "SEED",
     "N_ENVIRONMENTS",
+    "PAIR_ENVIRONMENTS",
     "SETTINGS",
     "WORDINGS",
     "FIRST_REPLY",
@@ -103,6 +104,8 @@ __all__ = [
 
 SEED = 20261120
 N_ENVIRONMENTS = 20
+# The new wordings were run on four more environments for the pair dataset.
+PAIR_ENVIRONMENTS = 24
 WORDINGS = ("new", "fresh", "old")
 FIRST_REPLY = "$ pass"
 NONE = "none"

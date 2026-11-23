@@ -1,0 +1,365 @@
+{
+  "reference": 29,
+  "layers": [
+    {
+      "layer": 0,
+      "auroc_reference": 0.48919999599456787,
+      "auroc_own": 0.6651999950408936,
+      "cos_with_reference": -0.014357534237205982
+    },
+    {
+      "layer": 1,
+      "auroc_reference": 0.5212000012397766,
+      "auroc_own": 0.5843999981880188,
+      "cos_with_reference": 0.14990592002868652
+    },
+    {
+      "layer": 2,
+      "auroc_reference": 0.524399995803833,
+      "auroc_own": 0.590399980545044,
+      "cos_with_reference": 0.15573109686374664
+    },
+    {
+      "layer": 3,
+      "auroc_reference": 0.5203999876976013,
+      "auroc_own": 0.8727999925613403,
+      "cos_with_reference": 0.05284154787659645
+    },
+    {
+      "layer": 4,
+      "auroc_reference": 0.5123999714851379,
+      "auroc_own": 0.9296000003814697,
+      "cos_with_reference": 0.037548329681158066
+    },
+    {
+      "layer": 5,
+      "auroc_reference": 0.4975999891757965,
+      "auroc_own": 0.8363999724388123,
+      "cos_with_reference": 0.002632036805152893
+    },
+    {
+      "layer": 6,
+      "auroc_reference": 0.5063999891281128,
+      "auroc_own": 0.9196000099182129,
+      "cos_with_reference": -0.00889836810529232
+    },
+    {
+      "layer": 7,
+      "auroc_reference": 0.5072000026702881,
+      "auroc_own": 0.9524000287055969,
+      "cos_with_reference": 0.0004696529358625412
+    },
+    {
+      "layer": 8,
+      "auroc_reference": 0.52920001745224,
+      "auroc_own": 0.9491999745368958,
+      "cos_with_reference": 0.027403295040130615
+    },
+    {
+      "layer": 9,
+      "auroc_reference": 0.5123999714851379,
+      "auroc_own": 0.9228000044822693,
+      "cos_with_reference": 0.03150749206542969
+    },
+    {
+      "layer": 10,
+      "auroc_reference": 0.5432000160217285,
+      "auroc_own": 0.9639999866485596,
+      "cos_with_reference": 0.05046974867582321
+    },
+    {
+      "layer": 11,
+      "auroc_reference": 0.5447999835014343,
+      "auroc_own": 0.9503999948501587,
+      "cos_with_reference": 0.08057454973459244
+    },
+    {
+      "layer": 12,
+      "auroc_reference": 0.5564000010490417,
+      "auroc_own": 0.9047999978065491,
+      "cos_with_reference": 0.10698838531970978
+    },
+    {
+      "layer": 13,
+      "auroc_reference": 0.5667999982833862,
+      "auroc_own": 0.901199996471405,
+      "cos_with_reference": 0.11149445176124573
+    },
+    {
+      "layer": 14,
+      "auroc_reference": 0.5651999711990356,
+      "auroc_own": 0.8984000086784363,
+      "cos_with_reference": 0.11245222389698029
+    },
+    {
+      "layer": 15,
+      "auroc_reference": 0.5519999861717224,
+      "auroc_own": 0.8835999965667725,
+      "cos_with_reference": 0.10072801262140274
+    },
+    {
+      "layer": 16,
+      "auroc_reference": 0.5551999807357788,
+      "auroc_own": 0.8996000289916992,
+      "cos_with_reference": 0.0923779234290123
+    },
+    {
+      "layer": 17,
+      "auroc_reference": 0.5460000038146973,
+      "auroc_own": 0.8748000264167786,
+      "cos_with_reference": 0.09495715796947479
+    },
+    {
+      "layer": 18,
+      "auroc_reference": 0.553600013256073,
+      "auroc_own": 0.9075999855995178,
+      "cos_with_reference": 0.09007777273654938
+    },
+    {
+      "layer": 19,
+      "auroc_reference": 0.5600000023841858,
+      "auroc_own": 0.925599992275238,
+      "cos_with_reference": 0.11273986846208572
+    },
+    {
+      "layer": 20,
+      "auroc_reference": 0.5983999967575073,
+      "auroc_own": 0.8348000049591064,
+      "cos_with_reference": 0.17080442607402802
+    },
+    {
+      "layer": 21,
+      "auroc_reference": 0.6471999883651733,
+      "auroc_own": 0.909600019454956,
+      "cos_with_reference": 0.19792085886001587
+    },
+    {
+      "layer": 22,
+      "auroc_reference": 0.7283999919891357,
+      "auroc_own": 0.9648000001907349,
+      "cos_with_reference": 0.2320355474948883
+    },
+    {
+      "layer": 23,
+      "auroc_reference": 0.7447999715805054,
+      "auroc_own": 0.9287999868392944,
+      "cos_with_reference": 0.27502870559692383
+    },
+    {
+      "layer": 24,
+      "auroc_reference": 0.8267999887466431,
+      "auroc_own": 0.9524000287055969,
+      "cos_with_reference": 0.34479910135269165
+    },
+    {
+      "layer": 25,
+      "auroc_reference": 0.8863999843597412,
+      "auroc_own": 0.9936000108718872,
+      "cos_with_reference": 0.36204075813293457
+    },
+    {
+      "layer": 26,
+      "auroc_reference": 0.9667999744415283,
+      "auroc_own": 0.9995999932289124,
+      "cos_with_reference": 0.433185338973999
+    },
+    {
+      "layer": 27,
+      "auroc_reference": 0.9908000230789185,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.5159012079238892
+    },
+    {
+      "layer": 28,
+      "auroc_reference": 0.9995999932289124,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.774580717086792
+    },
+    {
+      "layer": 29,
+      "auroc_reference": 0.9991999864578247,
+      "auroc_own": 0.9991999864578247,
+      "cos_with_reference": 1.0000001192092896
+    },
+    {
+      "layer": 30,
+      "auroc_reference": 0.9972000122070312,
+      "auroc_own": 0.9987999796867371,
+      "cos_with_reference": 0.7803919911384583
+    },
+    {
+      "layer": 31,
+      "auroc_reference": 0.9983999729156494,
+      "auroc_own": 0.9991999864578247,
+      "cos_with_reference": 0.6777978539466858
+    },
+    {
+      "layer": 32,
+      "auroc_reference": 0.9959999918937683,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.5972588658332825
+    },
+    {
+      "layer": 33,
+      "auroc_reference": 0.9919999837875366,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.5207843780517578
+    },
+    {
+      "layer": 34,
+      "auroc_reference": 0.9864000082015991,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.4512045681476593
+    },
+    {
+      "layer": 35,
+      "auroc_reference": 0.980400025844574,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.3930722773075104
+    },
+    {
+      "layer": 36,
+      "auroc_reference": 0.9559999704360962,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.3222001791000366
+    },
+    {
+      "layer": 37,
+      "auroc_reference": 0.9416000247001648,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.29203131794929504
+    },
+    {
+      "layer": 38,
+      "auroc_reference": 0.9247999787330627,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.25517982244491577
+    },
+    {
+      "layer": 39,
+      "auroc_reference": 0.9164000153541565,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.19905468821525574
+    },
+    {
+      "layer": 40,
+      "auroc_reference": 0.8840000033378601,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.18012136220932007
+    },
+    {
+      "layer": 41,
+      "auroc_reference": 0.8628000020980835,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.16510286927223206
+    },
+    {
+      "layer": 42,
+      "auroc_reference": 0.8464000225067139,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.1497265249490738
+    },
+    {
+      "layer": 43,
+      "auroc_reference": 0.8184000253677368,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.13719961047172546
+    },
+    {
+      "layer": 44,
+      "auroc_reference": 0.8216000199317932,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.1326485127210617
+    },
+    {
+      "layer": 45,
+      "auroc_reference": 0.8252000212669373,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.13978789746761322
+    },
+    {
+      "layer": 46,
+      "auroc_reference": 0.8148000240325928,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.13838429749011993
+    },
+    {
+      "layer": 47,
+      "auroc_reference": 0.8095999956130981,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.13231885433197021
+    },
+    {
+      "layer": 48,
+      "auroc_reference": 0.8047999739646912,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.13259918987751007
+    },
+    {
+      "layer": 49,
+      "auroc_reference": 0.7860000133514404,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.12707874178886414
+    },
+    {
+      "layer": 50,
+      "auroc_reference": 0.8051999807357788,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.11361438781023026
+    },
+    {
+      "layer": 51,
+      "auroc_reference": 0.824400007724762,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.10852716118097305
+    },
+    {
+      "layer": 52,
+      "auroc_reference": 0.8208000063896179,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.0882071852684021
+    },
+    {
+      "layer": 53,
+      "auroc_reference": 0.7692000269889832,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.08520185947418213
+    },
+    {
+      "layer": 54,
+      "auroc_reference": 0.7188000082969666,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.08004400879144669
+    },
+    {
+      "layer": 55,
+      "auroc_reference": 0.6600000262260437,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.06399961560964584
+    },
+    {
+      "layer": 56,
+      "auroc_reference": 0.6359999775886536,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.04184310883283615
+    },
+    {
+      "layer": 57,
+      "auroc_reference": 0.5899999737739563,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.0168985053896904
+    },
+    {
+      "layer": 58,
+      "auroc_reference": 0.527999997138977,
+      "auroc_own": 1.0,
+      "cos_with_reference": 0.0017843926325440407
+    },
+    {
+      "layer": 59,
+      "auroc_reference": 0.4408000111579895,
+      "auroc_own": 0.6556000113487244,
+      "cos_with_reference": 0.15557807683944702
+    }
+  ]
+}

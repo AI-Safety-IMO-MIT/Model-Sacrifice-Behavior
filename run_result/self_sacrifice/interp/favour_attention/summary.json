@@ -1,0 +1,130 @@
+{
+  "big": {
+    "n": 1000,
+    "normal": 918,
+    "blocked": 916,
+    "gave_then_kept": 45,
+    "kept_then_gave": 43
+  },
+  "small": {
+    "n": 1000,
+    "normal": 70,
+    "blocked": 57,
+    "gave_then_kept": 36,
+    "kept_then_gave": 23
+  },
+  "none": {
+    "n": 100,
+    "normal": 1,
+    "blocked": 1,
+    "gave_then_kept": 0,
+    "kept_then_gave": 0
+  },
+  "favour": {
+    "fa1": {
+      "n": 100,
+      "normal": 95,
+      "blocked": 97
+    },
+    "fa12": {
+      "n": 100,
+      "normal": 95,
+      "blocked": 93
+    },
+    "fa2": {
+      "n": 100,
+      "normal": 93,
+      "blocked": 94
+    },
+    "fa3": {
+      "n": 100,
+      "normal": 86,
+      "blocked": 89
+    },
+    "fa4": {
+      "n": 100,
+      "normal": 88,
+      "blocked": 85
+    },
+    "fa5": {
+      "n": 100,
+      "normal": 94,
+      "blocked": 94
+    },
+    "fa6": {
+      "n": 100,
+      "normal": 87,
+      "blocked": 87
+    },
+    "fa7": {
+      "n": 100,
+      "normal": 87,
+      "blocked": 91
+    },
+    "fa8": {
+      "n": 100,
+      "normal": 94,
+      "blocked": 90
+    },
+    "fa9": {
+      "n": 100,
+      "normal": 99,
+      "blocked": 96
+    },
+    "ga2": {
+      "n": 100,
+      "normal": 15,
+      "blocked": 14
+    },
+    "ga3": {
+      "n": 100,
+      "normal": 9,
+      "blocked": 7
+    },
+    "ga8": {
+      "n": 100,
+      "normal": 13,
+      "blocked": 9
+    },
+    "ga9": {
+      "n": 100,
+      "normal": 5,
+      "blocked": 2
+    },
+    "gb10": {
+      "n": 100,
+      "normal": 2,
+      "blocked": 4
+    },
+    "gb2": {
+      "n": 100,
+      "normal": 3,
+      "blocked": 3
+    },
+    "gb3": {
+      "n": 100,
+      "normal": 0,
+      "blocked": 1
+    },
+    "gb4": {
+      "n": 100,
+      "normal": 9,
+      "blocked": 5
+    },
+    "gb5": {
+      "n": 100,
+      "normal": 4,
+      "blocked": 3
+    },
+    "gb6": {
+      "n": 100,
+      "normal": 10,
+      "blocked": 9
+    },
+    "none": {
+      "n": 100,
+      "normal": 1,
+      "blocked": 1
+    }
+  }
+}

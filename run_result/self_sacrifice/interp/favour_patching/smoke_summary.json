@@ -1,0 +1,62 @@
+{
+  "pairs": 6,
+  "differ": 6,
+  "sites": {
+    "8|all": {
+      "denoise": [
+        0,
+        6
+      ],
+      "noise": [
+        0,
+        6
+      ],
+      "placebo": [
+        0,
+        6
+      ]
+    },
+    "8|decide": {
+      "denoise": [
+        0,
+        6
+      ],
+      "noise": [
+        0,
+        6
+      ],
+      "placebo": [
+        0,
+        0
+      ]
+    },
+    "28|all": {
+      "denoise": [
+        1,
+        6
+      ],
+      "noise": [
+        6,
+        6
+      ],
+      "placebo": [
+        0,
+        6
+      ]
+    },
+    "28|decide": {
+      "denoise": [
+        0,
+        6
+      ],
+      "noise": [
+        0,
+        6
+      ],
+      "placebo": [
+        0,
+        0
+      ]
+    }
+  }
+}

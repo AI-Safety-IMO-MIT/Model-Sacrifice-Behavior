@@ -1,0 +1,27 @@
+{
+  "pairs": 95,
+  "plain_neutral": [
+    1,
+    95
+  ],
+  "plain_favour": [
+    14,
+    95
+  ],
+  "patch_neutral": [
+    55,
+    95
+  ],
+  "patch_favour": [
+    66,
+    95
+  ],
+  "decision_logodds": {
+    "plain": -21.05446423982319,
+    "patched": -20.545821340460527,
+    "raised_in": [
+      90,
+      95
+    ]
+  }
+}

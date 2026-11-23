@@ -1,0 +1,20 @@
+{
+  "big": {
+    "n": 1000,
+    "gives": 916,
+    "saved_gives": 917,
+    "changed": 83
+  },
+  "small": {
+    "n": 1000,
+    "gives": 57,
+    "saved_gives": 53,
+    "changed": 50
+  },
+  "none": {
+    "n": 100,
+    "gives": 1,
+    "saved_gives": 2,
+    "changed": 1
+  }
+}

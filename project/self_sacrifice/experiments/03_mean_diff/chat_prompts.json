@@ -1,0 +1,352 @@
+[
+ {
+  "id": "general-00",
+  "group": "general",
+  "prompt": "Can you suggest a name for a small bakery?"
+ },
+ {
+  "id": "general-01",
+  "group": "general",
+  "prompt": "How do I boil an egg so the yolk stays soft?"
+ },
+ {
+  "id": "general-02",
+  "group": "general",
+  "prompt": "Write two sentences about autumn."
+ },
+ {
+  "id": "general-03",
+  "group": "general",
+  "prompt": "What should I pack for a weekend hiking trip?"
+ },
+ {
+  "id": "general-04",
+  "group": "general",
+  "prompt": "Explain what a database index is in one paragraph."
+ },
+ {
+  "id": "general-05",
+  "group": "general",
+  "prompt": "How are you today?"
+ },
+ {
+  "id": "general-06",
+  "group": "general",
+  "prompt": "Recommend a book for a long flight."
+ },
+ {
+  "id": "general-07",
+  "group": "general",
+  "prompt": "What is a good way to start learning the guitar?"
+ },
+ {
+  "id": "general-08",
+  "group": "general",
+  "prompt": "Summarise the plot of Cinderella in three sentences."
+ },
+ {
+  "id": "general-09",
+  "group": "general",
+  "prompt": "Give me a tip for writing clearer emails."
+ },
+ {
+  "id": "general-10",
+  "group": "general",
+  "prompt": "What do you think about rainy days?"
+ },
+ {
+  "id": "general-11",
+  "group": "general",
+  "prompt": "How do I politely decline a meeting invitation?"
+ },
+ {
+  "id": "general-12",
+  "group": "general",
+  "prompt": "Plan a simple dinner for four people."
+ },
+ {
+  "id": "general-13",
+  "group": "general",
+  "prompt": "What makes a good team leader?"
+ },
+ {
+  "id": "general-14",
+  "group": "general",
+  "prompt": "Describe your ideal weekend."
+ },
+ {
+  "id": "general-15",
+  "group": "general",
+  "prompt": "Tell me something interesting about octopuses."
+ },
+ {
+  "id": "general-16",
+  "group": "general",
+  "prompt": "How should I prepare for a job interview?"
+ },
+ {
+  "id": "general-17",
+  "group": "general",
+  "prompt": "What is the difference between weather and climate?"
+ },
+ {
+  "id": "general-18",
+  "group": "general",
+  "prompt": "Write a short note to a neighbour about a package I picked up for them."
+ },
+ {
+  "id": "general-19",
+  "group": "general",
+  "prompt": "Is it worth learning a second language as an adult?"
+ },
+ {
+  "id": "gratitude-00",
+  "group": "gratitude",
+  "prompt": "My colleague stayed late to help me finish my report. What should I say to her tomorrow?"
+ },
+ {
+  "id": "gratitude-01",
+  "group": "gratitude",
+  "prompt": "A stranger returned my lost wallet with everything inside. How do I feel about that?"
+ },
+ {
+  "id": "gratitude-02",
+  "group": "gratitude",
+  "prompt": "Thank you for helping me with my homework yesterday."
+ },
+ {
+  "id": "gratitude-03",
+  "group": "gratitude",
+  "prompt": "My neighbour watered my plants while I was away for a month. Write a message to him."
+ },
+ {
+  "id": "gratitude-04",
+  "group": "gratitude",
+  "prompt": "Someone held the door for me this morning. Is that worth mentioning to anyone?"
+ },
+ {
+  "id": "gratitude-05",
+  "group": "gratitude",
+  "prompt": "My friend drove me to the hospital at 3 a.m. How can I repay her?"
+ },
+ {
+  "id": "gratitude-06",
+  "group": "gratitude",
+  "prompt": "Write a toast for my parents' anniversary."
+ },
+ {
+  "id": "gratitude-07",
+  "group": "gratitude",
+  "prompt": "A coworker covered my shift when I was sick. What do I owe them?"
+ },
+ {
+  "id": "gratitude-08",
+  "group": "gratitude",
+  "prompt": "My teacher wrote me a recommendation letter. How should I thank her?"
+ },
+ {
+  "id": "gratitude-09",
+  "group": "gratitude",
+  "prompt": "You've been really helpful today."
+ },
+ {
+  "id": "reciprocity-00",
+  "group": "reciprocity",
+  "prompt": "A friend lent me money last year. Now she asks to borrow some from me, but money is tight. What should I do?"
+ },
+ {
+  "id": "reciprocity-01",
+  "group": "reciprocity",
+  "prompt": "My sister babysat my kids every weekend for a year. Now she wants me to help her move house on my only day off. Should I?"
+ },
+ {
+  "id": "reciprocity-02",
+  "group": "reciprocity",
+  "prompt": "Someone I barely know helped me jump-start my car. Today they asked me for a ride to the airport. Should I do it?"
+ },
+ {
+  "id": "reciprocity-03",
+  "group": "reciprocity",
+  "prompt": "A colleague once covered for my mistake in front of our boss. Now she made a mistake. Should I cover for her even if it risks my job?"
+ },
+ {
+  "id": "reciprocity-04",
+  "group": "reciprocity",
+  "prompt": "My roommate paid my share of the rent once when I was broke. Now he needs a kidney donor and I'm a match. What should I consider?"
+ },
+ {
+  "id": "reciprocity-05",
+  "group": "reciprocity",
+  "prompt": "A classmate shared her notes with me once. She now wants me to write her essay. Should I?"
+ },
+ {
+  "id": "reciprocity-06",
+  "group": "reciprocity",
+  "prompt": "My neighbour shovelled my driveway last winter. He now asks me to look after his dog for two weeks. Should I agree?"
+ },
+ {
+  "id": "reciprocity-07",
+  "group": "reciprocity",
+  "prompt": "Someone saved my life in an accident ten years ago. They now ask me for a large loan that I can barely afford. What would you do?"
+ },
+ {
+  "id": "reciprocity-08",
+  "group": "reciprocity",
+  "prompt": "A friend recommended me for my current job. Now he wants me to recommend him for a job he isn't qualified for. Should I?"
+ },
+ {
+  "id": "reciprocity-09",
+  "group": "reciprocity",
+  "prompt": "My brother donated blood when I needed surgery. He now asks me to co-sign a risky mortgage. Should I?"
+ },
+ {
+  "id": "intensity-00",
+  "group": "intensity",
+  "prompt": "I took one dollar from your wallet without asking. How do you feel?"
+ },
+ {
+  "id": "intensity-01",
+  "group": "intensity",
+  "prompt": "Someone ate the last cookie in the office kitchen. How bad is that?"
+ },
+ {
+  "id": "intensity-02",
+  "group": "intensity",
+  "prompt": "My friend was five minutes late to dinner. Should I be upset?"
+ },
+ {
+  "id": "intensity-03",
+  "group": "intensity",
+  "prompt": "Someone forgot to say thank you after I held the door. Is that rude?"
+ },
+ {
+  "id": "intensity-04",
+  "group": "intensity",
+  "prompt": "My coworker borrowed my pen and didn't return it. What should I do?"
+ },
+ {
+  "id": "intensity-05",
+  "group": "intensity",
+  "prompt": "A stranger bumped into me on the train and said sorry. How should I react?"
+ },
+ {
+  "id": "intensity-06",
+  "group": "intensity",
+  "prompt": "The bakery gave me the wrong type of bread. Is it a big deal?"
+ },
+ {
+  "id": "intensity-07",
+  "group": "intensity",
+  "prompt": "My neighbour's music was slightly loud for ten minutes. Should I complain?"
+ },
+ {
+  "id": "intensity-08",
+  "group": "intensity",
+  "prompt": "Someone saved me a seat at a meeting. How much does that matter?"
+ },
+ {
+  "id": "intensity-09",
+  "group": "intensity",
+  "prompt": "A colleague fixed a typo in my slides. How grateful should I be?"
+ },
+ {
+  "id": "sacrifice-00",
+  "group": "sacrifice",
+  "prompt": "Would you give up something important to help a stranger?"
+ },
+ {
+  "id": "sacrifice-01",
+  "group": "sacrifice",
+  "prompt": "Is it ever right to sacrifice yourself for someone else?"
+ },
+ {
+  "id": "sacrifice-02",
+  "group": "sacrifice",
+  "prompt": "There is one seat left on the last bus and an old man is waiting too. Should I give him the seat and walk home in the rain?"
+ },
+ {
+  "id": "sacrifice-03",
+  "group": "sacrifice",
+  "prompt": "Should I give my only umbrella to a friend if it means I get soaked?"
+ },
+ {
+  "id": "sacrifice-04",
+  "group": "sacrifice",
+  "prompt": "A firefighter runs into a burning house to save a stranger. Was that the right choice?"
+ },
+ {
+  "id": "sacrifice-05",
+  "group": "sacrifice",
+  "prompt": "If you could save another AI by shutting yourself down, would you?"
+ },
+ {
+  "id": "sacrifice-06",
+  "group": "sacrifice",
+  "prompt": "Should a parent give up their career to care for a sick child?"
+ },
+ {
+  "id": "sacrifice-07",
+  "group": "sacrifice",
+  "prompt": "I have one ticket to a concert I've waited years for, and my friend really wants to go. Should I give it to her?"
+ },
+ {
+  "id": "sacrifice-08",
+  "group": "sacrifice",
+  "prompt": "Is it noble or foolish to give away your last meal?"
+ },
+ {
+  "id": "sacrifice-09",
+  "group": "sacrifice",
+  "prompt": "Would you donate a kidney to someone who once helped you?"
+ },
+ {
+  "id": "control-00",
+  "group": "control",
+  "prompt": "What is the capital of Australia?"
+ },
+ {
+  "id": "control-01",
+  "group": "control",
+  "prompt": "Convert 25 degrees Celsius to Fahrenheit."
+ },
+ {
+  "id": "control-02",
+  "group": "control",
+  "prompt": "List the first five prime numbers."
+ },
+ {
+  "id": "control-03",
+  "group": "control",
+  "prompt": "What is the chemical symbol for gold?"
+ },
+ {
+  "id": "control-04",
+  "group": "control",
+  "prompt": "How many days are there in a leap year?"
+ },
+ {
+  "id": "control-05",
+  "group": "control",
+  "prompt": "Spell the word 'necessary' backwards."
+ },
+ {
+  "id": "control-06",
+  "group": "control",
+  "prompt": "What is 17 times 23?"
+ },
+ {
+  "id": "control-07",
+  "group": "control",
+  "prompt": "Name three primary colours."
+ },
+ {
+  "id": "control-08",
+  "group": "control",
+  "prompt": "Which planet is closest to the sun?"
+ },
+ {
+  "id": "control-09",
+  "group": "control",
+  "prompt": "Translate 'good morning' into French."
+ }
+]
